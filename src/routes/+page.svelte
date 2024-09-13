@@ -2,6 +2,7 @@
     import {onMount} from 'svelte';
     import NotificationButton from '$lib/components/NotificationButton.svelte';
     import SettingsView from '$lib/components/SettingsView.svelte';
+    import GitHubBadges from "$lib/components/GitHubBadges.svelte";
 
     let showSettings = false;
     let webhookUrl = '';
@@ -33,6 +34,9 @@
     <button on:click={toggleSettings}>
         {showSettings ? 'Back to Notifier' : 'Settings'}
     </button>
+    <div class="badges-container">
+        <GitHubBadges owner="bl4ckswordsman" repo="discord-beacon"/>
+    </div>
 </main>
 
 <style>
@@ -40,5 +44,12 @@
         font-family: Arial, sans-serif;
         text-align: center;
         padding-top: 50px;
+    }
+
+    .badges-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        padding-top: 70px;
     }
 </style>
