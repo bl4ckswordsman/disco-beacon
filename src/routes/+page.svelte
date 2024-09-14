@@ -24,32 +24,20 @@
     }
 </script>
 
-<main>
+<main class="font-sans text-center pt-12">
     <h1>Valheim Server Notifier</h1>
-    {#if showSettings}
-        <SettingsView {webhookUrl} on:update={e => updateWebhookUrl(e.detail)}/>
-    {:else}
-        <NotificationButton {webhookUrl}/>
-    {/if}
-    <button on:click={toggleSettings}>
-        {showSettings ? 'Back to Notifier' : 'Settings'}
-    </button>
-    <div class="badges-container">
-        <GitHubBadges owner="bl4ckswordsman" repo="discord-beacon"/>
+    <div class="m-2">
+        {#if showSettings}
+            <SettingsView {webhookUrl} on:update={e => updateWebhookUrl(e.detail)}/>
+        {:else}
+            <NotificationButton {webhookUrl}/>
+        {/if}
+        <button class="btn" on:click={toggleSettings}>
+            {showSettings ? 'Back to Notifier' : 'Settings'}
+        </button>
+
+        <div class="flex justify-center mb-5 pt-16">
+            <GitHubBadges owner="bl4ckswordsman" repo="discord-beacon"/>
+        </div>
     </div>
 </main>
-
-<style>
-    main {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding-top: 50px;
-    }
-
-    .badges-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-        padding-top: 70px;
-    }
-</style>

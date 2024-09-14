@@ -42,12 +42,5 @@
     }
 </script>
 
-<button on:click={sendNotification}>Notify Discord</button>
+<button class="btn btn-lg btn-wide" on:click={sendNotification}>Notify Discord</button>
 <p>{status}</p>
-
-<style>
-    button {
-        font-size: 24px;
-        padding: 15px 30px;
-    }
-</style>

@@ -11,7 +11,7 @@
     }
 </script>
 
-<div>
+<div class="flex flex-col items-center gap-2.5">
     <h2>Settings</h2>
     <label for="webhook-url">Discord Webhook URL:</label>
     <input
@@ -20,17 +20,10 @@
             bind:value={inputUrl}
             placeholder="Enter Discord webhook URL"
     />
-    <button on:click={saveSettings}>Save</button>
+    <button class="btn" on:click={saveSettings}>Save</button>
 </div>
 
 <style>
-    div {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
     input {
         width: 300px;
         padding: 5px;
