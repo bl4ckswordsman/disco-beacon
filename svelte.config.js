@@ -1,5 +1,5 @@
-import adapter from "svelte-adapter-bun"; // Bun
-// import adapter from "@sveltejs/adapter-auto"; // Node servers
+// import adapter from "svelte-adapter-bun"; // Bun (incompatible with Vercel)
+import adapter from "@sveltejs/adapter-auto"; // Node servers (Vercel compatible)
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /** @type {import('@sveltejs/kit').Config} */
