@@ -14,15 +14,17 @@
 
 <div class="flex flex-col items-center gap-2.5">
     <h2>Settings</h2>
-    <label for="webhook-url">Discord Webhook URL:</label>
-    <label class="input input-bordered flex items-center gap-2">
-        <KeyRound />
-        <input
-            id="webhook-url"
-            type="password"
-            bind:value={inputUrl}
-            placeholder="Enter Discord webhook URL"
-        />
-    </label>
-    <button class="btn" on:click={saveSettings}>Save</button>
+    <form on:submit={saveSettings} class="flex flex-col items-center gap-2.5">
+        <label for="webhook-url">Discord Webhook URL:</label>
+        <label class="input input-bordered flex items-center gap-2">
+            <KeyRound />
+            <input
+                    id="webhook-url"
+                    type="password"
+                    bind:value={inputUrl}
+                    placeholder="Enter Discord webhook URL"
+            />
+        </label>
+        <button type="submit" class="btn">Save</button>
+    </form>
 </div>
