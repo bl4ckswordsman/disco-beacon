@@ -36,8 +36,8 @@
             {showSettings ? 'Back to Notifier' : 'Settings'}
         </button>
 
-        <div class="flex justify-center mb-5 pt-16">
+<!--        <div class="flex justify-center mb-5 pt-16">
             <GitHubBadges owner="bl4ckswordsman" repo="discord-beacon"/>
-        </div>
+        </div>-->
     </div>
 </main>
