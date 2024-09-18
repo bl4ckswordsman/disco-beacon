@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { webhookUrl } from "$lib/stores/settings-store";
+    import {webhookUrl} from "$lib/stores/settings-store";
     import KeyRound from "$assets/icons/KeyRound.svelte";
+    import {encryptWebhookUrl} from "$lib/services/webhook-service";
 
     let inputUrl = $webhookUrl;
 
-    function saveSettings() {
-        $webhookUrl = inputUrl;
+    async function saveSettings(event: Event): Promise<void> {
+        event.preventDefault();
+        $webhookUrl = await encryptWebhookUrl(inputUrl);
     }
 </script>
 

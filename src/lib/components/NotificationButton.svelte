@@ -25,11 +25,8 @@
         };
 
         try {
-            const response = await sendWebhookNotification(
-                $webhookUrl,
-                payload,
-            );
-            status = response.ok
+            const success = await sendWebhookNotification($webhookUrl, payload);
+            status = success
                 ? "Notification sent successfully!"
                 : "Error: Failed to send notification";
         } catch (error) {
