@@ -1,7 +1,8 @@
 <script lang="ts">
-    export let title = "Disco Beacon";
-    export let description =
-        "Svelte app for Discord notifications via webhooks";
+    import { PROJECT_INFO } from "$lib/constants";
+
+    export let title: string = PROJECT_INFO.TITLE;
+    export let description: string = PROJECT_INFO.DESCRIPTION;
 </script>
 
 <svelte:head>
