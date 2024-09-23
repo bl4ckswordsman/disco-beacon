@@ -4,7 +4,7 @@
     export let githubLink: string;
 </script>
 
-<div class="navbar bg-base-100">
+<div class="navbar bg-base-100 max-w-2xl mx-auto">
     <div class="flex-1">
         <a href="/" class="btn btn-ghost text-xl">Disco Beacon</a>
     </div>

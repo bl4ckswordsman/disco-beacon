@@ -15,7 +15,7 @@
 
 <Metadata {title} {description} />
 
-<main class="font-sans text-center pt-12">
+<main class="font-sans text-center max-w-2xl mx-auto pt-12">
     <div class="m-2">
         {#if showSettings}
             <SettingsView />
