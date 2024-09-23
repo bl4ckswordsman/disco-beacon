@@ -16,7 +16,6 @@
 <Metadata {title} {description} />
 
 <main class="font-sans text-center pt-12">
-    <h1>{title}</h1>
     <div class="m-2">
         {#if showSettings}
             <SettingsView />
