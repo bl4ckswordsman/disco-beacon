@@ -1,10 +1,17 @@
 <script>
     import "../app.css";
+    import Navbar from "$lib/components/Navbar.svelte";
+    import { GITHUB } from "$lib/constants";
 
-    let footerText = "bl4ckswordsman";
+    const githubLink =
+        "https://github.com/" + GITHUB.USERNAME + "/" + GITHUB.REPO_NAME;
+    let footerText = GITHUB.USERNAME;
 </script>
 
 <div class="flex flex-col min-h-screen">
+    <header>
+        <Navbar {githubLink} />
+    </header>
     <main class="flex-grow">
         <slot />
     </main>
