@@ -3,6 +3,9 @@
     import SettingsView from "$lib/components/SettingsView.svelte";
     import Metadata from "$lib/components/Metadata.svelte";
 
+    let title: string = "Disco Beacon";
+    let description: string = "Send notifications about to your Discord server";
+
     let showSettings = false;
 
     function toggleSettings() {
@@ -10,13 +13,10 @@
     }
 </script>
 
-<Metadata
-    title="Disco Beacon - Home"
-    description="Send notifications about to your Discord server"
-/>
+<Metadata {title} {description} />
 
 <main class="font-sans text-center pt-12">
-    <h1>Valheim Server Notifier</h1>
+    <h1>{title}</h1>
     <div class="m-2">
         {#if showSettings}
             <SettingsView />
