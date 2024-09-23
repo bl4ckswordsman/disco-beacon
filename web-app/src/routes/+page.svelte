@@ -4,7 +4,7 @@
     import Metadata from "$lib/components/Metadata.svelte";
 
     let title: string = "Disco Beacon";
-    let description: string = "Send notifications about to your Discord server";
+    let description: string = "Send notifications to your Discord server";
 
     let showSettings = false;
 
