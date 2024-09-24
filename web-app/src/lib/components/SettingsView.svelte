@@ -3,16 +3,22 @@
     import { webhookPayload } from "$lib/stores/payload-store";
     import KeyRound from "$assets/icons/KeyRound.svelte";
     import { encryptWebhookUrl } from "$lib/services/webhook-service";
-    import {toast} from "$lib/stores/toast-store";
+    import { toast } from "$lib/stores/toast-store";
 
     let inputUrl = $webhookUrl;
     let inputPayload = JSON.stringify($webhookPayload, null, 2);
 
-    async function saveSettings(event: Event): Promise<void> {
-        event.preventDefault();
-        $webhookUrl = await encryptWebhookUrl(inputUrl);
+    async function saveWebhookUrl(): Promise<void> {
+        if (inputUrl !== $webhookUrl) {
+            $webhookUrl = await encryptWebhookUrl(inputUrl);
+            toast.show("Webhook URL saved successfully", "success");
+        }
+    }
+
+    function savePayload(): void {
         try {
             $webhookPayload = JSON.parse(inputPayload);
+            toast.show("Payload saved successfully", "success");
         } catch (error) {
             console.error("Invalid JSON for payload", error);
             toast.show("Error: Invalid JSON for payload", "error");
@@ -21,7 +27,7 @@
 </script>
 
 <h3 class="font-bold text-lg">Settings</h3>
-<form on:submit={saveSettings} class="py-4">
+<form class="py-4">
     <label for="username" class="sr-only">Username</label>
     <input
         id="username"
@@ -42,6 +48,12 @@
             class="w-full"
         />
     </label>
+    <div class="modal-action">
+        <button type="button" class="btn btn-primary" on:click={saveWebhookUrl}
+            >Save URL</button
+        >
+    </div>
+
     <label for="webhook-payload" class="label">Webhook Payload:</label>
     <textarea
         id="webhook-payload"
@@ -52,6 +64,8 @@
     ></textarea>
 
     <div class="modal-action">
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" on:click={savePayload}
+            >Save Payload</button
+        >
     </div>
 </form>
