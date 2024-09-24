@@ -19,10 +19,10 @@
 <main class="font-sans text-center max-w-2xl mx-auto pt-12">
     <div class="m-2">
         <NotificationButton />
-        <button class="btn btn-neutral mt-2" on:click={toggleSettings}
-            >Settings</button
-        >
     </div>
+    <button class="btn btn-neutral m-2" on:click={toggleSettings}
+        >Settings</button
+    >
 </main>
 
 <Modal isOpen={isSettingsOpen} onClose={toggleSettings}>
