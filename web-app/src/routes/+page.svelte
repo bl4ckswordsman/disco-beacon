@@ -19,7 +19,9 @@
 <main class="font-sans text-center max-w-2xl mx-auto pt-12">
     <div class="m-2">
         <NotificationButton />
-        <button class="btn" on:click={toggleSettings}>Settings</button>
+        <button class="btn btn-neutral mt-2" on:click={toggleSettings}
+            >Settings</button
+        >
     </div>
 </main>
 
