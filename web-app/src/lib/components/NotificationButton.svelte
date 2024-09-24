@@ -2,28 +2,15 @@
     import { webhookUrl } from "$lib/stores/settings-store";
     import { sendWebhookNotification } from "$lib/services/webhook-service";
     import type { WebhookPayload } from "$lib/types";
-    import Toast from "$lib/components/Toast.svelte";
-
-    let showToast = false;
-    let toastMessage = "";
-    let toastType: "info" | "success" | "error" = "info";
-
-    function displayToast(message: string, type: "info" | "success" | "error") {
-        toastMessage = message;
-        toastType = type;
-        showToast = true;
-        setTimeout(() => {
-            showToast = false;
-        }, 3000);
-    }
+    import { toast } from "$lib/stores/toast-store";
 
     async function sendNotification() {
         if (!$webhookUrl) {
-            displayToast("Error: Webhook URL not set", "error");
+            toast.show("Error: Webhook URL not set", "error");
             return;
         }
 
-        displayToast("Sending notification...", "info");
+        toast.show("Sending notification...", "info");
 
         const payload: WebhookPayload = {
             content: "The Valheim server is up. @everyone",
@@ -38,14 +25,14 @@
 
         try {
             const success = await sendWebhookNotification($webhookUrl, payload);
-            displayToast(
+            toast.show(
                 success
                     ? "Notification sent successfully!"
                     : "Error: Failed to send notification",
                 success ? "success" : "error",
             );
         } catch (error) {
-            displayToast(
+            toast.show(
                 error instanceof Error
                     ? `Error: ${error.message}`
                     : "Error: An unknown error occurred",
@@ -58,7 +45,3 @@
 <button class="btn btn-lg btn-wide" on:click={sendNotification}>
     Notify Discord
 </button>
-
-{#if showToast}
-    <Toast message={toastMessage} type={toastType} />
-{/if}
