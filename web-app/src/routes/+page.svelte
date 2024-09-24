@@ -1,15 +1,16 @@
 <script lang="ts">
     import NotificationButton from "$lib/components/NotificationButton.svelte";
     import SettingsView from "$lib/components/SettingsView.svelte";
+    import Modal from "$lib/components/Modal.svelte";
     import Metadata from "$lib/components/Metadata.svelte";
 
     let title: string = "Disco Beacon";
     let description: string = "Send notifications to your Discord server";
 
-    let showSettings = false;
+    let isSettingsOpen = false;
 
     function toggleSettings() {
-        showSettings = !showSettings;
+        isSettingsOpen = !isSettingsOpen;
     }
 </script>
 
@@ -17,13 +18,11 @@
 
 <main class="font-sans text-center max-w-2xl mx-auto pt-12">
     <div class="m-2">
-        {#if showSettings}
-            <SettingsView />
-        {:else}
-            <NotificationButton />
-        {/if}
-        <button class="btn" on:click={toggleSettings}>
-            {showSettings ? "Back to Notifier" : "Settings"}
-        </button>
+        <NotificationButton />
+        <button class="btn" on:click={toggleSettings}>Settings</button>
     </div>
 </main>
+
+<Modal isOpen={isSettingsOpen} onClose={toggleSettings}>
+    <SettingsView />
+</Modal>
