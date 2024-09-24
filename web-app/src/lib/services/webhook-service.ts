@@ -47,10 +47,6 @@ export async function sendWebhookNotification(
     return result.success;
   } catch (error) {
     console.error("Error occurred while sending webhook notification:", error);
-    if (error instanceof Error) {
-      throw new Error(`Notification failed: ${error.message}`);
-    } else {
-      throw new Error("Notification failed: An unknown error occurred");
-    }
+    throw error;
   }
 }
