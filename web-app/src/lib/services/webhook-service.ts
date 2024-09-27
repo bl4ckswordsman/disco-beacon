@@ -37,7 +37,7 @@ export async function sendWebhookNotification(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: WebhookAction.Send as WebhookAction.Send,
+        action: WebhookAction.Send,
         data: { url: encryptedWebhookUrl, payload },
       }),
     });
