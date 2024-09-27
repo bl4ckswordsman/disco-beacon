@@ -20,7 +20,7 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
         `Failed to encrypt webhook URL: HTTP status ${response.status}`,
       );
     }
-    const result = (await response.json()) as EncryptResponse;
+    const result: EncryptResponse = await response.json();
     if (!result.encryptedUrl) {
       throw new Error("Encrypted URL is missing in the response");
     }
@@ -44,7 +44,7 @@ export async function sendWebhookNotification(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: WebhookAction.Send as WebhookAction.Send,
+        action: WebhookAction.Send,
         data: { url: encryptedWebhookUrl, payload },
       }),
     });
@@ -53,7 +53,7 @@ export async function sendWebhookNotification(
         `Failed to send webhook notification: HTTP status ${response.status}`,
       );
     }
-    const result = (await response.json()) as { success?: boolean };
+    const result: { success?: boolean } = await response.json();
     return result.success ?? false;
   } catch (error) {
     console.error("Error occurred while sending webhook notification:", error);
