@@ -7,7 +7,7 @@ interface EncryptResponse {
 
 export async function encryptWebhookUrl(url: string): Promise<string> {
   try {
-    const response = await fetch(DISCORD_API_ENDPOINT as string, {
+    const response = await fetch(DISCORD_API_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
