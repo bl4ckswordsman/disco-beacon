@@ -46,8 +46,8 @@ export async function sendWebhookNotification(
         `Failed to send webhook notification: HTTP status ${response.status}`,
       );
     }
-    const result = await response.json();
-    return result.success;
+    const result = (await response.json()) as { success?: boolean };
+    return result.success ?? false;
   } catch (error) {
     console.error("Error occurred while sending webhook notification:", error);
     throw error;
