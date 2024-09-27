@@ -5,7 +5,7 @@ from webhook import send_webhook_notification
 from datetime import datetime, timezone
 from constants import GREEN_CIRCLE, YELLOW_CIRCLE, RED_CIRCLE
 from events import event_emitter
-from state import server_state
+
 
 def setup_notification_handlers():
     event_emitter.on('state_changed', handle_state_change)

@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable
 
 class EventEmitter:
     def __init__(self):
