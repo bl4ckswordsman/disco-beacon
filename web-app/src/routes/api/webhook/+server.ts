@@ -1,7 +1,6 @@
-import { json } from "@sveltejs/kit";
+import { json, type RequestHandler } from "@sveltejs/kit";
 import { DISCORDWEBHOOK_ENCRYPTION_KEY } from "$env/static/private";
 import { encrypt, decrypt } from "$lib/server/crypto";
-import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ request }) => {
   const { action, data } = await request.json();
