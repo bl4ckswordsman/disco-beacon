@@ -6,7 +6,10 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
     const response = await fetch(DISCORD_API_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: WebhookAction.Encrypt, data: url }),
+      body: JSON.stringify({
+        action: WebhookAction.Encrypt as WebhookAction.Encrypt,
+        data: url,
+      }),
     });
     if (!response.ok) {
       throw new Error(
