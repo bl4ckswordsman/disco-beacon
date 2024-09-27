@@ -1,7 +1,7 @@
 import * as crypto from "crypto";
 import { ENCRYPTION_ALGORITHM } from "$lib/constants";
 
-const algorithm = ENCRYPTION_ALGORITHM;
+const algorithm: string = ENCRYPTION_ALGORITHM;
 
 function hexToBuffer(hex: string): Buffer {
   return Buffer.from(hex, "hex");
