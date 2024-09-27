@@ -24,18 +24,18 @@ type WebhookRequest = EncryptRequest | DecryptRequest | SendRequest;
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const body = (await request.json()) as WebhookRequest;
+    const body: WebhookRequest = await request.json();
 
     switch (body.action) {
-      case "encrypt":
-        return json({
-          encryptedUrl: encrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY),
-        });
-      case "decrypt":
-        return json({
-          decryptedUrl: decrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY),
-        });
-      case "send":
+      case "encrypt": {
+        const encryptedUrl = encrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY);
+        return json({ encryptedUrl });
+      }
+      case "decrypt": {
+        const decryptedUrl = decrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY);
+        return json({ decryptedUrl });
+      }
+      case "send": {
         const decryptedUrl = decrypt(
           body.data.url,
           DISCORDWEBHOOK_ENCRYPTION_KEY,
@@ -46,6 +46,7 @@ export const POST: RequestHandler = async ({ request }) => {
           body: JSON.stringify(body.data.payload),
         });
         return json({ success: response.ok });
+      }
       default:
         return json({ error: "Invalid action" }, { status: 400 });
     }
