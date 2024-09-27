@@ -11,7 +11,7 @@ def get_server_status() -> Tuple[str, Optional[str], Optional[str], Optional[Dic
     Returns:
         Tuple containing status ('online' or 'offline'), lobby ID (if online), server owner name, and server data.
     """
-    url = f'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={API_KEY}&steamids={SERVER_OWNER_STEAM_ID}'
+    url = f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={API_KEY}&steamids={SERVER_OWNER_STEAM_ID}'
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
