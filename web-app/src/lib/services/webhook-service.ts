@@ -15,7 +15,7 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: WebhookAction.Encrypt as WebhookAction.Encrypt,
+        action: WebhookAction.Encrypt,
         data: url,
       }),
     });
@@ -48,7 +48,7 @@ export async function sendWebhookNotification(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: WebhookAction.Send,
+        action: WebhookAction.Send as WebhookAction.Send,
         data: { url: encryptedWebhookUrl, payload },
       }),
     });
