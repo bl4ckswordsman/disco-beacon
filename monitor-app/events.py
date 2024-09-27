@@ -14,4 +14,5 @@ class EventEmitter:
             for callback in self._listeners[event]:
                 callback(*args, **kwargs)
 
+
 event_emitter = EventEmitter()

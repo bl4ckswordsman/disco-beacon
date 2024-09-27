@@ -28,4 +28,5 @@ class ServerState:
         if changed:
             event_emitter.emit('state_changed', self, old_state, new_state)
 
+
 server_state = ServerState()

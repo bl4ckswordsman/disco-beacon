@@ -8,4 +8,5 @@ def setup_logger():
     )
     return logging.getLogger(__name__)
 
+
 logger = setup_logger()
