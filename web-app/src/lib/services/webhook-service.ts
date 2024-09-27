@@ -1,6 +1,14 @@
 import { WebhookAction, type WebhookPayload } from "$lib/types";
 import { DISCORD_API_ENDPOINT } from "$lib/constants";
 
+interface EncryptResponse {
+  encryptedUrl: string;
+}
+
+interface SendResponse {
+  success?: boolean;
+}
+
 export async function encryptWebhookUrl(url: string): Promise<string> {
   try {
     const response = await fetch(DISCORD_API_ENDPOINT, {
@@ -16,7 +24,10 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
         `Failed to encrypt webhook URL: HTTP status ${response.status}`,
       );
     }
-    const result = (await response.json()) as { encryptedUrl: string };
+    const result = (await response.json()) as EncryptResponse;
+    if (!result.encryptedUrl) {
+      throw new Error("Encrypted URL is missing in the response");
+    }
     return result.encryptedUrl;
   } catch (error) {
     console.error("Error occurred while encrypting webhook URL:", error);
