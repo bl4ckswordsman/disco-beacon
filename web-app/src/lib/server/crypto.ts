@@ -17,7 +17,7 @@ export function encrypt(text: string, key: string): string {
 
 export function decrypt(text: string, key: string): string {
   const textParts: string[] = text.split(":");
-  const iv: Buffer = Buffer.from(textParts.shift() || "", "hex");
+  const iv: Buffer = Buffer.from(textParts.shift() ?? "", "hex");
   const encryptedText: string = textParts.join(":");
   const decipher = crypto.createDecipheriv(algorithm, hexToBuffer(key), iv);
   let decrypted = decipher.update(encryptedText, "hex", "utf8");
