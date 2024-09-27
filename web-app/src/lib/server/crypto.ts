@@ -1,5 +1,5 @@
-import crypto from "crypto";
-import {ENCRYPTION_ALGORITHM} from "$lib/constants";
+import * as crypto from "crypto";
+import { ENCRYPTION_ALGORITHM } from "$lib/constants";
 
 const algorithm = ENCRYPTION_ALGORITHM;
 
