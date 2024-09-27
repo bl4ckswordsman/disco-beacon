@@ -6,17 +6,32 @@ interface Toast {
   message: string;
   type: ToastType;
 }
-
 function createToastStore() {
   const { subscribe, set } = writable<Toast | null>(null);
 
   return {
     subscribe,
-    show: (message: string, type: ToastType) => {
-      set({ message, type });
-      setTimeout(() => set(null), 3000);
+    show: (message: string, type: ToastType): void => {
+      try {
+        set({ message, type } as Toast);
+        setTimeout(() => {
+          try {
+            set(null);
+          } catch (error) {
+            console.error("Error hiding toast:", error);
+          }
+        }, 3000);
+      } catch (error) {
+        console.error("Error showing toast:", error);
+      }
     },
-    hide: () => set(null),
+    hide: (): void => {
+      try {
+        set(null);
+      } catch (error) {
+        console.error("Error hiding toast:", error);
+      }
+    },
   };
 }
 
