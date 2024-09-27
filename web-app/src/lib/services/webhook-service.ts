@@ -5,10 +5,6 @@ interface EncryptResponse {
   encryptedUrl: string;
 }
 
-interface SendResponse {
-  success?: boolean;
-}
-
 export async function encryptWebhookUrl(url: string): Promise<string> {
   try {
     const response = await fetch(DISCORD_API_ENDPOINT as string, {
