@@ -1,7 +1,7 @@
 import * as crypto from "crypto";
 import { ENCRYPTION_ALGORITHM } from "$lib/constants";
 
-const algorithm = ENCRYPTION_ALGORITHM;
+const algorithm: string = ENCRYPTION_ALGORITHM;
 
 function hexToBuffer(hex: string): Buffer {
   return Buffer.from(hex, "hex");
@@ -17,7 +17,7 @@ export function encrypt(text: string, key: string): string {
 
 export function decrypt(text: string, key: string): string {
   const textParts: string[] = text.split(":");
-  const iv: Buffer = Buffer.from(textParts.shift()!, "hex");
+  const iv: Buffer = Buffer.from(textParts.shift() || "", "hex");
   const encryptedText: string = textParts.join(":");
   const decipher = crypto.createDecipheriv(algorithm, hexToBuffer(key), iv);
   let decrypted = decipher.update(encryptedText, "hex", "utf8");
