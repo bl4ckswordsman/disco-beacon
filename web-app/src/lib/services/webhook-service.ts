@@ -7,7 +7,7 @@ interface EncryptResponse {
 
 export async function encryptWebhookUrl(url: string): Promise<string> {
   try {
-    const response = await fetch(DISCORD_API_ENDPOINT as string, {
+    const response = await fetch(DISCORD_API_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -35,6 +35,10 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
   }
 }
 
+interface WebhookResponse {
+  success: boolean;
+}
+
 export async function sendWebhookNotification(
   encryptedWebhookUrl: string,
   payload: WebhookPayload,
@@ -53,8 +57,8 @@ export async function sendWebhookNotification(
         `Failed to send webhook notification: HTTP status ${response.status}`,
       );
     }
-    const result: { success?: boolean } = await response.json();
-    return result.success ?? false;
+    const result = (await response.json()) as WebhookResponse;
+    return result.success;
   } catch (error) {
     console.error("Error occurred while sending webhook notification:", error);
     throw error;
