@@ -24,7 +24,7 @@ type WebhookRequest = EncryptRequest | DecryptRequest | SendRequest;
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const body = (await request.json()) as WebhookRequest;
+    const body: WebhookRequest = await request.json();
 
     switch (body.action) {
       case "encrypt": {
