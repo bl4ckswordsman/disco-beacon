@@ -1,4 +1,4 @@
-import { json, type RequestHandler } from "@sveltejs/kit";
+import { type RequestHandler } from "@sveltejs/kit";
 import { DISCORDWEBHOOK_ENCRYPTION_KEY } from "$env/static/private";
 import { encrypt, decrypt } from "$lib/server/crypto";
 
