@@ -34,31 +34,33 @@ function isWebhookRequest(obj: unknown): obj is WebhookRequest {
   }
   return true;
 }
+
+function createJsonResponse(
+  data: Record<string, unknown>,
+  status: number,
+): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const body: unknown = await request.json();
 
     if (!isWebhookRequest(body)) {
-      return new Response(JSON.stringify({ error: "Invalid request format" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return createJsonResponse({ error: "Invalid request format" }, 400);
     }
 
     switch (body.action) {
       case "encrypt": {
         const encryptedUrl = encrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY);
-        return new Response(JSON.stringify({ encryptedUrl }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
+        return createJsonResponse({ encryptedUrl }, 200);
       }
       case "decrypt": {
         const decryptedUrl = decrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY);
-        return new Response(JSON.stringify({ decryptedUrl }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
+        return createJsonResponse({ decryptedUrl }, 200);
       }
       case "send": {
         const decryptedUrl = decrypt(
@@ -73,22 +75,16 @@ export const POST: RequestHandler = async ({ request }) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return new Response(JSON.stringify({ success: true }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
+        return createJsonResponse({ success: true }, 200);
       }
     }
   } catch (error) {
     console.error("Error processing webhook request:", error);
-    return new Response(
-      JSON.stringify({
-        error: error instanceof Error ? error.message : "Internal server error",
-      }),
+    return createJsonResponse(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
+        error: error instanceof Error ? error.message : "Internal server error",
       },
+      500,
     );
   }
 };
