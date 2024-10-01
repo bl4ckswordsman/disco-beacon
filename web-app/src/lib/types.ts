@@ -1,10 +1,10 @@
 export interface WebhookPayload {
   content: string;
-  embeds: Array<{
+  embeds: {
     title: string;
     description: string;
     color: number;
-  }>;
+  }[];
 }
 
 export enum WebhookAction {

@@ -22,7 +22,7 @@ export function decrypt(text: string, key: string): string {
   const iv: Buffer = Buffer.from(textParts.shift() ?? "", "hex");
   const encryptedText: string = textParts.join(":");
   const decipher = crypto.createDecipheriv(
-    ENCRYPTION_ALGORITHM,
+    ENCRYPTION_ALGORITHM as crypto.CipherGCMTypes,
     hexToBuffer(key),
     iv,
   );
