@@ -29,7 +29,8 @@ function isWebhookRequest(obj: unknown): obj is WebhookRequest {
   if (action === "encrypt" || action === "decrypt") {
     return typeof data === "string";
   }
-  if (action === "send" && typeof data === "object" && data !== null) {
+  if (action === "send") {
+    if (typeof data !== "object" || data === null) return false;
     const { url, payload } = data as Partial<SendRequest["data"]>;
     return typeof url === "string" && payload !== undefined;
   }
