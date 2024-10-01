@@ -22,9 +22,26 @@ interface SendRequest {
 
 type WebhookRequest = EncryptRequest | DecryptRequest | SendRequest;
 
+function isWebhookRequest(obj: unknown): obj is WebhookRequest {
+  if (typeof obj !== "object" || obj === null) return false;
+  const { action, data } = obj as Partial<WebhookRequest>;
+  if (typeof action !== "string") return false;
+  if (!["encrypt", "decrypt", "send"].includes(action)) return false;
+  if (typeof data !== "string" && typeof data !== "object") return false;
+  if (action === "send" && typeof data === "object") {
+    const { url, payload } = data as Partial<SendRequest["data"]>;
+    return typeof url === "string" && payload !== undefined;
+  }
+  return true;
+}
+
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const body: WebhookRequest = (await request.json()) as WebhookRequest;
+    const body: unknown = await request.json();
+
+    if (!isWebhookRequest(body)) {
+      return json({ error: "Invalid request format" }, { status: 400 });
+    }
 
     switch (body.action) {
       case "encrypt": {
@@ -45,13 +62,17 @@ export const POST: RequestHandler = async ({ request }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body.data.payload),
         });
-        return json({ success: response.ok });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return json({ success: true });
       }
-      default:
-        return json({ error: "Invalid action" }, { status: 400 });
     }
   } catch (error) {
     console.error("Error processing webhook request:", error);
+    if (error instanceof Error) {
+      return json({ error: error.message }, { status: 500 });
+    }
     return json({ error: "Internal server error" }, { status: 500 });
   }
 };
