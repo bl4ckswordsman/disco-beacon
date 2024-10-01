@@ -8,18 +8,16 @@ interface Toast {
 }
 
 function createToastStore() {
-  const { subscribe, set }: Writable<Toast | null> = writable<Toast | null>(
-    null,
-  );
+  const toastStore: Writable<Toast | null> = writable<Toast | null>(null);
 
   return {
-    subscribe,
+    subscribe: toastStore.subscribe,
     show: (message: string, type: ToastType): void => {
-      set({ message, type });
-      setTimeout(() => set(null), 3000);
+      toastStore.set({ message, type });
+      setTimeout(() => toastStore.set(null), 3000);
     },
     hide: (): void => {
-      set(null);
+      toastStore.set(null);
     },
   };
 }
