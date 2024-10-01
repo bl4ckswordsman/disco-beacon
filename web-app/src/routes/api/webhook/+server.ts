@@ -21,18 +21,19 @@ interface SendRequest {
 }
 
 type WebhookRequest = EncryptRequest | DecryptRequest | SendRequest;
-
 function isWebhookRequest(obj: unknown): obj is WebhookRequest {
   if (typeof obj !== "object" || obj === null) return false;
   const { action, data } = obj as Partial<WebhookRequest>;
   if (typeof action !== "string") return false;
   if (!["encrypt", "decrypt", "send"].includes(action)) return false;
-  if (typeof data !== "string" && typeof data !== "object") return false;
-  if (action === "send" && typeof data === "object") {
+  if (action === "encrypt" || action === "decrypt") {
+    return typeof data === "string";
+  }
+  if (action === "send" && typeof data === "object" && data !== null) {
     const { url, payload } = data as Partial<SendRequest["data"]>;
     return typeof url === "string" && payload !== undefined;
   }
-  return true;
+  return false;
 }
 
 function createJsonResponse(
@@ -67,6 +68,9 @@ export const POST: RequestHandler = async ({ request }) => {
           body.data.url,
           DISCORDWEBHOOK_ENCRYPTION_KEY,
         );
+        if (typeof decryptedUrl !== "string") {
+          throw new Error("Invalid decrypted URL");
+        }
         const response = await fetch(decryptedUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
