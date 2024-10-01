@@ -8,18 +8,26 @@ interface Toast {
 }
 
 function createToastStore() {
-  // Writable store with proper type inference
   const store: Writable<Toast | null> = writable<Toast | null>(null);
 
+  // Wrapping the store's set function
+  function setToast(toast: Toast | null): void {
+    store.set(toast);
+  }
+
+  function subscribeToStore(run: (value: Toast | null) => void) {
+    return store.subscribe(run);
+  }
+
   function show(message: string, type: ToastType): void {
-    store.set({ message, type });
+    setToast({ message, type });
     setTimeout(() => {
-      store.set(null); // Clear the toast after 3 seconds
+      setToast(null); // Clear the toast after 3 seconds
     }, 3000);
   }
 
   return {
-    subscribe: store.subscribe,
+    subscribe: subscribeToStore,
     show,
   };
 }
