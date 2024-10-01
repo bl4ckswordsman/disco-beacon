@@ -17,6 +17,7 @@ A project consisting of a Svelte web app and a Python monitor app for Discord no
 ## Game Compatibility
 
 Currently supported games:
+
 - Valheim
 
 More games to be added in future updates.
