@@ -34,23 +34,31 @@ function isWebhookRequest(obj: unknown): obj is WebhookRequest {
   }
   return true;
 }
-
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const body: unknown = await request.json();
 
     if (!isWebhookRequest(body)) {
-      return json({ error: "Invalid request format" }, { status: 400 });
+      return new Response(JSON.stringify({ error: "Invalid request format" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     switch (body.action) {
       case "encrypt": {
         const encryptedUrl = encrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY);
-        return json({ encryptedUrl });
+        return new Response(JSON.stringify({ encryptedUrl }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
       }
       case "decrypt": {
         const decryptedUrl = decrypt(body.data, DISCORDWEBHOOK_ENCRYPTION_KEY);
-        return json({ decryptedUrl });
+        return new Response(JSON.stringify({ decryptedUrl }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
       }
       case "send": {
         const decryptedUrl = decrypt(
@@ -65,14 +73,22 @@ export const POST: RequestHandler = async ({ request }) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return json({ success: true });
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
       }
     }
   } catch (error) {
     console.error("Error processing webhook request:", error);
-    if (error instanceof Error) {
-      return json({ error: error.message }, { status: 500 });
-    }
-    return json({ error: "Internal server error" }, { status: 500 });
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Internal server error",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 };
