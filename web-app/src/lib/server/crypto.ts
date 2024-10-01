@@ -8,7 +8,7 @@ function hexToBuffer(hex: string): Buffer {
 export function encrypt(text: string, key: string): string {
   const iv: Buffer = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(
-    ENCRYPTION_ALGORITHM,
+    ENCRYPTION_ALGORITHM as crypto.CipherGCMTypes,
     hexToBuffer(key),
     iv,
   );
