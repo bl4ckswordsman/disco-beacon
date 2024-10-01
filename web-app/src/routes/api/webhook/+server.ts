@@ -33,7 +33,6 @@ function isWebhookRequest(obj: unknown): obj is WebhookRequest {
     case "send":
       return (
         typeof data === "object" &&
-        data !== null &&
         "url" in data &&
         typeof data.url === "string" &&
         "payload" in data
