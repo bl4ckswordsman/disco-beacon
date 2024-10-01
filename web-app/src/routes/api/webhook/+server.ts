@@ -1,4 +1,4 @@
-import { json, type RequestHandler } from "@sveltejs/kit";
+import { type RequestHandler } from "@sveltejs/kit";
 import { DISCORDWEBHOOK_ENCRYPTION_KEY } from "$env/static/private";
 import { encrypt, decrypt } from "$lib/server/crypto";
 
@@ -21,18 +21,25 @@ interface SendRequest {
 }
 
 type WebhookRequest = EncryptRequest | DecryptRequest | SendRequest;
-
 function isWebhookRequest(obj: unknown): obj is WebhookRequest {
   if (typeof obj !== "object" || obj === null) return false;
   const { action, data } = obj as Partial<WebhookRequest>;
   if (typeof action !== "string") return false;
-  if (!["encrypt", "decrypt", "send"].includes(action)) return false;
-  if (typeof data !== "string" && typeof data !== "object") return false;
-  if (action === "send" && typeof data === "object") {
-    const { url, payload } = data as Partial<SendRequest["data"]>;
-    return typeof url === "string" && payload !== undefined;
+
+  switch (action) {
+    case "encrypt":
+    case "decrypt":
+      return typeof data === "string";
+    case "send":
+      return (
+        typeof data === "object" &&
+        "url" in data &&
+        typeof data.url === "string" &&
+        "payload" in data
+      );
+    default:
+      return false;
   }
-  return true;
 }
 
 function createJsonResponse(
@@ -67,6 +74,9 @@ export const POST: RequestHandler = async ({ request }) => {
           body.data.url,
           DISCORDWEBHOOK_ENCRYPTION_KEY,
         );
+        if (typeof decryptedUrl !== "string") {
+          throw new Error("Invalid decrypted URL");
+        }
         const response = await fetch(decryptedUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
