@@ -1,4 +1,4 @@
-import { writable, type Writable } from "svelte/store";
+import { writable } from "svelte/store";
 
 type ToastType = "info" | "success" | "error";
 
@@ -8,17 +8,21 @@ interface Toast {
 }
 
 function createToastStore() {
-  const toastStore: Writable<Toast | null> = writable<Toast | null>(null);
+  const store = writable<Toast | null>(null);
+
+  function show(message: string, type: ToastType): void {
+    store.set({ message, type });
+    setTimeout(() => store.set(null), 3000);
+  }
+
+  function hide(): void {
+    store.set(null);
+  }
 
   return {
-    subscribe: toastStore.subscribe,
-    show: (message: string, type: ToastType): void => {
-      toastStore.set({ message, type });
-      setTimeout(() => toastStore.set(null), 3000);
-    },
-    hide: (): void => {
-      toastStore.set(null);
-    },
+    subscribe: store.subscribe,
+    show,
+    hide,
   };
 }
 
