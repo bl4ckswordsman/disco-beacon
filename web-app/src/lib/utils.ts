@@ -3,7 +3,7 @@ import { LOCAL_STORAGE_DISCORD_KEY } from "$lib/constants";
 export function getStoredWebhookUrl(): string {
   if (typeof localStorage !== "undefined") {
     const storedValue = localStorage.getItem(LOCAL_STORAGE_DISCORD_KEY);
-    return storedValue !== null ? storedValue : "";
+    return storedValue ?? "";
   }
   return "";
 }
