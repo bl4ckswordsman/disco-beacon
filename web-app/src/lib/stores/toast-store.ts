@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 
 type ToastType = "info" | "success" | "error";
 
@@ -8,19 +8,18 @@ interface Toast {
 }
 
 function createToastStore() {
-  // Initialize the store with a correctly typed default value
-  const { subscribe, set } = writable<Toast | null>(null);
+  // Writable store with proper type inference
+  const store: Writable<Toast | null> = writable<Toast | null>(null);
 
   function show(message: string, type: ToastType): void {
-    // Set the toast and reset it after a timeout
-    set({ message, type });
+    store.set({ message, type });
     setTimeout(() => {
-      set(null); // Clear the toast after 3 seconds
+      store.set(null); // Clear the toast after 3 seconds
     }, 3000);
   }
 
   return {
-    subscribe,
+    subscribe: store.subscribe,
     show,
   };
 }
