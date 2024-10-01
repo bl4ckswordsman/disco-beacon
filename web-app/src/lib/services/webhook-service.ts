@@ -4,10 +4,9 @@ import { DISCORD_API_ENDPOINT } from "$lib/constants";
 interface EncryptResponse {
   encryptedUrl: string;
 }
-
 export async function encryptWebhookUrl(url: string): Promise<string> {
   try {
-    const response = await fetch(new URL(DISCORD_API_ENDPOINT), {
+    const response = await fetch(DISCORD_API_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -16,7 +15,7 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
       }),
     });
     if (!response.ok) {
-      throw new Error(
+      throw new Error( //TODO: Fix warning ('throw' of exception caught locally)
         `Failed to encrypt webhook URL: HTTP status ${response.status}`,
       );
     }
@@ -38,13 +37,12 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
 interface WebhookResponse {
   success: boolean;
 }
-
 export async function sendWebhookNotification(
   encryptedWebhookUrl: string,
   payload: WebhookPayload,
 ): Promise<boolean> {
   try {
-    const response = await fetch(new URL(DISCORD_API_ENDPOINT), {
+    const response = await fetch(DISCORD_API_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -53,14 +51,14 @@ export async function sendWebhookNotification(
       }),
     });
     if (!response.ok) {
-      throw new Error( //TODO: Fix warning ('throw' of exception caught locally)
-        `Failed to send webhook notification: HTTP status ${response.status}`,
-      );
+      const errorMessage = `Failed to send webhook notification: HTTP status ${response.status}`;
+      console.error(errorMessage);
+      return false;
     }
     const result = (await response.json()) as WebhookResponse;
     return result.success;
   } catch (error) {
     console.error("Error occurred while sending webhook notification:", error);
-    throw error;
+    return false;
   }
 }
