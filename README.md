@@ -1,12 +1,25 @@
 # Disco Beacon
 
-A Svelte-based application to notify a Discord channel using a webhook.
+A project consisting of a Svelte web app and a Python monitor app for Discord notifications.
 
-## Features
+## Web App (Svelte)
 
-- Send notifications to a Discord webhook.
-- Save and update the Discord webhook URL in local storage.
-- Toggle between notification and settings views.
+- Send notifications to Discord via webhooks
+- Manage webhook URL and payload (notification content)
+
+## Monitor App (Python)
+
+- Track game server status in real-time
+- Send automated Discord notifications for server state changes
+- Integrate with Steam API for game information
+- Configurable check intervals
+
+## Game Compatibility
+
+Currently supported games:
+- Valheim
+
+More games to be added in future updates.
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/89b803681f5d42d3b5b2b5a9f983cb0d)](https://app.codacy.com/gh/bl4ckswordsman/disco-beacon?utm_source=github.com&utm_medium=referral&utm_content=bl4ckswordsman/disco-beacon&utm_campaign=Badge_Grade)
 
