@@ -31,9 +31,13 @@ function isWebhookRequest(obj: unknown): obj is WebhookRequest {
     case "decrypt":
       return typeof data === "string";
     case "send":
-      if (typeof data !== "object" || data === null) return false;
-      const { url, payload } = data as SendRequest["data"];
-      return payload !== undefined;
+      return (
+        typeof data === "object" &&
+        data !== null &&
+        "url" in data &&
+        typeof data.url === "string" &&
+        "payload" in data
+      );
     default:
       return false;
   }
