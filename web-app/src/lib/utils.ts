@@ -4,7 +4,7 @@ export function getStoredWebhookUrl(): string {
   if (typeof localStorage !== "undefined") {
     const storedValue = localStorage.getItem(
       LOCAL_STORAGE_DISCORD_KEY as string,
-    ) as string | null;
+    );
     return storedValue ?? "";
   }
   return "";
