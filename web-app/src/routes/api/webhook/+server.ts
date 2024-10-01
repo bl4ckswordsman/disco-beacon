@@ -25,16 +25,18 @@ function isWebhookRequest(obj: unknown): obj is WebhookRequest {
   if (typeof obj !== "object" || obj === null) return false;
   const { action, data } = obj as Partial<WebhookRequest>;
   if (typeof action !== "string") return false;
-  if (!["encrypt", "decrypt", "send"].includes(action)) return false;
-  if (action === "encrypt" || action === "decrypt") {
-    return typeof data === "string";
+
+  switch (action) {
+    case "encrypt":
+    case "decrypt":
+      return typeof data === "string";
+    case "send":
+      if (typeof data !== "object" || data === null) return false;
+      const { url, payload } = data as SendRequest["data"];
+      return payload !== undefined;
+    default:
+      return false;
   }
-  if (action === "send") {
-    if (typeof data !== "object" || data === null) return false;
-    const { url, payload } = data as Partial<SendRequest["data"]>;
-    return typeof url === "string" && payload !== undefined;
-  }
-  return false;
 }
 
 function createJsonResponse(
