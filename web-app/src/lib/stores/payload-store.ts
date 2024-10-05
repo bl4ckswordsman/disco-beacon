@@ -10,11 +10,10 @@ const defaultPayload: WebhookPayload = {
     },
   ],
 };
-
-const typedWritable = writable as <T>(value: T) => {
-  subscribe: (run: (value: T) => void) => () => void;
-  set: (value: T) => void;
-  update: (updater: (value: T) => T) => void;
+const typedWritable = writable as <T>(_value: T) => {
+  subscribe: (_run: (value: T) => void) => () => void;
+  set: (_value: T) => void;
+  update: (_updater: (value: T) => T) => void;
 };
 
 export const webhookPayload = typedWritable(defaultPayload);
