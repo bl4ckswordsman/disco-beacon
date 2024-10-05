@@ -1,36 +1,29 @@
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 
-type ToastType = "info" | "success" | "error";
+export type ToastType = "info" | "success" | "error";
 
-interface Toast {
+export interface Toast {
   message: string;
   type: ToastType;
 }
+
 function createToastStore() {
-  const { subscribe, set } = writable<Toast | null>(null);
+  const { subscribe, set }: Writable<Toast | null> = writable<Toast | null>(
+    null,
+  );
+
+  function setToast(value: Toast | null): void {
+    set(value);
+  }
 
   return {
     subscribe,
     show: (message: string, type: ToastType): void => {
-      try {
-        set({ message, type } as Toast);
-        setTimeout(() => {
-          try {
-            set(null);
-          } catch (error) {
-            console.error("Error hiding toast:", error);
-          }
-        }, 3000);
-      } catch (error) {
-        console.error("Error showing toast:", error);
-      }
+      setToast({ message, type });
+      setTimeout(() => setToast(null), 3000);
     },
     hide: (): void => {
-      try {
-        set(null);
-      } catch (error) {
-        console.error("Error hiding toast:", error);
-      }
+      setToast(null);
     },
   };
 }
