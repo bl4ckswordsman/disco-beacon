@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 import type { WebhookPayload } from "$lib/types";
 
-const defaultPayload: WebhookPayload = {
+const defaultPayload = {
   content: "The Valheim server is up. @everyone",
   embeds: [
     {
@@ -10,6 +10,9 @@ const defaultPayload: WebhookPayload = {
       color: 5763719,
     },
   ],
-};
+} as const;
 
-export const webhookPayload = writable<WebhookPayload>(defaultPayload);
+export const webhookPayload = writable<WebhookPayload>({
+  ...defaultPayload,
+  embeds: [...defaultPayload.embeds],
+});
