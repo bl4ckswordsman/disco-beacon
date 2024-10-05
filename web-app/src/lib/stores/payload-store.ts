@@ -11,7 +11,4 @@ const defaultPayload: WebhookPayload = {
     },
   ],
 };
-
-export const webhookPayload = writable<WebhookPayload>(
-  structuredClone(defaultPayload),
-);
+export const webhookPayload = writable<WebhookPayload>(defaultPayload);
