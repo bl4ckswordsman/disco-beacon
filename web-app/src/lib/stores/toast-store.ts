@@ -6,12 +6,8 @@ interface Toast {
   message: string;
   type: ToastType;
 }
-interface ToastStore {
-  subscribe: Writable<Toast | null>["subscribe"];
-  show: (message: string, type: ToastType) => void;
-}
 
-function createToastStore(): ToastStore {
+function createToastStore() {
   const { subscribe, set } = writable<Toast | null>(
     null,
   ) as Writable<Toast | null>;
