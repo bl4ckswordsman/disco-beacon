@@ -11,6 +11,5 @@ const defaultPayload: WebhookPayload = {
     },
   ],
 };
-export const webhookPayload = writable<WebhookPayload>(
-  defaultPayload as WebhookPayload,
-);
+
+export const webhookPayload = writable<WebhookPayload>(defaultPayload);
