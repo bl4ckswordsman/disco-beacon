@@ -1,4 +1,4 @@
-import { writable, type Writable } from "svelte/store";
+import { writable } from "svelte/store";
 import type { WebhookPayload } from "$lib/types";
 const defaultPayload: WebhookPayload = {
   content: "The Valheim server is up. @everyone",
@@ -10,5 +10,11 @@ const defaultPayload: WebhookPayload = {
     },
   ],
 };
-export const webhookPayload: Writable<WebhookPayload> =
-  writable(defaultPayload);
+
+const typedWritable = writable as <T>(value: T) => {
+  subscribe: (run: (value: T) => void) => () => void;
+  set: (value: T) => void;
+  update: (updater: (value: T) => T) => void;
+};
+
+export const webhookPayload = typedWritable(defaultPayload);
