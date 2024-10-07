@@ -24,6 +24,27 @@ def get_server_status() -> Tuple[str, Optional[str], Optional[str], Optional[Dic
     except requests.RequestException:
         raise
 
+def get_game_status() -> Tuple[str, Optional[str], Optional[str], Optional[Dict]]:
+    """
+    Fetch game status from Steam API.
+
+    Returns:
+        Tuple containing status ('online' or 'offline'), lobby ID (if online), server owner name, and server data.
+    """
+    url = f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={API_KEY}&steamids={SERVER_OWNER_STEAM_ID}'
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        server_owner = data['response']['players'][0]
+
+        if 'gameid' in server_owner and int(server_owner['gameid']) == GAME_APP_ID:
+            return 'online', server_owner.get('lobbysteamid'), server_owner.get('personaname'), server_owner
+        return 'offline', None, server_owner.get('personaname'), None
+    except requests.RequestException:
+        raise
+
+
 def get_game_icon(app_id: int) -> Optional[str]:
     """
     Fetch game icon URL from Steam Store API.
