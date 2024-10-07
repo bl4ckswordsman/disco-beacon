@@ -3,18 +3,22 @@ from . import constants
 from . import keys
 from .steam_api import get_game_icon
 
-from ..gui.gui_config import WINDOW_WIDTH, WINDOW_HEIGHT, GUI_REFRESH_RATE, COLORS, FONT_FAMILY, FONT_SIZE_NORMAL, FONT_SIZE_LARGE, ICON_PATH
-
 class Config:
     # GUI Configuration
-    WINDOW_WIDTH: int = WINDOW_WIDTH
-    WINDOW_HEIGHT: int = WINDOW_HEIGHT
-    GUI_REFRESH_RATE: int = GUI_REFRESH_RATE
-    COLORS: Dict[str, str] = COLORS
-    FONT_FAMILY: str = FONT_FAMILY
-    FONT_SIZE_NORMAL: int = FONT_SIZE_NORMAL
-    FONT_SIZE_LARGE: int = FONT_SIZE_LARGE
-    ICON_PATH: str = ICON_PATH
+    WINDOW_WIDTH: int = 800
+    WINDOW_HEIGHT: int = 600
+    GUI_REFRESH_RATE: int = 1000
+    COLORS: Dict[str, str] = {
+        'background': '#F0F0F0',
+        'text': '#333333',
+        'accent': '#007BFF',
+        'online': '#28A745',
+        'offline': '#DC3545'
+    }
+    FONT_FAMILY: str = 'Arial'
+    FONT_SIZE_NORMAL: int = 12
+    FONT_SIZE_LARGE: int = 16
+    ICON_PATH: str = 'assets/icons/'
 
     API_KEY: str = keys.API_KEY
     SERVER_OWNER_STEAM_ID: str = keys.SERVER_OWNER_STEAM_ID
