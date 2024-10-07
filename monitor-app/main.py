@@ -3,18 +3,24 @@ from config import config
 from steam_api import get_server_status
 from logger import logger
 from notification_handler import setup_notification_handlers
-from state import server_state
+from state import GameState, GameServerState
 
 def main() -> None:
     """Main function to continuously check server status."""
     setup_notification_handlers()
+    game_state = GameState()
+    game_server_state = GameServerState()
 
     while True:
         try:
             status, lobby_id, server_owner, server_data = get_server_status()
             logger.info(f"Game server status: {status}")
 
-            server_state.update(
+            game_state.update(
+                status='online' if status == 'online' else 'offline'
+            )
+
+            game_server_state.update(
                 status=status,
                 lobby_id=lobby_id,
                 server_owner=server_owner or "Unknown",
