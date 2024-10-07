@@ -1,9 +1,8 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QApplication
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
 from ..core.config import Config
 from ..core.logger import logger
-from .system_tray import SystemTrayIcon
 
 class MainWindow(QMainWindow):
     exit_app = Signal()

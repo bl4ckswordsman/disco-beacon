@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu
 from PySide6.QtGui import QIcon
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import Signal
 
 class SystemTrayIcon(QSystemTrayIcon):
     exit_app = Signal()
