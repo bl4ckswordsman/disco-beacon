@@ -3,19 +3,12 @@ from dataclasses import dataclass
 from events import event_emitter
 
 @dataclass
-class ServerState:
+class GameState:
     status: str = 'offline'
-    lobby_id: Optional[str] = None
-    server_owner: Optional[str] = None
-    server_data: Optional[Dict] = None
+    last_notified_status: str = 'offline'
 
     def get_state(self):
-        if self.status == 'offline':
-            return 'offline'
-        elif self.status == 'online' and (self.server_data is None or self.lobby_id is None):
-            return 'online_incomplete'
-        else:
-            return 'online_complete'
+        return self.status
 
     def update(self, **kwargs):
         old_state = self.get_state()
@@ -25,8 +18,34 @@ class ServerState:
                 setattr(self, key, value)
                 changed = True
         new_state = self.get_state()
-        if changed:
-            event_emitter.emit('state_changed', self, old_state, new_state)
+        if changed and new_state != self.last_notified_status:
+            event_emitter.emit('game_state_changed', self, old_state, new_state)
+            self.last_notified_status = new_state
+
+@dataclass
+class GameServerState:
+    status: str = 'offline'
+    lobby_id: Optional[str] = None
+    server_owner: Optional[str] = None
+    server_data: Optional[Dict] = None
+    last_notified_status: str = 'offline'
+
+    def get_state(self):
+        if self.status == 'offline' or self.lobby_id is None:
+            return 'offline'
+        else:
+            return 'online'
+
+    def update(self, **kwargs):
+        old_state = self.get_state()
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        new_state = self.get_state()
+        if new_state != self.last_notified_status:
+            event_emitter.emit('game_server_state_changed', self, old_state, new_state)
+            self.last_notified_status = new_state
 
 
-server_state = ServerState()
+game_state = GameState()
+game_server_state = GameServerState()
