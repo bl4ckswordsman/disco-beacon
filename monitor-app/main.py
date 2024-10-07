@@ -7,13 +7,13 @@ from src.core.notification_handler import setup_notification_handlers
 from src.core.state import GameState, GameServerState
 
 # GUI imports
-gui_available = False
 try:
     from PySide6.QtWidgets import QApplication
     from PySide6.QtCore import QTimer
     from src.gui.mainwindow import MainWindow
     gui_available = True
 except ImportError:
+    gui_available = False
     logger.warning("PySide6 is not installed. GUI functionality will be disabled.")
 
 def update_gui(window):
@@ -49,35 +49,46 @@ def main() -> None:
     game_state = GameState()
     game_server_state = GameServerState()
 
+    app = None
+    window = None
     if gui_available:
         app, window = init_gui()
+        if not app:
+            logger.warning("Failed to initialize GUI. Falling back to CLI mode.")
+
+    logger.info("Running in GUI mode" if app else "Running in CLI mode")
+
+    while True:
+        try:
+            game_status, server_status, lobby_id, server_owner, server_data = get_status()
+
+            if config.MONITOR_MODE == 'both':
+                logger.info(f"Game status: {game_status}, Server status: {server_status}")
+                game_state.update(status=game_status)
+            else:
+                logger.info(f"Server status: {server_status}")
+
+            game_server_state.update(
+                status=server_status,
+                lobby_id=lobby_id,
+                server_owner=server_owner or "Unknown",
+                server_data=server_data
+            )
+
+            if window:
+                update_gui(window)
+
+        except Exception as e:
+            logger.error(f"Error occurred: {e}")
+            logger.error(f"Failed to fetch status. Retrying in {config.CHECK_INTERVAL} seconds.")
+
         if app:
-            logger.info("Starting GUI event loop")
-            sys.exit(app.exec())
-    else:
-        logger.info("Running in CLI mode")
-        while True:
-            try:
-                game_status, server_status, lobby_id, server_owner, server_data = get_status()
-
-                if config.MONITOR_MODE == 'both':
-                    logger.info(f"Game status: {game_status}, Server status: {server_status}")
-                    game_state.update(status=game_status)
-                else:
-                    logger.info(f"Server status: {server_status}")
-
-                game_server_state.update(
-                    status=server_status,
-                    lobby_id=lobby_id,
-                    server_owner=server_owner or "Unknown",
-                    server_data=server_data
-                )
-
-            except Exception as e:
-                logger.error(f"Error occurred: {e}")
-                logger.error(f"Failed to fetch status. Retrying in {config.CHECK_INTERVAL} seconds.")
-
+            app.processEvents()
+        else:
             time.sleep(config.CHECK_INTERVAL)
+
+    if app:
+        sys.exit(app.exec())
 
 if __name__ == "__main__":
     main()
