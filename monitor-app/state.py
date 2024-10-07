@@ -5,6 +5,7 @@ from events import event_emitter
 @dataclass
 class GameState:
     status: str = 'offline'
+    last_notified_status: str = 'offline'
 
     def get_state(self):
         return self.status
@@ -17,8 +18,9 @@ class GameState:
                 setattr(self, key, value)
                 changed = True
         new_state = self.get_state()
-        if changed:
+        if changed and new_state != self.last_notified_status:
             event_emitter.emit('game_state_changed', self, old_state, new_state)
+            self.last_notified_status = new_state
 
 @dataclass
 class GameServerState:
@@ -26,25 +28,23 @@ class GameServerState:
     lobby_id: Optional[str] = None
     server_owner: Optional[str] = None
     server_data: Optional[Dict] = None
+    last_notified_status: str = 'offline'
 
     def get_state(self):
-        if self.status == 'offline':
+        if self.status == 'offline' or self.lobby_id is None:
             return 'offline'
-        elif self.status == 'online' and (self.server_data is None or self.lobby_id is None):
-            return 'online_incomplete'
         else:
-            return 'online_complete'
+            return 'online'
 
     def update(self, **kwargs):
         old_state = self.get_state()
-        changed = False
         for key, value in kwargs.items():
-            if hasattr(self, key) and getattr(self, key) != value:
+            if hasattr(self, key):
                 setattr(self, key, value)
-                changed = True
         new_state = self.get_state()
-        if changed:
+        if new_state != self.last_notified_status:
             event_emitter.emit('game_server_state_changed', self, old_state, new_state)
+            self.last_notified_status = new_state
 
 game_state = GameState()
 game_server_state = GameServerState()

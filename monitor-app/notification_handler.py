@@ -16,22 +16,20 @@ def handle_game_state_change(state, old_status, new_status):
     icon_url = config.get_game_icon_url(config.GAME_APP_ID)
     current_time = datetime.now(timezone.utc).isoformat()
 
-    if new_status != old_status:
-        if new_status == 'online':
-            send_game_online_notification(game_name, current_time, icon_url)
-        else:
-            send_game_offline_notification(game_name, current_time, icon_url)
+    if new_status == 'online':
+        send_game_online_notification(game_name, current_time, icon_url)
+    else:
+        send_game_offline_notification(game_name, current_time, icon_url)
 
 def handle_game_server_state_change(state, old_status, new_status):
     game_name = config.get_game_name(config.GAME_APP_ID)
     icon_url = config.get_game_icon_url(config.GAME_APP_ID)
     current_time = datetime.now(timezone.utc).isoformat()
 
-    if new_status != old_status:
-        if new_status == 'online':
-            send_server_online_notification(game_name, state.server_owner, state.lobby_id or "Unknown", current_time, icon_url)
-        else:
-            send_server_offline_notification(game_name, state.server_owner, current_time, icon_url)
+    if new_status == 'online':
+        send_server_online_notification(game_name, state.server_owner, state.lobby_id or "Unknown", current_time, icon_url)
+    else:
+        send_server_offline_notification(game_name, state.server_owner, current_time, icon_url)
 
 def send_game_online_notification(game_name: str, current_time: str, icon_url: Optional[str]):
     logger.info(f"{game_name} is now running")
@@ -39,7 +37,7 @@ def send_game_online_notification(game_name: str, current_time: str, icon_url: O
         "content": f"{game_name} is now running!",
         "embeds": [{
             "title": f"{YELLOW_CIRCLE} Game Running",
-            "description": f"{game_name} is running, but the server might be down",
+            "description": f"{game_name} is running, but the server is down",
             "color": 16776960,  # Yellow color
             "timestamp": current_time,
             "footer": {"text": "Last updated"},
