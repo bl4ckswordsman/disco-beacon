@@ -3,7 +3,25 @@ from dataclasses import dataclass
 from events import event_emitter
 
 @dataclass
-class ServerState:
+class GameState:
+    status: str = 'offline'
+
+    def get_state(self):
+        return self.status
+
+    def update(self, **kwargs):
+        old_state = self.get_state()
+        changed = False
+        for key, value in kwargs.items():
+            if hasattr(self, key) and getattr(self, key) != value:
+                setattr(self, key, value)
+                changed = True
+        new_state = self.get_state()
+        if changed:
+            event_emitter.emit('game_state_changed', self, old_state, new_state)
+
+@dataclass
+class GameServerState:
     status: str = 'offline'
     lobby_id: Optional[str] = None
     server_owner: Optional[str] = None
@@ -26,7 +44,7 @@ class ServerState:
                 changed = True
         new_state = self.get_state()
         if changed:
-            event_emitter.emit('state_changed', self, old_state, new_state)
+            event_emitter.emit('game_server_state_changed', self, old_state, new_state)
 
-
-server_state = ServerState()
+game_state = GameState()
+game_server_state = GameServerState()
