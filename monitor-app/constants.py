@@ -9,3 +9,6 @@ SUPPORTED_GAMES = {
 GREEN_CIRCLE = "🟢"
 YELLOW_CIRCLE = "🟡"
 RED_CIRCLE = "🔴"
+
+STEAM_API_URL = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/"
+STEAM_STORE_API_URL = "https://store.steampowered.com/api/appdetails"
