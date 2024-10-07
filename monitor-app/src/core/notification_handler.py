@@ -1,10 +1,10 @@
 from typing import Dict, Optional
-from config import config
-from logger import logger
-from webhook import send_webhook_notification
+from .config import config
+from .logger import logger
+from .webhook import send_webhook_notification
 from datetime import datetime, timezone
-from constants import GREEN_CIRCLE, YELLOW_CIRCLE, RED_CIRCLE
-from events import event_emitter
+from .constants import GREEN_CIRCLE, YELLOW_CIRCLE, RED_CIRCLE
+from .events import event_emitter
 
 
 def setup_notification_handlers():

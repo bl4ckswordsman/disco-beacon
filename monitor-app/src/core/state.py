@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 from dataclasses import dataclass
-from events import event_emitter
+from .events import event_emitter
 
 @dataclass
 class GameState:
@@ -45,7 +45,6 @@ class GameServerState:
         if new_state != self.last_notified_status:
             event_emitter.emit('game_server_state_changed', self, old_state, new_state)
             self.last_notified_status = new_state
-
 
 game_state = GameState()
 game_server_state = GameServerState()
