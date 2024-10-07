@@ -6,8 +6,12 @@ from steam_api import get_game_icon
 class Config:
     API_KEY: str = keys.API_KEY
     SERVER_OWNER_STEAM_ID: str = keys.SERVER_OWNER_STEAM_ID
+
     GAME_APP_ID: int = constants.GAME_APP_ID
+
     CHECK_INTERVAL: int = constants.CHECK_INTERVAL
+    MONITOR_MODE: str = 'both'  # 'both' or 'server_only'
+
     WEBHOOK_URL: str = keys.WEBHOOK_URL
     SUPPORTED_GAMES: Dict[int, str] = constants.SUPPORTED_GAMES
 

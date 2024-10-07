@@ -8,7 +8,8 @@ from events import event_emitter
 
 
 def setup_notification_handlers():
-    event_emitter.on('game_state_changed', handle_game_state_change)
+    if config.MONITOR_MODE == 'both':
+        event_emitter.on('game_state_changed', handle_game_state_change)
     event_emitter.on('game_server_state_changed', handle_game_server_state_change)
 
 def handle_game_state_change(state, old_status, new_status):

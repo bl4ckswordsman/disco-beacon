@@ -15,11 +15,12 @@ def main() -> None:
         try:
             # Check game and server status
             game_status, server_status, lobby_id, server_owner, server_data = get_status()
-            logger.info(f"Game status: {game_status}, Server status: {server_status}")
 
-            game_state.update(
-                status=game_status
-            )
+            if config.MONITOR_MODE == 'both':
+                logger.info(f"Game status: {game_status}, Server status: {server_status}")
+                game_state.update(status=game_status)
+            else:
+                logger.info(f"Server status: {server_status}")
 
             game_server_state.update(
                 status=server_status,
