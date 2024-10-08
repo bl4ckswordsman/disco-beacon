@@ -1,11 +1,17 @@
-from PySide6.QtWidgets import QSystemTrayIcon, QMenu
-from PySide6.QtGui import QIcon
-from PySide6.QtCore import Signal
+try:
+    from PySide6.QtWidgets import QSystemTrayIcon, QMenu
+    from PySide6.QtGui import QIcon
+    from PySide6.QtCore import Signal
+except ImportError:
+    from PyQt6.QtWidgets import QSystemTrayIcon, QMenu
+    from PyQt6.QtGui import QIcon
+    from PyQt6.QtCore import pyqtSignal as Signal
 
+from ..gui.gui_config import gui_config
 class SystemTrayIcon(QSystemTrayIcon):
     exit_app = Signal()
-
-    def __init__(self, icon, parent=None):
+    def __init__(self, parent=None):
+        icon = QIcon(gui_config.ICON_THEME_DARK + '/' + gui_config.ICON_NAME)  # Always use dark theme
         super().__init__(icon, parent)
         self.setToolTip('Game Server Monitor')
         self.create_context_menu()
