@@ -1,10 +1,6 @@
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette
-from PySide6.QtCore import QTimer
-import sys
 from ..gui.gui_config import gui_config
-from ..core.steam_api import get_status
-from ..core.logger import logger
 
 def get_current_theme():
     app = QApplication.instance()

@@ -6,7 +6,7 @@ from .mainwindow import MainWindow
 from .system_tray import SystemTrayIcon
 from ..core.steam_api import get_status
 from ..core.logger import logger
-import resources.resources
+import resources.resources # noqa: F401
 
 def init_gui():
     app = QApplication(sys.argv)
@@ -18,7 +18,6 @@ def init_gui():
     # Connect tray icon's exit signal to a function that will quit the application
     tray_icon.exit_app.connect(lambda: (app.quit(), sys.exit(0)))
 
-    window.set_tray_icon(tray_icon)
     window.show()
 
     timer = QTimer()

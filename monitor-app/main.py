@@ -1,4 +1,3 @@
-import sys
 import time
 from src.core.config import config
 from src.core.steam_api import get_status
@@ -6,7 +5,6 @@ from src.core.logger import logger
 from src.core.notification_handler import setup_notification_handlers
 from src.core.state import GameState, GameServerState
 from src.gui.gui_init import init_gui, update_gui
-from src.gui.gui_utils import get_current_theme
 
 gui_available = False
 try:

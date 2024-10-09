@@ -21,4 +21,5 @@ class GUIConfig:
         'offline': Qt.red
     }
 
+
 gui_config = GUIConfig()
