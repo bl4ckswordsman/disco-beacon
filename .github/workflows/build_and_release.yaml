@@ -28,7 +28,14 @@ jobs:
       - name: Create archive
         run: |
           $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
-          Compress-Archive -Path dist\DiscoBeacon -DestinationPath DiscoBeacon_Windows_$version.zip
+          if (Test-Path dist\DiscoBeacon) {
+            Compress-Archive -Path dist\DiscoBeacon -DestinationPath DiscoBeacon_Windows_$version.zip
+          } elseif (Test-Path dist\DiscoBeacon.exe) {
+            Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$version.zip
+          } else {
+            Write-Error "Could not find DiscoBeacon executable in the dist directory"
+            exit 1
+          }
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
