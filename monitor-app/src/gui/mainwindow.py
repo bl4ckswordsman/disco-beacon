@@ -4,6 +4,7 @@ from PySide6.QtGui import QIcon
 from ..gui.gui_config import gui_config
 from ..core.logger import logger
 from ..gui.gui_utils import get_current_theme, get_icon_path
+from ..gui.app_settings import AppSettings
 
 class MainWindow(QMainWindow):
     is_minimized = False
@@ -13,7 +14,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setWindowTitle(gui_config.APP_NAME)
+        self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
         self.current_theme = "light"
         self.set_window_icon()

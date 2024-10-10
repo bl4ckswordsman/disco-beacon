@@ -6,6 +6,8 @@ from src.core.notification_handler import setup_notification_handlers
 from src.core.state import GameState, GameServerState
 from src.gui.gui_init import init_gui
 
+from src.gui.app_settings import AppSettings
+
 gui_available = False
 
 try:
@@ -47,9 +49,17 @@ def check_and_update_status(game_state, game_server_state, window):
     except Exception as e:
         logger.error(f"Error occurred while fetching status: {e}")
 
+def setup_application():
+    if gui_available:
+        AppSettings.set_app_metadata()
+    logger.info("Application setup completed")
+
 def main() -> None:
     """Main function to continuously check game and server status."""
     logger.info("Application starting")
+
+    setup_application()
+
     setup_notification_handlers()
     game_state = GameState()
     game_server_state = GameServerState()

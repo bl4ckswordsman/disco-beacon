@@ -8,6 +8,7 @@ except ImportError:
     from PyQt6.QtCore import pyqtSignal as Signal, QObject
 
 from ..gui.gui_config import gui_config
+from ..gui.app_settings import AppSettings
 
 class SystemTrayIcon(QSystemTrayIcon):
     exit_app = Signal()
@@ -15,7 +16,7 @@ class SystemTrayIcon(QSystemTrayIcon):
     def __init__(self, parent=None):
         icon = QIcon(gui_config.ICON_THEME_DARK + '/' + gui_config.ICON_NAME)  # Always use dark theme
         super().__init__(icon, parent)
-        self.setToolTip(gui_config.APP_NAME)
+        self.setToolTip(AppSettings.APP_NAME)
         self.create_context_menu()
 
     def create_context_menu(self):

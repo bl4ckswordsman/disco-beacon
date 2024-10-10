@@ -1,7 +1,6 @@
 from PySide6.QtCore import Qt
 
 class GUIConfig:
-    APP_NAME: str = 'Disco Beacon'
     WINDOW_WIDTH: int = 800
     WINDOW_HEIGHT: int = 600
     GUI_REFRESH_RATE: int = 1000  # ms
