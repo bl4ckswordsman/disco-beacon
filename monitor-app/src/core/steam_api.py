@@ -4,9 +4,14 @@ from .keys import API_KEY, SERVER_OWNER_STEAM_ID
 from .constants import GAME_APP_ID
 from .logger import logger
 
-def get_status() -> Tuple[str, str, Optional[str], Optional[str], Optional[Dict]]:
+def get_status(api_key: str, steam_id: str, game_app_id: int) -> Tuple[str, str, Optional[str], Optional[str], Optional[Dict]]:
     """
     Fetch game and server status from Steam API.
+
+    Args:
+        api_key (str): The Steam API key.
+        steam_id (str): The Steam ID of the server owner.
+        game_app_id (int): The app ID of the game to check.
 
     Returns:
         Tuple containing game status ('online' or 'offline'),
@@ -15,7 +20,7 @@ def get_status() -> Tuple[str, str, Optional[str], Optional[str], Optional[Dict]
         server owner name,
         and server data.
     """
-    url = f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={API_KEY}&steamids={SERVER_OWNER_STEAM_ID}'
+    url = f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={api_key}&steamids={steam_id}'
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -26,7 +31,7 @@ def get_status() -> Tuple[str, str, Optional[str], Optional[str], Optional[Dict]
         server_status = 'offline'
         lobby_id = None
 
-        if 'gameid' in server_owner and int(server_owner['gameid']) == GAME_APP_ID:
+        if 'gameid' in server_owner and int(server_owner['gameid']) == game_app_id:
             game_status = 'online'
             lobby_id = server_owner.get('lobbysteamid')
             if lobby_id:

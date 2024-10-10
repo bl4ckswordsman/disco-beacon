@@ -1,6 +1,10 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon
 from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtGui import QIcon
+
+from PySide6.QtWidgets import QPushButton
+from src.gui.settings_dialog import SettingsDialog
+
 from src.gui.utils.gui_config import gui_config
 from ..core.logger import logger
 from src.gui.utils.gui_utils import get_current_theme, get_icon_path
@@ -16,7 +20,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
-        self.current_theme = "light"
+        self.current_theme = "dark"
         self.set_window_icon()
 
         self.theme_timer = QTimer(self)
@@ -34,11 +38,22 @@ class MainWindow(QMainWindow):
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
 
+        settings_button = QPushButton("Settings")
+        settings_button.clicked.connect(self.open_settings_dialog)
+        layout.addWidget(settings_button)
+
         self.tray_icon = None
 
         self.theme_changed.connect(self.update_theme)
 
         logger.info("MainWindow initialized")
+
+    def open_settings_dialog(self):
+        dialog = SettingsDialog(self)
+        if dialog.exec():
+            logger.info("Settings updated")
+            # Optionally, update any relevant parts of the main window
+            # that depend on the settings
 
     def set_window_icon(self):
         icon_path = get_icon_path(self.current_theme)
@@ -72,7 +87,7 @@ class MainWindow(QMainWindow):
         self.is_minimized = True
         if self.tray_icon:
             self.tray_icon.showMessage(
-                gui_config.APP_NAME,
+                AppSettings.APP_NAME,
                 "Application minimized to tray",
                 QSystemTrayIcon.Information,
                 2000

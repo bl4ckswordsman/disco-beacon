@@ -1,14 +1,15 @@
-from . import constants, keys
+from . import constants
+from .app_settings import app_settings
 from .steam_api import get_game_icon
 
 class Config:
     APP_NAME = 'Disco Beacon'
-    API_KEY = keys.API_KEY
-    SERVER_OWNER_STEAM_ID = keys.SERVER_OWNER_STEAM_ID
-    GAME_APP_ID = constants.GAME_APP_ID
-    CHECK_INTERVAL = constants.CHECK_INTERVAL
-    MONITOR_MODE = 'both'  # 'both' or 'server_only'
-    WEBHOOK_URL = keys.WEBHOOK_URL
+    API_KEY = app_settings.get('api_key', '')
+    SERVER_OWNER_STEAM_ID = app_settings.get('steam_id', '')
+    GAME_APP_ID = app_settings.get('game_app_id', constants.GAME_APP_ID)
+    CHECK_INTERVAL = app_settings.get('check_interval', constants.CHECK_INTERVAL)
+    MONITOR_MODE = app_settings.get('monitor_mode', 'both')  # 'both' or 'server_only'
+    WEBHOOK_URL = app_settings.get('webhook_url', '')
     SUPPORTED_GAMES = constants.SUPPORTED_GAMES
 
     @staticmethod
