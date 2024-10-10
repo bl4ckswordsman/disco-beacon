@@ -5,11 +5,17 @@ import os
 
 block_cipher = None
 
+# Define the correct path to your icon file
+icon_path = os.path.join('icons', 'light', 'tower-control.svg')
+
 a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('resources', 'resources')],
+    datas=[
+        ('resources', 'resources'),
+        (icon_path, 'icons/light')  # Include the icon file in the build
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -43,5 +49,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['resources/icons/light/tower-control.svg'],
+    icon=[icon_path],  # Use the defined icon path
 )
