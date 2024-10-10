@@ -21,7 +21,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pillow  #  Pillow for icon conversion
+          pip install pillow  # Pillow for icon conversion
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
@@ -29,14 +29,14 @@ jobs:
         run: |
           $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
           Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$version.zip
+      - name: Debug List Files
+        run: |
+          Get-ChildItem -Path . -Recurse
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
           path: DiscoBeacon_Windows_*.zip
-      - name: Debug List Files
-        run: |
-          Get-ChildItem -Path . -Recurse
 
   build_linux:
     runs-on: ubuntu-latest
@@ -64,14 +64,14 @@ jobs:
         run: |
           version=${GITHUB_REF#refs/tags/v}
           tar -czvf DiscoBeacon_Linux_$version.tar.gz -C dist DiscoBeacon
+      - name: Debug List Files
+        run: |
+          find . -type f
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
           path: DiscoBeacon_Linux_*.tar.gz
-      - name: Debug List Files
-        run: |
-          find . -type f
 
   create_release:
     needs: [build_windows, build_linux]
