@@ -12,9 +12,9 @@ jobs:
       run:
         working-directory: monitor-app
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install dependencies
@@ -30,7 +30,7 @@ jobs:
           $version = (python -c "from version import __version__; print(__version__)")
           Compress-Archive -Path dist\DiscoBeacon -DestinationPath DiscoBeacon_Windows_$version.zip
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
           path: monitor-app/DiscoBeacon_Windows_*.zip
@@ -41,9 +41,9 @@ jobs:
       run:
         working-directory: monitor-app
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install dependencies
@@ -59,7 +59,7 @@ jobs:
           version=$(python -c "from version import __version__; print(__version__)")
           tar -czvf DiscoBeacon_Linux_$version.tar.gz -C dist DiscoBeacon
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
           path: monitor-app/DiscoBeacon_Linux_*.tar.gz
@@ -67,44 +67,31 @@ jobs:
   create_release:
     needs: [build_windows, build_linux]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Get version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
       - name: Download Windows artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: DiscoBeacon_Windows
       - name: Download Linux artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: DiscoBeacon_Linux
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
+          files: |
+            DiscoBeacon_Windows_${{ steps.get_version.outputs.VERSION }}.zip
+            DiscoBeacon_Linux_${{ steps.get_version.outputs.VERSION }}.tar.gz
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ steps.get_version.outputs.VERSION }}
           draft: false
           prerelease: false
-      - name: Upload Windows Release Asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./DiscoBeacon_Windows_${{ steps.get_version.outputs.VERSION }}.zip
-          asset_name: DiscoBeacon_Windows_${{ steps.get_version.outputs.VERSION }}.zip
-          asset_content_type: application/zip
-      - name: Upload Linux Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./DiscoBeacon_Linux_${{ steps.get_version.outputs.VERSION }}.tar.gz
-          asset_name: DiscoBeacon_Linux_${{ steps.get_version.outputs.VERSION }}.tar.gz
-          asset_content_type: application/gzip
