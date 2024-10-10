@@ -27,13 +27,13 @@ jobs:
           copy settings.json dist\DiscoBeacon\
       - name: Create archive
         run: |
-          $version = (python -c "from version import __version__; print(__version__)")
+          $version = (Get-Content version.py | Select-String -Pattern "__version__ = '(.+)'").Matches.Groups[1].Value
           Compress-Archive -Path dist\DiscoBeacon -DestinationPath DiscoBeacon_Windows_$version.zip
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
-          path: monitor-app/DiscoBeacon_Windows_*.zip
+          path: DiscoBeacon_Windows_*.zip
 
   build_linux:
     runs-on: ubuntu-latest
@@ -56,13 +56,13 @@ jobs:
           cp settings.json dist/DiscoBeacon/
       - name: Create archive
         run: |
-          version=$(python -c "from version import __version__; print(__version__)")
+          version=$(grep -oP "__version__ = '\K[^']+" version.py)
           tar -czvf DiscoBeacon_Linux_$version.tar.gz -C dist DiscoBeacon
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
-          path: monitor-app/DiscoBeacon_Linux_*.tar.gz
+          path: DiscoBeacon_Linux_*.tar.gz
 
   create_release:
     needs: [build_windows, build_linux]
@@ -74,7 +74,7 @@ jobs:
       - name: Get version
         id: get_version
         working-directory: monitor-app
-        run: echo "VERSION=$(python -c "from version import __version__; print(__version__)")" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(grep -oP "__version__ = '\K[^']+" version.py)" >> $GITHUB_OUTPUT
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:

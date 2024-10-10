@@ -1,42 +1,52 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import sys
-from version import __version__
+import os
 
 block_cipher = None
 
-a = Analysis(['main.py'],
-             pathex=['.'],
-             binaries=[],
-             datas=[('resources', 'resources'), ('version.py', '.')],
-             hiddenimports=[],
-             hookspath=[],
-             hooksconfig={},
-             runtime_hooks=[],
-             excludes=[],
-             win_no_prefer_redirects=False,
-             win_private_assemblies=False,
-             cipher=block_cipher,
-             noarchive=False)
+# Read version from version.py
+with open('version.py', 'r') as f:
+    exec(f.read())
 
-pyz = PYZ(a.pure, a.zipped_data,
-          cipher=block_cipher)
+a = Analysis(
+    ['main.py'],
+    pathex=[],
+    binaries=[],
+    datas=[('resources', 'resources'), ('version.py', '.')],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
 
-exe = EXE(pyz,
-          a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
-          [],
-          name='DiscoBeacon',
-          debug=False,
-          bootloader_ignore_signals=False,
-          strip=False,
-          upx=True,
-          upx_exclude=[],
-          runtime_tmpdir=None,
-          console=False if sys.platform == 'win32' else True,
-          icon='resources/icons/light/tower-control.ico' if sys.platform == 'win32' else None,
-          version='version.py',
-          fileversion=__version__,
-          productversion=__version__)
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='DiscoBeacon',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    version='version.py',
+    icon=['resources/icons/light/tower-control.svg'],
+)
