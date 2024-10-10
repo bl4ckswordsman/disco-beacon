@@ -5,15 +5,19 @@ import os
 
 block_cipher = None
 
+# Get the absolute path of the current script
+script_path = os.path.dirname(os.path.abspath(SPECPATH))
+
 # Read version from version.py
-with open('version.py', 'r') as f:
+version_path = os.path.join(script_path, 'version.py')
+with open(version_path, 'r') as f:
     exec(f.read())
 
 a = Analysis(
     ['main.py'],
-    pathex=[],
+    pathex=[script_path],
     binaries=[],
-    datas=[('resources', 'resources'), ('version.py', '.')],
+    datas=[('resources', 'resources'), (version_path, '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -47,6 +51,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version='version.py',
+    version=version_path,
     icon=['resources/icons/light/tower-control.svg'],
 )
