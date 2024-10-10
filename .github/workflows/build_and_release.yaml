@@ -73,7 +73,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Get version
         id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        working-directory: monitor-app
+        run: echo "VERSION=$(python -c "from version import __version__; print(__version__)")" >> $GITHUB_OUTPUT
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
