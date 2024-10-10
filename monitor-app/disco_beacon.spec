@@ -5,22 +5,11 @@ import os
 
 block_cipher = None
 
-# Get the absolute path of the current script
-script_path = os.path.dirname(os.path.abspath(SPECPATH))
-
-# Read version from version.py
-version_path = os.path.join(script_path, 'version.py')
-version_string = "0.0.1"  # Default version if file not found
-if os.path.exists(version_path):
-    with open(version_path, 'r') as f:
-        exec(f.read())
-    version_string = locals().get('__version__', version_string)
-
 a = Analysis(
     ['main.py'],
-    pathex=[script_path],
+    pathex=[],
     binaries=[],
-    datas=[('resources', 'resources'), ('version.py', '.')],
+    datas=[('resources', 'resources')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -54,6 +43,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version=version_string,
     icon=['resources/icons/light/tower-control.svg'],
 )

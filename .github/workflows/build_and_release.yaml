@@ -24,16 +24,15 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
-          if (Test-Path settings.json) { Copy-Item settings.json -Destination dist\DiscoBeacon\ }
       - name: Create archive
         run: |
-          $version = if (Test-Path version.py) { (Get-Content version.py | Select-String -Pattern "__version__ = '(.+)'").Matches.Groups[1].Value } else { "0.0.1" }
+          $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
           Compress-Archive -Path dist\DiscoBeacon -DestinationPath DiscoBeacon_Windows_$version.zip
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
-          path: DiscoBeacon_Windows_*.zip
+          path: monitor-app/DiscoBeacon_Windows_*.zip
 
   build_linux:
     runs-on: ubuntu-latest
@@ -50,19 +49,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxkbcommon-x11-0
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
-          if [ -f settings.json ]; then cp settings.json dist/DiscoBeacon/; fi
       - name: Create archive
         run: |
-          version=$(if [ -f version.py ]; then grep -oP "__version__ = '\K[^']+" version.py; else echo "0.0.1"; fi)
+          version=${GITHUB_REF#refs/tags/v}
           tar -czvf DiscoBeacon_Linux_$version.tar.gz -C dist DiscoBeacon
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
-          path: DiscoBeacon_Linux_*.tar.gz
+          path: monitor-app/DiscoBeacon_Linux_*.tar.gz
 
   create_release:
     needs: [build_windows, build_linux]
@@ -73,13 +75,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Get version
         id: get_version
-        working-directory: monitor-app
-        run: |
-          if [ -f version.py ]; then
-            echo "VERSION=$(grep -oP "__version__ = '\K[^']+" version.py)" >> $GITHUB_OUTPUT
-          else
-            echo "VERSION=0.0.1" >> $GITHUB_OUTPUT
-          fi
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
