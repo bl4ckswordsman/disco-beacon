@@ -7,20 +7,18 @@ from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 
 from src.gui.utils.app_settings import AppSettings
-
 gui_available = False
 
 try:
-    import PySide6
     from PySide6 import QtWidgets, QtCore, QtGui
     from src.gui.mainwindow import MainWindow
     from src.gui.system_tray import SystemTrayIcon
-    gui_available = all((PySide6, QtWidgets, QtCore, QtGui, MainWindow, SystemTrayIcon))
+    gui_available = all((QtWidgets, QtCore, QtGui, MainWindow, SystemTrayIcon))
 except ImportError as e:
-    logger.warning(f"PySide6 import error: {e}")
+    logger.warning(f"GUI import error: {e}")
     logger.warning("GUI functionality will be disabled.")
 except Exception as e:
-    logger.error(f"Unexpected error importing PySide6: {e}")
+    logger.error(f"Unexpected error importing GUI modules: {e}")
     logger.warning("GUI functionality will be disabled.")
 
 if not gui_available:

@@ -1,28 +1,22 @@
-from typing import Dict, Optional
-from . import constants
-from . import keys
+from . import constants, keys
 from .steam_api import get_game_icon
 
 class Config:
-    APP_NAME: str = 'Disco Beacon'
+    APP_NAME = 'Disco Beacon'
+    API_KEY = keys.API_KEY
+    SERVER_OWNER_STEAM_ID = keys.SERVER_OWNER_STEAM_ID
+    GAME_APP_ID = constants.GAME_APP_ID
+    CHECK_INTERVAL = constants.CHECK_INTERVAL
+    MONITOR_MODE = 'both'  # 'both' or 'server_only'
+    WEBHOOK_URL = keys.WEBHOOK_URL
+    SUPPORTED_GAMES = constants.SUPPORTED_GAMES
 
-    API_KEY: str = keys.API_KEY
-    SERVER_OWNER_STEAM_ID: str = keys.SERVER_OWNER_STEAM_ID
+    @staticmethod
+    def get_game_name(app_id):
+        return Config.SUPPORTED_GAMES.get(app_id, "Unknown Game")
 
-    GAME_APP_ID: int = constants.GAME_APP_ID
-
-    CHECK_INTERVAL: int = constants.CHECK_INTERVAL
-    MONITOR_MODE: str = 'both'  # 'both' or 'server_only'
-
-    WEBHOOK_URL: str = keys.WEBHOOK_URL
-    SUPPORTED_GAMES: Dict[int, str] = constants.SUPPORTED_GAMES
-
-    @classmethod
-    def get_game_name(cls, app_id: int) -> str:
-        return cls.SUPPORTED_GAMES.get(app_id, "Unknown Game")
-
-    @classmethod
-    def get_game_icon_url(cls, app_id: int) -> Optional[str]:
+    @staticmethod
+    def get_game_icon_url(app_id):
         return get_game_icon(app_id)
 
 config = Config()
