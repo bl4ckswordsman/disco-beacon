@@ -1,30 +1,36 @@
 from typing import Dict, Optional
-from config import config
-from logger import logger
-from webhook import send_webhook_notification
+from .config import config
+from .logger import logger
+from .webhook import send_webhook_notification
 from datetime import datetime, timezone
-from constants import GREEN_CIRCLE, YELLOW_CIRCLE, RED_CIRCLE
-from events import event_emitter
+from .constants import GREEN_CIRCLE, YELLOW_CIRCLE, RED_CIRCLE, SUPPORTED_GAMES
+from .events import event_emitter
+from .app_settings import app_settings
 
 
 def setup_notification_handlers():
-    if config.MONITOR_MODE == 'both':
-        event_emitter.on('game_state_changed', handle_game_state_change)
+    event_emitter.on('game_state_changed', handle_game_state_change)
     event_emitter.on('game_server_state_changed', handle_game_server_state_change)
 
 def handle_game_state_change(state, old_status, new_status):
-    game_name = config.get_game_name(config.GAME_APP_ID)
-    icon_url = config.get_game_icon_url(config.GAME_APP_ID)
+    monitor_mode = app_settings.get('monitor_mode', 'both')
+    game_app_id = app_settings.get('game_app_id')
+    game_name = SUPPORTED_GAMES.get(game_app_id, "Unknown Game")
+    icon_url = config.get_game_icon_url(game_app_id)
     current_time = datetime.now(timezone.utc).isoformat()
 
-    if new_status == 'online':
-        send_game_online_notification(game_name, current_time, icon_url)
+    if monitor_mode == 'both':
+        if new_status == 'online':
+            send_game_online_notification(game_name, current_time, icon_url)
+        else:
+            send_game_offline_notification(game_name, current_time, icon_url)
     else:
-        send_game_offline_notification(game_name, current_time, icon_url)
+        logger.info(f"Game state change detected: {old_status} -> {new_status}")
 
 def handle_game_server_state_change(state, old_status, new_status):
-    game_name = config.get_game_name(config.GAME_APP_ID)
-    icon_url = config.get_game_icon_url(config.GAME_APP_ID)
+    game_app_id = app_settings.get('game_app_id')
+    game_name = SUPPORTED_GAMES.get(game_app_id, "Unknown Game")
+    icon_url = config.get_game_icon_url(game_app_id)
     current_time = datetime.now(timezone.utc).isoformat()
 
     if new_status == 'online':
@@ -34,7 +40,7 @@ def handle_game_server_state_change(state, old_status, new_status):
 
 def send_game_online_notification(game_name: str, current_time: str, icon_url: Optional[str]):
     logger.info(f"{game_name} is now running")
-    send_webhook_notification(config.WEBHOOK_URL, {
+    send_webhook_notification(app_settings.get('webhook_url'), {
         "content": f"{game_name} is now running!",
         "embeds": [{
             "title": f"{YELLOW_CIRCLE} Game Running",
@@ -48,7 +54,7 @@ def send_game_online_notification(game_name: str, current_time: str, icon_url: O
 
 def send_game_offline_notification(game_name: str, current_time: str, icon_url: Optional[str]):
     logger.info(f"{game_name} is now offline")
-    send_webhook_notification(config.WEBHOOK_URL, {
+    send_webhook_notification(app_settings.get('webhook_url'), {
         "content": f"{game_name} is no longer running",
         "embeds": [{
             "title": f"{RED_CIRCLE} Game Offline",
@@ -62,7 +68,7 @@ def send_game_offline_notification(game_name: str, current_time: str, icon_url: 
 
 def send_server_offline_notification(game_name: str, server_owner: str, current_time: str, icon_url: Optional[str]):
     logger.info(f"{game_name} server owned by {server_owner} is now offline")
-    send_webhook_notification(config.WEBHOOK_URL, {
+    send_webhook_notification(app_settings.get('webhook_url'), {
         "content": f"The {game_name} server is down!",
         "embeds": [{
             "title": f"{RED_CIRCLE} Server Offline",
@@ -80,7 +86,7 @@ def send_server_offline_notification(game_name: str, server_owner: str, current_
 def send_server_online_notification(game_name: str, server_owner: str, lobby_id: Optional[str], current_time: str, icon_url: Optional[str]):
     logger.info(f"{game_name} server owned by {server_owner} is now online with lobby ID: {lobby_id}")
     send_webhook_notification(
-        config.WEBHOOK_URL,
+        app_settings.get('webhook_url'),
         {
             "content": f"The {game_name} server is up!",
             "embeds": [{
