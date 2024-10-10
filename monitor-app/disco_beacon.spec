@@ -1,13 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import sys
+from version import __version__
+
 block_cipher = None
 
 a = Analysis(['main.py'],
              pathex=['.'],
              binaries=[],
-             datas=[('resources', 'resources')],
+             datas=[('resources', 'resources'), ('version.py', '.')],
              hiddenimports=[],
              hookspath=[],
+             hooksconfig={},
              runtime_hooks=[],
              excludes=[],
              win_no_prefer_redirects=False,
@@ -24,12 +28,15 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='disco-beacon',
+          name='DiscoBeacon',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False,
-          icon='resources/icons/light/tower-control.svg')
+          console=False if sys.platform == 'win32' else True,
+          icon='resources/icons/light/tower-control.ico' if sys.platform == 'win32' else None,
+          version='version.py',
+          fileversion=__version__,
+          productversion=__version__)
