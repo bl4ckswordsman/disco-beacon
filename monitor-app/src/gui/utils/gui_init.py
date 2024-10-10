@@ -2,10 +2,10 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QTimer
 import sys
 from .gui_config import gui_config
-from .mainwindow import MainWindow
-from .system_tray import SystemTrayIcon
-from ..core.steam_api import get_status
-from ..core.logger import logger
+from src.gui.mainwindow import MainWindow
+from src.gui.system_tray import SystemTrayIcon
+from src.core.steam_api import get_status
+from src.core.logger import logger
 import resources.resources # noqa: F401
 
 def init_gui():

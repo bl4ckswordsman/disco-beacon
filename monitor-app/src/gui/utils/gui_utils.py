@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette
-from ..gui.gui_config import gui_config
+from src.gui.utils.gui_config import gui_config
 
 def get_current_theme():
     app = QApplication.instance()

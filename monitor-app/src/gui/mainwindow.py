@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon
 from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtGui import QIcon
-from ..gui.gui_config import gui_config
+from src.gui.utils.gui_config import gui_config
 from ..core.logger import logger
-from ..gui.gui_utils import get_current_theme, get_icon_path
-from ..gui.app_settings import AppSettings
+from src.gui.utils.gui_utils import get_current_theme, get_icon_path
+from src.gui.utils.app_settings import AppSettings
 
 class MainWindow(QMainWindow):
     is_minimized = False

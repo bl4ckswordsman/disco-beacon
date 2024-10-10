@@ -7,8 +7,8 @@ except ImportError:
     from PyQt6.QtGui import QIcon
     from PyQt6.QtCore import pyqtSignal as Signal, QObject
 
-from ..gui.gui_config import gui_config
-from ..gui.app_settings import AppSettings
+from src.gui.utils.gui_config import gui_config
+from src.gui.utils.app_settings import AppSettings
 
 class SystemTrayIcon(QSystemTrayIcon):
     exit_app = Signal()
