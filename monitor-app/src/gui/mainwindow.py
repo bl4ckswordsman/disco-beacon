@@ -6,6 +6,8 @@ from ..core.logger import logger
 from ..gui.gui_utils import get_current_theme, get_icon_path
 
 class MainWindow(QMainWindow):
+    is_minimized = False
+
     exit_app = Signal()
     theme_changed = Signal(str)
 
@@ -57,15 +59,19 @@ class MainWindow(QMainWindow):
         self.exit_app.emit()
 
     def update_status(self, status):
-        logger.debug(f"Updating status: {status}")
-        self.status_label.setText(status)
+        if not self.is_minimized:
+            logger.debug(f"Updating status: {status}")
+            self.status_label.setText(status)
+        else:
+            logger.debug(f"Skipping status update while minimized: {status}")
 
     def closeEvent(self, event):
         event.ignore()
         self.hide()
+        self.is_minimized = True
         if self.tray_icon:
             self.tray_icon.showMessage(
-                "Game Server Monitor",
+                gui_config.APP_NAME,
                 "Application minimized to tray",
                 QSystemTrayIcon.Information,
                 2000
@@ -74,6 +80,7 @@ class MainWindow(QMainWindow):
     def show_window(self):
         self.show()
         self.activateWindow()
+        self.is_minimized = False
 
     def set_tray_icon(self, tray_icon):
         self.tray_icon = tray_icon
@@ -83,6 +90,8 @@ class MainWindow(QMainWindow):
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
             if self.isVisible():
                 self.hide()
+                self.is_minimized = True
             else:
                 self.show()
                 self.activateWindow()
+                self.is_minimized = False

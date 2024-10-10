@@ -20,20 +20,27 @@ def init_gui():
 
     window.show()
 
-    timer = QTimer()
-    timer.timeout.connect(lambda: update_gui(window))
-    timer.start(gui_config.GUI_REFRESH_RATE)
+    # Create a timer for GUI updates
+    gui_update_timer = QTimer()
+    gui_update_timer.timeout.connect(lambda: update_gui(window))
+    gui_update_timer.start(gui_config.GUI_REFRESH_RATE)
+
+    window.set_tray_icon(tray_icon)
 
     logger.info("GUI initialized with system tray icon and Fusion style")
     return app, window, tray_icon
 
 def update_gui(window):
-    try:
-        game_status, server_status, lobby_id, server_owner, _ = get_status()
-        status_text = f"Game: {game_status}, Server: {server_status}"
-        if server_status == 'online':
-            status_text += f"\nLobby ID: {lobby_id}\nServer Owner: {server_owner}"
-        window.update_status(status_text)
-        logger.debug(f"GUI updated: {status_text}")
-    except Exception as e:
-        logger.error(f"Error updating GUI: {e}")
+    if not window.is_minimized:
+        try:
+            game_status, server_status, lobby_id, server_owner, _ = get_status()
+            status_text = f"Game: {game_status}, Server: {server_status}"
+            if server_status == 'online':
+                status_text += f"\nLobby ID: {lobby_id}\nServer Owner: {server_owner}"
+            window.update_status(status_text)
+            logger.debug(f"GUI updated: {status_text}")
+        except Exception as e:
+            logger.error(f"Error updating GUI: {e}")
+            window.update_status("Error fetching status")
+    else:
+        logger.debug("Skipping GUI update while minimized")

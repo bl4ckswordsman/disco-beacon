@@ -4,7 +4,7 @@ class GUIConfig:
     APP_NAME: str = 'Disco Beacon'
     WINDOW_WIDTH: int = 800
     WINDOW_HEIGHT: int = 600
-    GUI_REFRESH_RATE: int = 10000  # ms
+    GUI_REFRESH_RATE: int = 1000  # ms
 
     FONT_FAMILY: str = 'Arial'
     FONT_SIZE_NORMAL: int = 12
