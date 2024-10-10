@@ -10,14 +10,17 @@ script_path = os.path.dirname(os.path.abspath(SPECPATH))
 
 # Read version from version.py
 version_path = os.path.join(script_path, 'version.py')
-with open(version_path, 'r') as f:
-    exec(f.read())
+version_string = "0.0.1"  # Default version if file not found
+if os.path.exists(version_path):
+    with open(version_path, 'r') as f:
+        exec(f.read())
+    version_string = locals().get('__version__', version_string)
 
 a = Analysis(
     ['main.py'],
     pathex=[script_path],
     binaries=[],
-    datas=[('resources', 'resources'), (version_path, '.')],
+    datas=[('resources', 'resources'), ('version.py', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -51,6 +54,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version=version_path,
+    version=version_string,
     icon=['resources/icons/light/tower-control.svg'],
 )
