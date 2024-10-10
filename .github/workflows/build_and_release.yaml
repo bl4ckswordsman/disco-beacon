@@ -25,20 +25,10 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
-      - name: Debug Output
-        run: |
-          Get-ChildItem -Path dist -Recurse
       - name: Create archive
         run: |
           $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
-          if (Test-Path dist\DiscoBeacon) {
-            Compress-Archive -Path dist\DiscoBeacon -DestinationPath DiscoBeacon_Windows_$version.zip
-          } elseif (Test-Path dist\DiscoBeacon.exe) {
-            Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$version.zip
-          } else {
-            Write-Error "Could not find DiscoBeacon executable in the dist directory"
-            exit 1
-          }
+          Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$version.zip
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
@@ -70,9 +60,6 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
-      - name: Debug Output
-        run: |
-          ls -R dist
       - name: Create archive
         run: |
           version=${GITHUB_REF#refs/tags/v}
@@ -112,8 +99,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            DiscoBeacon_Windows_${{ steps.get_version.outputs.VERSION }}.zip
-            DiscoBeacon_Linux_${{ steps.get_version.outputs.VERSION }}.tar.gz
+            DiscoBeacon_Windows_*.zip
+            DiscoBeacon_Linux_*.tar.gz
           tag_name: ${{ github.ref }}
           name: Release ${{ steps.get_version.outputs.VERSION }}
           draft: false
