@@ -20,4 +20,5 @@ class Config:
     def get_game_icon_url(app_id):
         return get_game_icon(app_id)
 
+
 config = Config()

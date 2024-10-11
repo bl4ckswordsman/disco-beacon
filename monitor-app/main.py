@@ -32,7 +32,6 @@ def check_and_update_status(game_state, game_server_state, window):
         game_status, server_status, lobby_id, server_owner, server_data = get_status(api_key, steam_id, game_app_id)
 
         game_name = config.get_game_name(game_app_id)
-        monitor_mode = app_settings.get('monitor_mode', 'both')
 
         logger.info(f"Game status: {game_status}, Server status: {server_status}")
 
