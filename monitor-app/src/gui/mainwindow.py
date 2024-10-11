@@ -53,8 +53,7 @@ class MainWindow(QMainWindow):
             logger.info("Settings updated")
 
     def set_window_icon(self):
-        icon_path = gui_config.ICON_THEME_LIGHT + '/' + gui_config.ICON_NAME
-        self.setWindowIcon(QIcon(icon_path))
+        self.setWindowIcon(QIcon(gui_config.WINDOW_ICON))
 
 
     def update_theme(self, new_theme):

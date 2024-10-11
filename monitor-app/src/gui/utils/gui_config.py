@@ -11,6 +11,7 @@ class GUIConfig:
     ICON_THEME_LIGHT: str = ':/icons/light'
     ICON_THEME_DARK: str = ':/icons/dark'
     ICON_NAME: str = 'tower-control.svg'
+    WINDOW_ICON: str = ':/icons/tower-control.ico'
 
     COLORS = {
         'background': Qt.white,
