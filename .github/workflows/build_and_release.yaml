@@ -25,9 +25,12 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
-      - name: Create archive
+      - name: Set VERSION
         run: |
           $env:VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
+          echo "VERSION=$env:VERSION" >> $env:GITHUB_ENV
+      - name: Create archive
+        run: |
           Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$env:VERSION.zip
       - name: Debug List Files
         run: |
@@ -65,16 +68,18 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
-      - name: Create archive
+      - name: Set VERSION
         run: |
           echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-          tar -czvf DiscoBeacon_Linux_$VERSION.tar.gz -C dist DiscoBeacon
+      - name: Create archive
+        run: |
+          tar -czvf DiscoBeacon_Linux_${VERSION}.tar.gz -C dist DiscoBeacon
       - name: Debug List Files
         run: |
           find . -type f
       - name: Echo file name
         run: |
-          echo "File name: DiscoBeacon_Linux_$VERSION.tar.gz"
+          echo "File name: DiscoBeacon_Linux_${VERSION}.tar.gz"
           ls DiscoBeacon_Linux_*.tar.gz
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
@@ -90,9 +95,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Get version
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Set VERSION
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: List artifacts
         run: |
           echo "Available artifacts:"
@@ -117,7 +121,7 @@ jobs:
             DiscoBeacon_Windows_${{ env.VERSION }}.zip
             DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
           tag_name: ${{ github.ref }}
-          name: Release ${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ env.VERSION }}
           draft: false
           prerelease: false
         env:
