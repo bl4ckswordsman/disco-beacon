@@ -17,6 +17,7 @@ def create_archive():
     shutil.make_archive(archive_name, archive_format, os.path.join("dist", "DiscoBeacon"))
     return f"{archive_name}.{'zip' if sys.platform == 'win32' else 'tar.gz'}"
 
+
 if __name__ == "__main__":
     build_executable()
     copy_additional_files()

@@ -31,4 +31,5 @@ class AppSettings:
         self.settings[key] = value
         self.save_settings()
 
+
 app_settings = AppSettings()

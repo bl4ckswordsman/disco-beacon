@@ -1,11 +1,11 @@
 try:
     from PySide6.QtWidgets import QSystemTrayIcon, QMenu
     from PySide6.QtGui import QIcon
-    from PySide6.QtCore import Signal, QObject
+    from PySide6.QtCore import Signal
 except ImportError:
     from PyQt6.QtWidgets import QSystemTrayIcon, QMenu
     from PyQt6.QtGui import QIcon
-    from PyQt6.QtCore import pyqtSignal as Signal, QObject
+    from PyQt6.QtCore import pyqtSignal as Signal
 
 from src.gui.utils.gui_config import gui_config
 from src.gui.utils.app_settings import AppSettings

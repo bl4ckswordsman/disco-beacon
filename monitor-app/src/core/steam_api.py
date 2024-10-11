@@ -1,7 +1,5 @@
 import requests
 from typing import Dict, Optional, Tuple
-from .keys import API_KEY, SERVER_OWNER_STEAM_ID
-from .constants import GAME_APP_ID
 from .logger import logger
 
 def get_status(api_key: str, steam_id: str, game_app_id: int) -> Tuple[str, str, Optional[str], Optional[str], Optional[Dict]]:
