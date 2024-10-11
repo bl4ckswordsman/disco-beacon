@@ -4,6 +4,7 @@ from src.gui.mainwindow import MainWindow
 from src.gui.system_tray import SystemTrayIcon
 from src.core.logger import logger
 import resources.resources # noqa: F401
+from src.gui.utils.gui_utils import get_current_theme
 
 def init_gui():
     # import os
@@ -12,7 +13,8 @@ def init_gui():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")  # Explicitly set Fusion style
     window = MainWindow()
-    tray_icon = SystemTrayIcon(window)
+    current_theme = get_current_theme()
+    tray_icon = SystemTrayIcon(window, theme=current_theme)
     tray_icon.show()
 
     # Connect tray icon's exit signal to a function that will quit the application
