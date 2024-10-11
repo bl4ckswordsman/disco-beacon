@@ -31,19 +31,19 @@ jobs:
           echo "VERSION=$env:VERSION" >> $env:GITHUB_ENV
       - name: Create archive
         run: |
-          Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$env:VERSION.zip
+          Compress-Archive -Path .\dist\DiscoBeacon.exe -DestinationPath .\DiscoBeacon_Windows_$env:VERSION.zip
       - name: Debug List Files
         run: |
           Get-ChildItem -Path . -Recurse
       - name: Echo file name
         run: |
           echo "File name: DiscoBeacon_Windows_$env:VERSION.zip"
-          ls DiscoBeacon_Windows_*.zip
+          Get-ChildItem -Path . -Filter DiscoBeacon_Windows_*.zip
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
-          path: DiscoBeacon_Windows_${{ env.VERSION }}.zip
+          path: .\DiscoBeacon_Windows_${{ env.VERSION }}.zip
           if-no-files-found: error
 
   build_linux:
@@ -73,19 +73,19 @@ jobs:
           echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Create archive
         run: |
-          tar -czvf DiscoBeacon_Linux_${VERSION}.tar.gz -C dist DiscoBeacon
+          tar -czvf ./DiscoBeacon_Linux_${VERSION}.tar.gz -C ./dist DiscoBeacon
       - name: Debug List Files
         run: |
           find . -type f
       - name: Echo file name
         run: |
           echo "File name: DiscoBeacon_Linux_${VERSION}.tar.gz"
-          ls DiscoBeacon_Linux_*.tar.gz
+          ls ./DiscoBeacon_Linux_*.tar.gz
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
-          path: DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
+          path: ./DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
           if-no-files-found: error
 
   create_release:
