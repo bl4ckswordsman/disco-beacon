@@ -9,21 +9,23 @@ except ImportError:
 
 from src.gui.utils.gui_config import gui_config
 from src.gui.utils.app_settings import AppSettings
+from src.gui.utils.gui_utils import get_icon_path, is_linux
 
 class SystemTrayIcon(QSystemTrayIcon):
     exit_app = Signal()
 
-    def __init__(self, parent=None):
-        icon = QIcon(gui_config.ICON_THEME_DARK + '/' + gui_config.ICON_NAME)  # Always use dark theme
+    def __init__(self, parent=None, theme='light'):
+        icon = QIcon(get_icon_path('dark' if is_linux() else theme))
         super().__init__(icon, parent)
         self.setToolTip(AppSettings.APP_NAME)
         self.create_context_menu()
 
+    def update_icon(self, theme):
+        if not is_linux():
+            self.setIcon(QIcon(get_icon_path(theme)))
+
     def create_context_menu(self):
         menu = QMenu()
         exit_action = menu.addAction("Exit")
-        exit_action.triggered.connect(self.emit_exit_signal)
+        exit_action.triggered.connect(self.exit_app.emit)
         self.setContextMenu(menu)
-
-    def emit_exit_signal(self):
-        self.exit_app.emit()

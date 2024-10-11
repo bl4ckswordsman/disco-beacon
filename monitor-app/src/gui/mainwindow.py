@@ -1,26 +1,28 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon
-from PySide6.QtCore import Qt, Signal, QTimer
-from PySide6.QtGui import QIcon
+try:
+    from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
+    from PySide6.QtCore import Qt, Signal, QTimer
+    from PySide6.QtGui import QIcon
+except ImportError:
+    from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
+    from PyQt6.QtCore import Qt, pyqtSignal as Signal, QTimer
+    from PyQt6.QtGui import QIcon
 
-from PySide6.QtWidgets import QPushButton
 from src.gui.settings_dialog import SettingsDialog
-
 from src.gui.utils.gui_config import gui_config
 from ..core.logger import logger
-from src.gui.utils.gui_utils import get_current_theme, get_icon_path
+from src.gui.utils.gui_utils import get_current_theme, get_icon_path, is_linux
 from src.gui.utils.app_settings import AppSettings
 
 class MainWindow(QMainWindow):
     is_minimized = False
-
     exit_app = Signal()
     theme_changed = Signal(str)
 
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super().__init__()
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
-        self.current_theme = "dark"
+        self.current_theme = get_current_theme()
         self.set_window_icon()
 
         self.theme_timer = QTimer(self)
@@ -52,22 +54,24 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self)
         if dialog.exec():
             logger.info("Settings updated")
-            # Optionally, update any relevant parts of the main window
-            # that depend on the settings
 
     def set_window_icon(self):
-        icon_path = get_icon_path(self.current_theme)
-        self.setWindowIcon(QIcon(icon_path))
+        self.setWindowIcon(QIcon(gui_config.WINDOW_ICON))
 
     def update_theme(self, new_theme):
-        self.current_theme = new_theme
-        self.set_window_icon()
-        logger.info(f"Theme updated to: {new_theme}")
+        if new_theme != self.current_theme:
+            self.current_theme = new_theme
+            self.set_window_icon()  # Update window icon
+            if self.tray_icon and not is_linux():
+                self.tray_icon.update_icon(new_theme)
+            logger.info(f"Theme updated to: {new_theme}")
+            # Emit signal to update other UI elements if needed
+            self.theme_changed.emit(new_theme)
 
     def check_and_update_theme(self):
         new_theme = get_current_theme()
         if new_theme != self.current_theme:
-            self.theme_changed.emit(new_theme)
+            self.update_theme(new_theme)
 
     def handle_exit(self):
         logger.info("Exit signal received from system tray")
