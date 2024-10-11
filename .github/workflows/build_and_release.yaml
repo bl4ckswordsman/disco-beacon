@@ -32,11 +32,15 @@ jobs:
       - name: Debug List Files
         run: |
           Get-ChildItem -Path . -Recurse
+      - name: Echo file name
+        run: |
+          echo "File name: DiscoBeacon_Windows_${{ github.ref_name.substring(1) }}.zip"
+          ls DiscoBeacon_Windows_*.zip
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
-          path: DiscoBeacon_Windows_${{ github.ref_name }}.zip
+          path: DiscoBeacon_Windows_${{ github.ref_name.substring(1) }}.zip
           if-no-files-found: error
 
   build_linux:
@@ -68,11 +72,15 @@ jobs:
       - name: Debug List Files
         run: |
           find . -type f
+      - name: Echo file name
+        run: |
+          echo "File name: DiscoBeacon_Linux_${{ github.ref_name.substring(1) }}.tar.gz"
+          ls DiscoBeacon_Linux_*.tar.gz
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
-          path: DiscoBeacon_Linux_${{ github.ref_name }}.tar.gz
+          path: DiscoBeacon_Linux_${{ github.ref_name.substring(1) }}.tar.gz
           if-no-files-found: error
 
   create_release:
@@ -106,8 +114,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            DiscoBeacon_Windows_*.zip
-            DiscoBeacon_Linux_*.tar.gz
+            DiscoBeacon_Windows_${{ github.ref_name.substring(1) }}.zip
+            DiscoBeacon_Linux_${{ github.ref_name.substring(1) }}.tar.gz
           tag_name: ${{ github.ref }}
           name: Release ${{ steps.get_version.outputs.VERSION }}
           draft: false
