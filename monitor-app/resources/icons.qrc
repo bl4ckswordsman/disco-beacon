@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/light/tower-control.svg</file>
+        <file>icons/dark/tower-control.svg</file>
+    </qresource>
+</RCC>
