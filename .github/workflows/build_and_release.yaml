@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
-          path: .\DiscoBeacon_Windows_${{ env.VERSION }}.zip
+          path: ${{ github.workspace }}/monitor-app/DiscoBeacon_Windows_${{ env.VERSION }}.zip
           if-no-files-found: error
 
   build_linux:
@@ -85,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
-          path: ./DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
+          path: ${{ github.workspace }}/monitor-app/DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
           if-no-files-found: error
 
   create_release:
