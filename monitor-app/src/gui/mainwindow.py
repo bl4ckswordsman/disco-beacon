@@ -1,13 +1,16 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon
-from PySide6.QtCore import Qt, Signal, QTimer
-from PySide6.QtGui import QIcon
+try:
+    from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
+    from PySide6.QtCore import Qt, Signal, QTimer
+    from PySide6.QtGui import QIcon
+except ImportError:
+    from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
+    from PyQt6.QtCore import Qt, pyqtSignal as Signal, QTimer
+    from PyQt6.QtGui import QIcon
 
-from PySide6.QtWidgets import QPushButton
 from src.gui.settings_dialog import SettingsDialog
-
 from src.gui.utils.gui_config import gui_config
 from ..core.logger import logger
-from src.gui.utils.gui_utils import get_current_theme, get_icon_path
+from src.gui.utils.gui_utils import get_current_theme, get_icon_path, is_linux
 from src.gui.utils.app_settings import AppSettings
 
 class MainWindow(QMainWindow):
@@ -55,12 +58,11 @@ class MainWindow(QMainWindow):
     def set_window_icon(self):
         self.setWindowIcon(QIcon(gui_config.WINDOW_ICON))
 
-
     def update_theme(self, new_theme):
         if new_theme != self.current_theme:
             self.current_theme = new_theme
             self.set_window_icon()  # Update window icon
-            if self.tray_icon:
+            if self.tray_icon and not is_linux():
                 self.tray_icon.update_icon(new_theme)
             logger.info(f"Theme updated to: {new_theme}")
             # Emit signal to update other UI elements if needed
