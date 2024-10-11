@@ -94,5 +94,6 @@ def main() -> None:
 
     logger.info("Application shutting down")
 
+
 if __name__ == "__main__":
     main()
