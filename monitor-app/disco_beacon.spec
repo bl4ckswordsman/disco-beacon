@@ -35,13 +35,17 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
     [],
-    exclude_binaries=True,
     name='DiscoBeacon',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
     console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
@@ -49,17 +53,6 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon=[ico_icon_path] if sys.platform == 'win32' else [svg_icon_path],
-)
-
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='DiscoBeacon',
 )
 
 if platform.system() == "Windows":
@@ -87,28 +80,21 @@ if platform.system() == "Windows":
     exe_windows = EXE(
         pyz_windows,
         a_windows.scripts,
+        a_windows.binaries,
+        a_windows.zipfiles,
+        a_windows.datas,
         [],
-        exclude_binaries=True,
-        name='DiscoBeacon_Windows',
+        name='DiscoBeacon',
         debug=False,
         bootloader_ignore_signals=False,
         strip=False,
         upx=True,
+        upx_exclude=[],
+        runtime_tmpdir=None,
         console=False,
         disable_windowed_traceback=False,
         target_arch=None,
         codesign_identity=None,
         entitlements_file=None,
         icon=[ico_icon_path],
-    )
-
-    coll_windows = COLLECT(
-        exe_windows,
-        a_windows.binaries,
-        a_windows.zipfiles,
-        a_windows.datas,
-        strip=False,
-        upx=True,
-        upx_exclude=[],
-        name='DiscoBeacon_Windows',
     )

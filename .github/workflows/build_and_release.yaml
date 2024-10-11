@@ -31,7 +31,7 @@ jobs:
           echo "VERSION=$env:VERSION" >> $env:GITHUB_ENV
       - name: Create archive
         run: |
-          Compress-Archive -Path .\dist\DiscoBeacon_Windows -DestinationPath .\DiscoBeacon_Windows_$env:VERSION.zip
+          Compress-Archive -Path .\dist\DiscoBeacon.exe -DestinationPath .\DiscoBeacon_Windows_$env:VERSION.zip
       - name: Debug List Files
         run: |
           Get-ChildItem -Path . -Recurse
@@ -74,13 +74,6 @@ jobs:
       - name: Create archive
         run: |
           tar -czvf ./DiscoBeacon_Linux_${VERSION}.tar.gz -C ./dist DiscoBeacon
-      - name: Debug List Files
-        run: |
-          find ./dist -type f
-      - name: Echo file name
-        run: |
-          echo "File name: DiscoBeacon_Linux_${VERSION}.tar.gz"
-          ls ./DiscoBeacon_Linux_*.tar.gz
       - name: Debug List Files
         run: |
           find . -type f
