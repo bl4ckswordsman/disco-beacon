@@ -56,16 +56,16 @@ class MainWindow(QMainWindow):
             logger.info("Settings updated")
 
     def set_window_icon(self):
-        self.setWindowIcon(QIcon(gui_config.WINDOW_ICON))
+        icon = QIcon(gui_config.WINDOW_ICON)
+        self.setWindowIcon(icon)
+        logger.info(f"Window icon set to: {gui_config.WINDOW_ICON}")
 
     def update_theme(self, new_theme):
         if new_theme != self.current_theme:
             self.current_theme = new_theme
-            self.set_window_icon()  # Update window icon
             if self.tray_icon and not is_linux():
                 self.tray_icon.update_icon(new_theme)
             logger.info(f"Theme updated to: {new_theme}")
-            # Emit signal to update other UI elements if needed
             self.theme_changed.emit(new_theme)
 
     def check_and_update_theme(self):
