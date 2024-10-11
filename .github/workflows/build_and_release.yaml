@@ -27,20 +27,20 @@ jobs:
           pyinstaller --clean disco_beacon.spec
       - name: Create archive
         run: |
-          $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
-          Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$version.zip
+          $env:VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
+          Compress-Archive -Path dist\DiscoBeacon.exe -DestinationPath DiscoBeacon_Windows_$env:VERSION.zip
       - name: Debug List Files
         run: |
           Get-ChildItem -Path . -Recurse
       - name: Echo file name
         run: |
-          echo "File name: DiscoBeacon_Windows_${{ github.ref_name.substring(1) }}.zip"
+          echo "File name: DiscoBeacon_Windows_$env:VERSION.zip"
           ls DiscoBeacon_Windows_*.zip
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Windows
-          path: DiscoBeacon_Windows_${{ github.ref_name.substring(1) }}.zip
+          path: DiscoBeacon_Windows_${{ env.VERSION }}.zip
           if-no-files-found: error
 
   build_linux:
@@ -67,20 +67,20 @@ jobs:
           pyinstaller --clean disco_beacon.spec
       - name: Create archive
         run: |
-          version=${GITHUB_REF#refs/tags/v}
-          tar -czvf DiscoBeacon_Linux_$version.tar.gz -C dist DiscoBeacon
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+          tar -czvf DiscoBeacon_Linux_$VERSION.tar.gz -C dist DiscoBeacon
       - name: Debug List Files
         run: |
           find . -type f
       - name: Echo file name
         run: |
-          echo "File name: DiscoBeacon_Linux_${{ github.ref_name.substring(1) }}.tar.gz"
+          echo "File name: DiscoBeacon_Linux_$VERSION.tar.gz"
           ls DiscoBeacon_Linux_*.tar.gz
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscoBeacon_Linux
-          path: DiscoBeacon_Linux_${{ github.ref_name.substring(1) }}.tar.gz
+          path: DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
           if-no-files-found: error
 
   create_release:
@@ -114,8 +114,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            DiscoBeacon_Windows_${{ github.ref_name.substring(1) }}.zip
-            DiscoBeacon_Linux_${{ github.ref_name.substring(1) }}.tar.gz
+            DiscoBeacon_Windows_${{ env.VERSION }}.zip
+            DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
           tag_name: ${{ github.ref }}
           name: Release ${{ steps.get_version.outputs.VERSION }}
           draft: false
