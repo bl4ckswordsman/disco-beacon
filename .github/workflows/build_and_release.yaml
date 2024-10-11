@@ -76,6 +76,13 @@ jobs:
           tar -czvf ./DiscoBeacon_Linux_${VERSION}.tar.gz -C ./dist DiscoBeacon
       - name: Debug List Files
         run: |
+          find ./dist -type f
+      - name: Echo file name
+        run: |
+          echo "File name: DiscoBeacon_Linux_${VERSION}.tar.gz"
+          ls ./DiscoBeacon_Linux_*.tar.gz
+      - name: Debug List Files
+        run: |
           find . -type f
       - name: Echo file name
         run: |
