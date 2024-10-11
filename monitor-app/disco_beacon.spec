@@ -89,7 +89,7 @@ if platform.system() == "Windows":
         a_windows.scripts,
         [],
         exclude_binaries=True,
-        name='DiscoBeacon',
+        name='DiscoBeacon_Windows',
         debug=False,
         bootloader_ignore_signals=False,
         strip=False,
@@ -110,5 +110,5 @@ if platform.system() == "Windows":
         strip=False,
         upx=True,
         upx_exclude=[],
-        name='DiscoBeacon',
+        name='DiscoBeacon_Windows',
     )
