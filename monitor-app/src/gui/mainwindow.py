@@ -12,15 +12,14 @@ from src.gui.utils.app_settings import AppSettings
 
 class MainWindow(QMainWindow):
     is_minimized = False
-
     exit_app = Signal()
     theme_changed = Signal(str)
 
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super().__init__()
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
-        self.current_theme = "dark"
+        self.current_theme = get_current_theme()
         self.set_window_icon()
 
         self.theme_timer = QTimer(self)
@@ -52,17 +51,17 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self)
         if dialog.exec():
             logger.info("Settings updated")
-            # Optionally, update any relevant parts of the main window
-            # that depend on the settings
 
     def set_window_icon(self):
         icon_path = get_icon_path(self.current_theme)
         self.setWindowIcon(QIcon(icon_path))
 
+
     def update_theme(self, new_theme):
-        self.current_theme = new_theme
-        self.set_window_icon()
-        logger.info(f"Theme updated to: {new_theme}")
+        if new_theme != self.current_theme:
+            self.current_theme = new_theme
+            self.set_window_icon()
+            logger.info(f"Theme updated to: {new_theme}")
 
     def check_and_update_theme(self):
         new_theme = get_current_theme()

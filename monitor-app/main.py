@@ -10,10 +10,11 @@ from src.core.app_settings import app_settings
 gui_available = False
 
 try:
+    import PySide6
     from PySide6 import QtWidgets, QtCore, QtGui
     from src.gui.mainwindow import MainWindow
     from src.gui.system_tray import SystemTrayIcon
-    gui_available = all((QtWidgets, QtCore, QtGui, MainWindow, SystemTrayIcon))
+    gui_available = all((PySide6, QtWidgets, QtCore, QtGui, MainWindow, SystemTrayIcon))
 except ImportError as e:
     logger.warning(f"GUI import error: {e}")
     logger.warning("GUI functionality will be disabled.")
@@ -49,6 +50,9 @@ def check_and_update_status(game_state, game_server_state, window):
         if window and not window.is_minimized:
             status_text = f"{game_name} - Game: {game_status}, Server: {server_status}"
             window.update_status(status_text)
+        elif window is None:
+            # CLI mode
+            print(f"{game_name} - Game: {game_status}, Server: {server_status}")
 
     except Exception as e:
         logger.error(f"Error occurred while fetching status: {e}")
@@ -69,27 +73,33 @@ def main() -> None:
     game_server_state = GameServerState()
 
     last_check = time.time()
-    app, window, tray_icon = init_gui() if gui_available else (None, None, None)
 
     if gui_available:
         logger.info("Running in GUI mode")
+        app, window, tray_icon = init_gui()
+        try:
+            while True:
+                current_time = time.time()
+                if current_time - last_check >= app_settings.get('check_interval'):
+                    check_and_update_status(game_state, game_server_state, window)
+                    last_check = current_time
+                app.processEvents()
+                time.sleep(0.1)  # Short sleep to prevent busy-waiting
+        except KeyboardInterrupt:
+            logger.info("Received keyboard interrupt, shutting down...")
+        finally:
+            app.quit()
     else:
         logger.info("Running in CLI mode")
-
-    try:
-        while True:
-            current_time = time.time()
-            if current_time - last_check >= app_settings.get('check_interval'):
-                check_and_update_status(game_state, game_server_state, window)
-                last_check = current_time
-            if gui_available:
-                app.processEvents()
-            time.sleep(0.1)  # Short sleep to prevent busy-waiting
-    except KeyboardInterrupt:
-        logger.info("Received keyboard interrupt, shutting down...")
-    finally:
-        if gui_available:
-            app.quit()
+        try:
+            while True:
+                current_time = time.time()
+                if current_time - last_check >= app_settings.get('check_interval'):
+                    check_and_update_status(game_state, game_server_state, None)
+                    last_check = current_time
+                time.sleep(0.1)  # Short sleep to prevent busy-waiting
+        except KeyboardInterrupt:
+            logger.info("Received keyboard interrupt, shutting down...")
 
     logger.info("Application shutting down")
 
