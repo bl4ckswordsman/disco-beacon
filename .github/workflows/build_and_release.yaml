@@ -97,11 +97,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set VERSION
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-      - name: List artifacts
-        run: |
-          echo "Available artifacts:"
-          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                https://api.github.com/repos/${{ github.repository }}/actions/artifacts
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
@@ -113,16 +108,26 @@ jobs:
       - name: Debug List Downloaded Files
         run: |
           ls -R
+      - name: Check if release exists
+        id: check_release
+        run: |
+          RELEASE_EXISTS=$(gh release view ${{ github.ref_name }} > /dev/null 2>&1 && echo "true" || echo "false")
+          echo "RELEASE_EXISTS=$RELEASE_EXISTS" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # 2.0.8
-        with:
-          files: |
-            DiscoBeacon_Windows_${{ env.VERSION }}.zip
-            DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
-          tag_name: ${{ github.ref }}
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+        if: env.RELEASE_EXISTS == 'false'
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --title "Release ${{ env.VERSION }}" \
+            --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Assets
+        run: |
+          gh release upload ${{ github.ref_name }} \
+            DiscoBeacon_Windows_${{ env.VERSION }}.zip \
+            DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz \
+            --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
