@@ -1,5 +1,7 @@
 # Disco Beacon
 
+A[![GitHub release (latest by date)](https://img.shields.io/github/v/release/bl4ckswordsman/disco-beacon)](https://github.com/bl4ckswordsman/disco-beacon/releases/latest)
+
 A project consisting of a Svelte web app and a Python monitor app for Discord notifications.
 
 ## Web App (Svelte)
