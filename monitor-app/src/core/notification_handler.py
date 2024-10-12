@@ -84,11 +84,11 @@ def send_server_offline_notification(game_name: str, server_owner: str, current_
     })
 
 def send_server_online_notification(game_name: str, server_owner: str, lobby_id: Optional[str], current_time: str, icon_url: Optional[str]):
-    logger.info(f"{game_name} server is now online! @everyone")
+    logger.info(f"{game_name} server owned by {server_owner} is now online with lobby ID: {lobby_id}")
     send_webhook_notification(
         app_settings.get('webhook_url'),
         {
-            "content": f"The {game_name} server is up!",
+            "content": f"The {game_name} server is up! @everyone",
             "embeds": [{
                 "title": f"{GREEN_CIRCLE} Server Online",
                 "description": f"Lobby ID: {lobby_id}",
