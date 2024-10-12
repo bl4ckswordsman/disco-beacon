@@ -1,6 +1,7 @@
 # Disco Beacon
 
 A project consisting of a Python monitor app and a Svelte web app for Discord notifications.
+
 ## Monitor App (Python)
 
 - Track game server status in real-time
