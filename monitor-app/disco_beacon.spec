@@ -94,7 +94,7 @@ if platform.system() == "Windows":
         upx=True,
         upx_exclude=[],
         runtime_tmpdir=None,
-        console=True,
+        console=False, # For logging purposes
         disable_windowed_traceback=False,
         target_arch=None,
         codesign_identity=None,
