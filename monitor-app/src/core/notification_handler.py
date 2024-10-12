@@ -69,7 +69,7 @@ def send_game_offline_notification(game_name: str, current_time: str, icon_url: 
 def send_server_offline_notification(game_name: str, server_owner: str, current_time: str, icon_url: Optional[str]):
     logger.info(f"{game_name} server owned by {server_owner} is now offline")
     send_webhook_notification(app_settings.get('webhook_url'), {
-        "content": f"The {game_name} server is down!",
+        "content": f"The {game_name} server is down! @everyone",
         "embeds": [{
             "title": f"{RED_CIRCLE} Server Offline",
             "description": f"No active {game_name} server",
@@ -84,7 +84,7 @@ def send_server_offline_notification(game_name: str, server_owner: str, current_
     })
 
 def send_server_online_notification(game_name: str, server_owner: str, lobby_id: Optional[str], current_time: str, icon_url: Optional[str]):
-    logger.info(f"{game_name} server owned by {server_owner} is now online with lobby ID: {lobby_id}")
+    logger.info(f"{game_name} server is now online! @everyone")
     send_webhook_notification(
         app_settings.get('webhook_url'),
         {
