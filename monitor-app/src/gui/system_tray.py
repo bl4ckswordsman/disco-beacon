@@ -7,7 +7,6 @@ except ImportError:
     from PyQt6.QtGui import QIcon
     from PyQt6.QtCore import pyqtSignal as Signal
 
-from src.gui.utils.gui_config import gui_config
 from src.gui.utils.app_settings import AppSettings
 from src.gui.utils.gui_utils import get_icon_path, is_linux
 

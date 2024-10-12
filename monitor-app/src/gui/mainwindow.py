@@ -10,7 +10,7 @@ except ImportError:
 from src.gui.settings_dialog import SettingsDialog
 from src.gui.utils.gui_config import gui_config
 from ..core.logger import logger
-from src.gui.utils.gui_utils import get_current_theme, get_icon_path, is_linux
+from src.gui.utils.gui_utils import get_current_theme, is_linux
 from src.gui.utils.app_settings import AppSettings
 
 class MainWindow(QMainWindow):
