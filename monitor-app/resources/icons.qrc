@@ -3,5 +3,6 @@
         <file>icons/light/tower-control.svg</file>
         <file>icons/dark/tower-control.svg</file>
         <file>icons/tower-control.ico</file>
+        <file>icons/tower-control.png</file>
     </qresource>
 </RCC>

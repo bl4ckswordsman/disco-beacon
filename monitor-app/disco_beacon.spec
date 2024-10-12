@@ -9,6 +9,8 @@ block_cipher = None
 # Define the correct path to your icon files
 svg_icon_path = os.path.join('icons', 'light', 'tower-control.svg')
 ico_icon_path = os.path.join('icons', 'tower-control.ico')
+png_icon_path = os.path.join('icons', 'tower-control.png')
+
 icons_dir = 'icons'
 
 a = Analysis(
@@ -18,6 +20,7 @@ a = Analysis(
     datas=[
         ('resources', 'resources'),
         (icons_dir, 'icons'),  # Include the entire icons directory
+        (png_icon_path, 'icons'),  # Include the PNG icon
     ],
     hiddenimports=[],
     hookspath=[],
@@ -52,7 +55,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=[ico_icon_path] if sys.platform == 'win32' else [svg_icon_path],
+    icon=[ico_icon_path] if sys.platform == 'win32' else [png_icon_path],
 )
 
 if platform.system() == "Windows":

@@ -54,11 +54,10 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self)
         if dialog.exec():
             logger.info("Settings updated")
-
     def set_window_icon(self):
-        icon = QIcon(gui_config.WINDOW_ICON)
+        icon = QIcon(gui_config.WINDOW_ICON_PNG)
         self.setWindowIcon(icon)
-        logger.info(f"Window icon set to: {gui_config.WINDOW_ICON}")
+        logger.info(f"Window icon set to: {gui_config.WINDOW_ICON_PNG}")
 
     def update_theme(self, new_theme):
         if new_theme != self.current_theme:

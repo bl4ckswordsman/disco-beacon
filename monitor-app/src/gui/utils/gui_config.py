@@ -1,5 +1,7 @@
 from PySide6.QtCore import Qt
 
+
+
 class GUIConfig:
     WINDOW_WIDTH: int = 800
     WINDOW_HEIGHT: int = 600
@@ -11,6 +13,7 @@ class GUIConfig:
     ICON_THEME_LIGHT: str = ':/icons/light'
     ICON_THEME_DARK: str = ':/icons/dark'
     ICON_NAME: str = 'tower-control.svg'
+    WINDOW_ICON_PNG: str = ':/icons/tower-control.png'
     WINDOW_ICON: str = ':/icons/tower-control.ico'
 
     COLORS = {
