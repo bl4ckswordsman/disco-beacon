@@ -11,6 +11,7 @@ A project consisting of a Python monitor app and a Svelte web app for Discord no
 ### Download
 
 Download the latest Windows or Linux build from the Releases page:
+
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bl4ckswordsman/disco-beacon)](https://github.com/bl4ckswordsman/disco-beacon/releases/latest)
 
 ### Setup and Configuration
