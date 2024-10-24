@@ -92,12 +92,15 @@ class MainWindow(QMainWindow):
     def update_status(self, status):
         logger.debug(f"Updating status: {status}")
         if not self.is_minimized:
+            # Stop any existing timer before starting a new one
+            self.status_timeout_timer.stop()
             self.status_label.setText(status)
-            self.status_timeout_timer.start(CHECK_INTERVAL * 1000)
+            # Start a new timeout timer with double the check interval
+            self.status_timeout_timer.start(CHECK_INTERVAL * 1000 * 2)
 
     def handle_status_timeout(self):
         logger.warning("Status update timeout")
-        self.status_label.setText("Error encountered: Status update timeout")
+        self.status_label.setText("Error: No updates")
 
     def closeEvent(self, event):
         event.ignore()
