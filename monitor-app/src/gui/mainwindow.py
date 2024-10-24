@@ -44,7 +44,6 @@ class MainWindow(QMainWindow):
         settings_button = QPushButton("Settings")
         settings_button.setIcon(QIcon(gui_config.GEAR_ICON_PATH))
         settings_button.setFont(QFont(gui_config.FONT_FAMILY, gui_config.FONT_SIZE_LARGE))
-        settings_button.setStyleSheet("border-radius: 10px; padding: 10px;")
         settings_button.clicked.connect(self.open_settings_dialog)
         layout.addWidget(settings_button)
 
