@@ -14,3 +14,7 @@ RED_CIRCLE = "🔴"
 # Steam API URLs
 STEAM_API_URL = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/"
 STEAM_STORE_API_URL = "https://store.steampowered.com/api/appdetails"
+
+# Emojis for online and offline status
+ONLINE_EMOJI = "✅"
+OFFLINE_EMOJI = "❌"

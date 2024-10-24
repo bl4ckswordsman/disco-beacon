@@ -48,11 +48,11 @@ def check_and_update_status(game_state, game_server_state, window):
         )
 
         if window and not window.is_minimized:
-            status_text = f"{game_name} - Game: {game_status}, Server: {server_status}"
+            status_text = f"{game_name} - Game: {'✅' if game_status == 'online' else '❌'}, Server: {'✅' if server_status == 'online' else '❌'}"
             window.update_status(status_text)
         elif window is None:
             # CLI mode
-            print(f"{game_name} - Game: {game_status}, Server: {server_status}")
+            print(f"{game_name} - Game: {'✅' if game_status == 'online' else '❌'}, Server: {'✅' if server_status == 'online' else '❌'}")
 
     except Exception as e:
         logger.error(f"Error occurred while fetching status: {e}")

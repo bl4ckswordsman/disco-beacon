@@ -12,6 +12,8 @@ from src.gui.utils.gui_config import gui_config
 from ..core.logger import logger
 from src.gui.utils.gui_utils import get_current_theme, is_linux
 from src.gui.utils.app_settings import AppSettings
+from src.core.constants import CHECK_INTERVAL
+
 
 class MainWindow(QMainWindow):
     is_minimized = False
@@ -50,12 +52,17 @@ class MainWindow(QMainWindow):
 
         self.theme_changed.connect(self.update_theme)
 
+        self.status_timeout_timer = QTimer(self)
+        self.status_timeout_timer.timeout.connect(self.handle_status_timeout)
+        self.status_timeout_timer.setSingleShot(True)
+
         logger.info("MainWindow initialized")
 
     def open_settings_dialog(self):
         dialog = SettingsDialog(self)
         if dialog.exec():
             logger.info("Settings updated")
+
     def set_window_icon(self):
         icon = QIcon(gui_config.WINDOW_ICON_PNG)
         self.setWindowIcon(icon)
@@ -83,8 +90,12 @@ class MainWindow(QMainWindow):
         if not self.is_minimized:
             logger.debug(f"Updating status: {status}")
             self.status_label.setText(status)
+            self.status_timeout_timer.start(CHECK_INTERVAL * 1000)
         else:
             logger.debug(f"Skipping status update while minimized: {status}")
+
+    def handle_status_timeout(self):
+        self.status_label.setText("Error encountered")
 
     def closeEvent(self, event):
         event.ignore()
