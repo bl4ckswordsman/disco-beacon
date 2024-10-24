@@ -5,7 +5,7 @@ class GUIConfig:
     WINDOW_HEIGHT: int = 400
     GUI_REFRESH_RATE: int = 1000  # ms
 
-    FONT_FAMILY: str = 'Arial'
+    FONT_FAMILY: str = 'Helvetica'
     FONT_SIZE_NORMAL: int = 12
     FONT_SIZE_LARGE: int = 18
     SETTINGS_BUTTON_SIZE: int = 20
