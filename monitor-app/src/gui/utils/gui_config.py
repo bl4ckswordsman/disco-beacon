@@ -10,7 +10,6 @@ class GUIConfig:
     FONT_SIZE_LARGE: int = 18
     SETTINGS_BUTTON_SIZE: int = 20
     SETTINGS_BUTTON_FONT_SIZE: int = 14
-    GEAR_ICON_PATH: str = ':/icons/gear.svg'
     ICON_THEME_LIGHT: str = ':/icons/light'
     ICON_THEME_DARK: str = ':/icons/dark'
     ICON_NAME: str = 'tower-control.svg'

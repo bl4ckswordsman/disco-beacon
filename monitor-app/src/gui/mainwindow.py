@@ -42,7 +42,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.status_label)
 
         settings_button = QPushButton("Settings")
-        settings_button.setIcon(QIcon(gui_config.GEAR_ICON_PATH))
         settings_button.setFont(QFont(gui_config.FONT_FAMILY, gui_config.FONT_SIZE_LARGE))
         settings_button.clicked.connect(self.open_settings_dialog)
         layout.addWidget(settings_button)
