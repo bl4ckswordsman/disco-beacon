@@ -1,11 +1,11 @@
 try:
     from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
     from PySide6.QtCore import Qt, Signal, QTimer
-    from PySide6.QtGui import QIcon
+    from PySide6.QtGui import QIcon, QFont
 except ImportError:
     from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
     from PyQt6.QtCore import Qt, pyqtSignal as Signal, QTimer
-    from PyQt6.QtGui import QIcon
+    from PyQt6.QtGui import QIcon, QFont
 
 from src.gui.settings_dialog import SettingsDialog
 from src.gui.utils.gui_config import gui_config
@@ -38,9 +38,11 @@ class MainWindow(QMainWindow):
         self.status_label = QLabel("Initializing...")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status_label.setWordWrap(True)
+        self.status_label.setFont(QFont(gui_config.FONT_FAMILY, gui_config.FONT_SIZE_LARGE))
         layout.addWidget(self.status_label)
 
         settings_button = QPushButton("Settings")
+        settings_button.setFont(QFont(gui_config.FONT_FAMILY, gui_config.FONT_SIZE_LARGE))
         settings_button.clicked.connect(self.open_settings_dialog)
         layout.addWidget(settings_button)
 
