@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
-        self.status_label = QLabel("Initializing...")
+        self.status_label = QLabel()
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status_label.setWordWrap(True)
         self.status_label.setFont(QFont(gui_config.FONT_FAMILY, gui_config.FONT_SIZE_LARGE))
@@ -57,6 +57,9 @@ class MainWindow(QMainWindow):
         self.status_timeout_timer.setSingleShot(True)
 
         logger.info("MainWindow initialized")
+
+        # Initialize the app with a status message
+        self.update_status("Initializing...")
 
     def open_settings_dialog(self):
         dialog = SettingsDialog(self)
@@ -87,15 +90,14 @@ class MainWindow(QMainWindow):
         self.exit_app.emit()
 
     def update_status(self, status):
+        logger.debug(f"Updating status: {status}")
         if not self.is_minimized:
-            logger.debug(f"Updating status: {status}")
             self.status_label.setText(status)
             self.status_timeout_timer.start(CHECK_INTERVAL * 1000)
-        else:
-            logger.debug(f"Skipping status update while minimized: {status}")
 
     def handle_status_timeout(self):
-        self.status_label.setText("Error encountered")
+        logger.warning("Status update timeout")
+        self.status_label.setText("Error encountered: Status update timeout")
 
     def closeEvent(self, event):
         event.ignore()
@@ -105,7 +107,7 @@ class MainWindow(QMainWindow):
             self.tray_icon.showMessage(
                 AppSettings.APP_NAME,
                 "Application minimized to tray",
-                QSystemTrayIcon.Information,
+                QSystemTrayIcon.MessageIcon.Information,
                 2000
             )
 
