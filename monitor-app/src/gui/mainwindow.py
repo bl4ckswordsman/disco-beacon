@@ -12,6 +12,8 @@ from src.gui.utils.gui_config import gui_config
 from ..core.logger import logger
 from src.gui.utils.gui_utils import get_current_theme, is_linux
 from src.gui.utils.app_settings import AppSettings
+from src.core.constants import CHECK_INTERVAL
+
 
 class MainWindow(QMainWindow):
     is_minimized = False
@@ -35,7 +37,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
-        self.status_label = QLabel("Initializing...")
+        self.status_label = QLabel()
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status_label.setWordWrap(True)
         self.status_label.setFont(QFont(gui_config.FONT_FAMILY, gui_config.FONT_SIZE_LARGE))
@@ -50,12 +52,20 @@ class MainWindow(QMainWindow):
 
         self.theme_changed.connect(self.update_theme)
 
+        self.status_timeout_timer = QTimer(self)
+        self.status_timeout_timer.timeout.connect(self.handle_status_timeout)
+        self.status_timeout_timer.setSingleShot(True)
+
         logger.info("MainWindow initialized")
+
+        # Initialize the app with a status message
+        self.update_status("Initializing...")
 
     def open_settings_dialog(self):
         dialog = SettingsDialog(self)
         if dialog.exec():
             logger.info("Settings updated")
+
     def set_window_icon(self):
         icon = QIcon(gui_config.WINDOW_ICON_PNG)
         self.setWindowIcon(icon)
@@ -80,11 +90,17 @@ class MainWindow(QMainWindow):
         self.exit_app.emit()
 
     def update_status(self, status):
+        logger.debug(f"Updating status: {status}")
         if not self.is_minimized:
-            logger.debug(f"Updating status: {status}")
+            # Stop any existing timer before starting a new one
+            self.status_timeout_timer.stop()
             self.status_label.setText(status)
-        else:
-            logger.debug(f"Skipping status update while minimized: {status}")
+            # Start a new timeout timer with double the check interval
+            self.status_timeout_timer.start(CHECK_INTERVAL * 1000 * 2)
+
+    def handle_status_timeout(self):
+        logger.warning("Status update timeout")
+        self.status_label.setText("Error: No updates")
 
     def closeEvent(self, event):
         event.ignore()
@@ -94,7 +110,7 @@ class MainWindow(QMainWindow):
             self.tray_icon.showMessage(
                 AppSettings.APP_NAME,
                 "Application minimized to tray",
-                QSystemTrayIcon.Information,
+                QSystemTrayIcon.MessageIcon.Information,
                 2000
             )
 

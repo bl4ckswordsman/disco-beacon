@@ -48,7 +48,8 @@ def check_and_update_status(game_state, game_server_state, window):
         )
 
         if window and not window.is_minimized:
-            status_text = f"{game_name} - Game: {game_status}, Server: {server_status}"
+            status_text = (f"{game_name} \nGame: {'Online ✅' if game_status == 'online' else 'Offline ❌ '}"
+                           f"\n Server: {'Online ✅' if server_status == 'online' else 'Offline ❌'}")
             window.update_status(status_text)
         elif window is None:
             # CLI mode
