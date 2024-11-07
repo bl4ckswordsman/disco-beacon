@@ -16,6 +16,7 @@ class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
         ('SizeOfData', ctypes.c_size_t)
     ]
 
+
 WCA_ACCENT_POLICY = 19
 ACCENT_ENABLE_BLURBEHIND = 3
 
