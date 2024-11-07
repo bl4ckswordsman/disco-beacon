@@ -7,6 +7,9 @@ from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import app_settings
+from PySide6.QtCore import QOperatingSystemVersion, QApplication
+from src.gui.utils.mica_transparency import enable_mica_transparency
+
 gui_available = False
 
 try:
@@ -78,6 +81,8 @@ def main() -> None:
     if gui_available:
         logger.info("Running in GUI mode")
         app, window, tray_icon = init_gui()
+        if QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11:
+            enable_mica_transparency()
         try:
             while True:
                 current_time = time.time()

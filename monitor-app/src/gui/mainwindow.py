@@ -1,6 +1,6 @@
 try:
     from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
-    from PySide6.QtCore import Qt, Signal, QTimer
+    from PySide6.QtCore import Qt, Signal, QTimer, QOperatingSystemVersion
     from PySide6.QtGui import QIcon, QFont
 except ImportError:
     from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
@@ -13,6 +13,7 @@ from ..core.logger import logger
 from src.gui.utils.gui_utils import get_current_theme, is_linux
 from src.gui.utils.app_settings import AppSettings
 from src.core.constants import CHECK_INTERVAL
+from src.gui.utils.mica_transparency import enable_mica_transparency
 
 
 class MainWindow(QMainWindow):
@@ -60,6 +61,9 @@ class MainWindow(QMainWindow):
 
         # Initialize the app with a status message
         self.update_status("Initializing...")
+
+        if QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11:
+            enable_mica_transparency()
 
     def open_settings_dialog(self):
         dialog = SettingsDialog(self)

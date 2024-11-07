@@ -5,6 +5,8 @@ from src.gui.system_tray import SystemTrayIcon
 from src.core.logger import logger
 import resources.resources # noqa: F401
 from src.gui.utils.gui_utils import get_current_theme
+from PySide6.QtCore import QOperatingSystemVersion
+from src.gui.utils.mica_transparency import enable_mica_transparency
 
 def init_gui():
     # import os
@@ -24,6 +26,9 @@ def init_gui():
 
     # Set the tray icon for the main window
     window.set_tray_icon(tray_icon)
+
+    if QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11:
+        enable_mica_transparency()
 
     logger.info("GUI initialized with system tray icon and Fusion style")
     return app, window, tray_icon

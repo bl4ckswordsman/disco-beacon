@@ -18,3 +18,6 @@ def get_icon_path(theme: str) -> str:
 
 def is_linux():
     return platform.system() == 'Linux'
+
+def is_windows_11():
+    return platform.system() == 'Windows' and platform.release() == '10' and int(platform.version().split('.')[2]) >= 22000
