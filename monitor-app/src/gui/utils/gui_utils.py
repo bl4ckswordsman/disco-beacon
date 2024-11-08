@@ -20,5 +20,7 @@ def get_icon_path(theme: str) -> str:
 def is_linux():
     return platform.system() == 'Linux'
 
-def is_windows_11():
-    return QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11
+def apply_mica_transparency(window):
+    window.setAttribute(Qt.WA_TranslucentBackground)
+    window.setWindowFlag(Qt.FramelessWindowHint)
+    window.setStyleSheet("background: rgba(255, 255, 255, 0.8);")
