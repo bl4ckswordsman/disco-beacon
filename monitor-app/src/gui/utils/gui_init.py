@@ -4,11 +4,7 @@ from src.gui.mainwindow import MainWindow
 from src.gui.system_tray import SystemTrayIcon
 from src.core.logger import logger
 import resources.resources # noqa: F401
-from src.gui.utils.gui_utils import get_current_theme
-from PySide6.QtCore import QOperatingSystemVersion
-
-def is_windows_11():
-    return QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11
+from src.gui.utils.gui_utils import get_current_theme, is_windows_11
 
 def init_gui():
     # import os
