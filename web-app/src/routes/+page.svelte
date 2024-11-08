@@ -7,7 +7,7 @@
     let title: string = "Disco Beacon";
     let description: string = "Send notifications to your Discord server";
 
-    let isSettingsOpen = false; //
+    let isSettingsOpen = false;
 
     function toggleSettings() {
         isSettingsOpen = !isSettingsOpen;
