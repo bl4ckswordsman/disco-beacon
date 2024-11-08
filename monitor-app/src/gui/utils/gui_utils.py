@@ -2,6 +2,7 @@ import platform
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette
 from src.gui.utils.gui_config import gui_config
+from PySide6.QtCore import QOperatingSystemVersion
 
 def get_current_theme():
     app = QApplication.instance()
@@ -20,4 +21,4 @@ def is_linux():
     return platform.system() == 'Linux'
 
 def is_windows_11():
-    return platform.system() == 'Windows' and platform.release() == '10' and int(platform.version().split('.')[2]) >= 22000
+    return QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11
