@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QOperatingSystemVersion
 
 class GUIConfig:
     WINDOW_WIDTH: int = 600
@@ -24,6 +24,6 @@ class GUIConfig:
         'offline': Qt.red
     }
 
-    WINDOWS_11_VERSION = Qt.QOperatingSystemVersion.Windows11
+    WINDOWS_11_VERSION = QOperatingSystemVersion.Windows11
 
 gui_config = GUIConfig()
