@@ -16,6 +16,7 @@ from src.gui.utils.app_settings import AppSettings
 from src.core.constants import CHECK_INTERVAL
 
 
+from src.gui.utils.platform_utils import is_windows_11
 class MainWindow(QMainWindow):
     is_minimized = False
     exit_app = Signal()
@@ -23,6 +24,11 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        if is_windows_11():
+            # Make window background transparent for Mica effect
+            self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+            # Ensure window frame is enabled for Mica
+            self.setWindowFlag(Qt.WindowType.FramelessWindowHint, False)
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
         self.current_theme = get_current_theme()

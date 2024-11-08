@@ -30,27 +30,34 @@ def apply_mica_effect(hwnd):
         # Load dwmapi.dll
         dwm = ctypes.WinDLL("dwmapi")
 
-        # Try to use DWM_SYSTEMBACKDROP_TYPE (Windows 11 22H2 and later)
+        # Enable dark mode for window background and caption
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        dwm.DwmSetWindowAttribute(
+            hwnd,
+            DWMWA_USE_IMMERSIVE_DARK_MODE,
+            ctypes.byref(ctypes.c_int(1)),
+            ctypes.sizeof(ctypes.c_int)
+        )
+
+        # Try newer Windows 11 22H2+ method first
         try:
-            set_backdrop = dwm.DwmSetWindowAttribute
-            backdrop_type = DWM_SYSTEMBACKDROP_TYPE.DWMSBT_MAINWINDOW
-            set_backdrop(
+            DWMWA_SYSTEMBACKDROP_TYPE = 38
+            DWMSBT_MAINWINDOW = 2
+            dwm.DwmSetWindowAttribute(
                 hwnd,
-                35,  # DWMWA_SYSTEMBACKDROP_TYPE
-                ctypes.byref(ctypes.c_int(backdrop_type)),
+                DWMWA_SYSTEMBACKDROP_TYPE,
+                ctypes.byref(ctypes.c_int(DWMSBT_MAINWINDOW)),
                 ctypes.sizeof(ctypes.c_int)
             )
             return True
         except Exception:
             # Fallback for earlier Windows 11 versions
             DWMWA_MICA_EFFECT = 1029
-            set_mica = dwm.DwmSetWindowAttribute
-            value = ctypes.c_int(1)
-            set_mica(
+            dwm.DwmSetWindowAttribute(
                 hwnd,
                 DWMWA_MICA_EFFECT,
-                ctypes.byref(value),
-                ctypes.sizeof(value)
+                ctypes.byref(ctypes.c_int(1)),
+                ctypes.sizeof(ctypes.c_int)
             )
             return True
 
