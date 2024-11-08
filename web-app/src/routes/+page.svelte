@@ -10,7 +10,7 @@
     let isSettingsOpen = false;
 
     function toggleSettings() {
-        isSettingsOpen = !isSettingsOpen;//
+        isSettingsOpen = !isSettingsOpen;///
     }
 </script>
 
