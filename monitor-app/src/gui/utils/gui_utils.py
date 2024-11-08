@@ -2,7 +2,6 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette
 from src.gui.utils.gui_config import gui_config
 from src.gui.utils.platform_utils import is_linux
-from PySide6.QtCore import Qt
 
 
 def get_current_theme():

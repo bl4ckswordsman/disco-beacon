@@ -7,8 +7,6 @@ from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import app_settings
-from src.gui.utils.platform_utils import is_windows_11
-from src.gui.utils.mica_utils import apply_mica_to_window
 
 gui_available = False
 

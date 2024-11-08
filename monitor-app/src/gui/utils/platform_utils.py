@@ -7,4 +7,4 @@ def is_linux():
 
 def is_windows_11():
     """Check if the current system is Windows 11."""
-    return True#QOperatingSystemVersion.current() >= QOperatingSystemVersion.Windows11
+    return QOperatingSystemVersion.current() >= QOperatingSystemVersion.Windows11
