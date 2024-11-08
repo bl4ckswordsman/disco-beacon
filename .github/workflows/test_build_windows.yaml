@@ -1,0 +1,32 @@
+name: Test Windows Build
+
+on:
+  workflow_dispatch:  # Manual trigger
+  pull_request:      # Optionally trigger on PRs
+
+jobs:
+  build_windows_test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: monitor-app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pillow
+      - name: Build executable
+        run: |
+          pyinstaller --clean disco_beacon.spec
+      - name: Upload test artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiscoBeacon_Windows_Test
+          path: ${{ github.workspace }}/monitor-app/dist/DiscoBeacon.exe
+          retention-days: 5
