@@ -29,6 +29,8 @@ class MainWindow(QMainWindow):
             self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
             # Ensure window frame is enabled for Mica
             self.setWindowFlag(Qt.WindowType.FramelessWindowHint, False)
+            # Set a dark background color as fallback
+            self.setStyleSheet("QMainWindow { background-color: #202020; }")
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
         self.current_theme = get_current_theme()

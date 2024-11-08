@@ -1,83 +1,99 @@
 import ctypes
-from ctypes import wintypes
-from PySide6.QtCore import Qt
+from enum import IntEnum
+from src.core.logger import logger
 
-class ACCENT_POLICY(ctypes.Structure):
-    _fields_ = [
-        ('AccentState', ctypes.c_uint),
-        ('AccentFlags', ctypes.c_uint),
-        ('GradientColor', ctypes.c_uint),
-        ('AnimationId', ctypes.c_uint)
-    ]
+class DwmWindowAttribute(IntEnum):
+    """Windows 11 DWM window attributes"""
+    DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+    DWMWA_SYSTEMBACKDROP_TYPE = 38
+    DWMWA_MICA_EFFECT = 1029
 
-class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
-    _fields_ = [
-        ('Attribute', ctypes.c_uint),
-        ('Data', ctypes.POINTER(ACCENT_POLICY)),
-        ('SizeOfData', ctypes.c_size_t)
-    ]
-
-class DWM_SYSTEMBACKDROP_TYPE(ctypes.c_int):
-    DWMSBT_AUTO = 0
-    DWMSBT_NONE = 1
+class DwmSystemBackdropType(IntEnum):
+    """Windows 11 system backdrop types"""
     DWMSBT_MAINWINDOW = 2
-    DWMSBT_TRANSIENTWINDOW = 3
-    DWMSBT_TABBEDWINDOW = 4
 
-def apply_mica_effect(hwnd):
-    """Apply the Windows 11 Mica effect to a window."""
+def apply_mica_effect(hwnd: int) -> bool:
+    """
+    Apply the Windows 11 Mica effect to a window.
+    
+    Args:
+        hwnd: Window handle to apply the effect to
+        
+    Returns:
+        bool: True if successfully applied, False otherwise
+    """
     try:
-        # Load dwmapi.dll
         dwm = ctypes.WinDLL("dwmapi")
-
-        # Enable dark mode for window background and caption
-        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-        dwm.DwmSetWindowAttribute(
+        
+        # Enable dark mode
+        _set_window_attribute(
+            dwm, 
             hwnd,
-            DWMWA_USE_IMMERSIVE_DARK_MODE,
-            ctypes.byref(ctypes.c_int(1)),
-            ctypes.sizeof(ctypes.c_int)
+            DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE,
+            True
         )
 
-        # Try newer Windows 11 22H2+ method first
+        # Try Windows 11 22H2+ method first
         try:
-            DWMWA_SYSTEMBACKDROP_TYPE = 38
-            DWMSBT_MAINWINDOW = 2
-            dwm.DwmSetWindowAttribute(
+            success = _set_window_attribute(
+                dwm,
                 hwnd,
-                DWMWA_SYSTEMBACKDROP_TYPE,
-                ctypes.byref(ctypes.c_int(DWMSBT_MAINWINDOW)),
-                ctypes.sizeof(ctypes.c_int)
+                DwmWindowAttribute.DWMWA_SYSTEMBACKDROP_TYPE,
+                DwmSystemBackdropType.DWMSBT_MAINWINDOW
             )
-            return True
-        except Exception:
-            # Fallback for earlier Windows 11 versions
-            DWMWA_MICA_EFFECT = 1029
-            dwm.DwmSetWindowAttribute(
-                hwnd,
-                DWMWA_MICA_EFFECT,
-                ctypes.byref(ctypes.c_int(1)),
-                ctypes.sizeof(ctypes.c_int)
-            )
-            return True
+            if success:
+                return True
+        except OSError:
+            pass
+
+        # Fallback for earlier Windows 11
+        return _set_window_attribute(
+            dwm,
+            hwnd,
+            DwmWindowAttribute.DWMWA_MICA_EFFECT,
+            True
+        )
 
     except Exception as e:
-        print(f"Failed to apply Mica effect: {e}")
+        logger.error(f"Failed to apply Mica effect: {e}")
         return False
 
-def apply_mica_to_window(window):
-    """Apply Mica effect to a Qt window."""
+def _set_window_attribute(dwm, hwnd: int, attribute: DwmWindowAttribute, value: int) -> bool:
+    """Helper function to set DWM window attributes"""
     try:
-        # Make sure the window is created
-        window.create()
-
-        # Get the window handle
-        hwnd = window.winId()
-
-        # Apply the effect
-        success = apply_mica_effect(int(hwnd))
-
-        return success
+        val = ctypes.c_int(value)
+        dwm.DwmSetWindowAttribute(
+            hwnd,
+            attribute,
+            ctypes.byref(val),
+            ctypes.sizeof(val)
+        )
+        return True
     except Exception as e:
-        print(f"Error applying Mica effect: {e}")
+        logger.debug(f"Failed to set window attribute {attribute}: {e}")
+        return False
+
+def apply_mica_to_window(window) -> bool:
+    """
+    Apply Mica effect to a Qt window.
+    
+    Args:
+        window: PySide6 window instance
+        
+    Returns:
+        bool: True if successfully applied, False otherwise
+    """
+    try:
+        if not window.winId():
+            window.create()
+            
+        hwnd = int(window.winId())
+        if not hwnd:
+            logger.error("Failed to get window handle")
+            return False
+            
+        return apply_mica_effect(hwnd)
+        
+    except Exception as e:
+        logger.error(f"Error applying Mica effect: {e}")
         return False
