@@ -2,6 +2,7 @@ import platform
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette
 from src.gui.utils.gui_config import gui_config
+from PySide6.QtCore import QOperatingSystemVersion
 
 def get_current_theme():
     app = QApplication.instance()
@@ -18,3 +19,6 @@ def get_icon_path(theme: str) -> str:
 
 def is_linux():
     return platform.system() == 'Linux'
+
+def is_windows_11():
+    return QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11

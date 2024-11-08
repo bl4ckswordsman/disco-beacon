@@ -7,6 +7,8 @@ from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import app_settings
+from PySide6.QtCore import QOperatingSystemVersion
+
 gui_available = False
 
 try:
@@ -24,6 +26,9 @@ except Exception as e:
 
 if not gui_available:
     logger.warning("GUI functionality is disabled.")
+
+def is_windows_11():
+    return QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11
 
 def check_and_update_status(game_state, game_server_state, window):
     try:
@@ -78,6 +83,8 @@ def main() -> None:
     if gui_available:
         logger.info("Running in GUI mode")
         app, window, tray_icon = init_gui()
+        if is_windows_11():
+            window.enable_mica_transparency()
         try:
             while True:
                 current_time = time.time()
