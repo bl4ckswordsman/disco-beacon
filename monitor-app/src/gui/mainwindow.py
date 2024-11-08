@@ -136,8 +136,3 @@ class MainWindow(QMainWindow):
                 self.show()
                 self.activateWindow()
                 self.is_minimized = False
-
-    def enable_mica_transparency(self):
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setStyleSheet("background: rgba(255, 255, 255, 0.8);")

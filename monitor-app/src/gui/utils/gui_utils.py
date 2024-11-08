@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette
 from src.gui.utils.gui_config import gui_config
 from src.gui.utils.platform_utils import is_linux
+from PySide6.QtCore import Qt
 
 
 def get_current_theme():
@@ -16,8 +17,3 @@ def get_icon_path(theme: str) -> str:
         return f"{gui_config.ICON_THEME_DARK}/{gui_config.ICON_NAME}"
     icon_theme = gui_config.ICON_THEME_LIGHT if theme == 'light' else gui_config.ICON_THEME_DARK
     return f"{icon_theme}/{gui_config.ICON_NAME}"
-
-def apply_mica_transparency(window):
-    window.setAttribute(Qt.WA_TranslucentBackground)
-    window.setWindowFlag(Qt.FramelessWindowHint)
-    window.setStyleSheet("background: rgba(255, 255, 255, 0.8);")

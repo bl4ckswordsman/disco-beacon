@@ -8,6 +8,7 @@ from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import app_settings
 from src.gui.utils.platform_utils import is_windows_11
+from src.gui.utils.mica_utils import apply_mica_to_window
 
 gui_available = False
 
@@ -81,8 +82,6 @@ def main() -> None:
     if gui_available:
         logger.info("Running in GUI mode")
         app, window, tray_icon = init_gui()
-        if is_windows_11():
-            window.enable_mica_transparency()
         try:
             while True:
                 current_time = time.time()
