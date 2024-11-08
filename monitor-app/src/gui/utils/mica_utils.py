@@ -70,11 +70,6 @@ def apply_mica_to_window(window):
         # Apply the effect
         success = apply_mica_effect(int(hwnd))
 
-        if success:
-            # Additional Qt window settings for proper transparency
-            window.setAttribute(Qt.WA_TranslucentBackground)
-            window.setStyleSheet("background: transparent;")
-
         return success
     except Exception as e:
         print(f"Error applying Mica effect: {e}")

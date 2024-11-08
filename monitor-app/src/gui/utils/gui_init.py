@@ -13,7 +13,8 @@ def init_gui():
     # os.environ['QT_QPA_PLATFORM'] = 'xcb'  # Platform: xcb | wayland
     # os.environ['QT_STYLE_OVERRIDE'] = 'Fusion'  # Style: Fusion| Windows
     app = QApplication(sys.argv)
-    app.setStyle("Fusion")  # Explicitly set Fusion style
+    if not is_windows_11():
+        app.setStyle("Fusion")  # Use Fusion style on non-Windows platforms
     window = MainWindow()
     if is_windows_11():
         apply_mica_to_window(window)

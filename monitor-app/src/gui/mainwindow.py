@@ -62,9 +62,6 @@ class MainWindow(QMainWindow):
         # Initialize the app with a status message
         self.update_status("Initializing...")
 
-        if QOperatingSystemVersion.current() == QOperatingSystemVersion.Windows11:
-            self.enable_mica_transparency()
-
     def open_settings_dialog(self):
         dialog = SettingsDialog(self)
         if dialog.exec():
