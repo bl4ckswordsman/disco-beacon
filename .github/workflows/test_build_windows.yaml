@@ -23,7 +23,7 @@ jobs:
           pip install pillow
       - name: Set test version
         run: |
-          $timestamp = Get-Date -Format "yyyyMMdd-HHmm"
+          $timestamp = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), 'Central European Standard Time').ToString("yyyyMMdd-HHmm")
           # Read version from version.py and append timestamp
           $version = (Get-Content version.py | Select-String 'VERSION = "(.*)"').Matches.Groups[1].Value
           $testVersion = "$version-test-$timestamp"
