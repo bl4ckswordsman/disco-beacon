@@ -54,13 +54,13 @@ class MainWindow(QMainWindow):
         self.theme_changed.connect(self.update_theme)
 
         self.status_timeout_timer = QTimer(self)
-        self.status_timeout_timer.timeout.connect(self.handle_status_timeout)
+        self.status_timeout_timer.timeout.connect(self.on_status_timeout)
         self.status_timeout_timer.setSingleShot(True)
 
         logger.info("MainWindow initialized")
 
         # Initialize the app with a status message
-        self.update_status("Initializing...")
+        self.refresh_status("Initializing...")
 
     def open_settings_dialog(self):
         dialog = SettingsDialog(self)
@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         self.close()
         self.exit_app.emit()
 
-    def update_status(self, status):
+    def refresh_status(self, status):
         logger.debug(f"Updating status: {status}")
         if not self.is_minimized:
             # Stop any existing timer before starting a new one
@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
             # Start a new timeout timer with double the check interval
             self.status_timeout_timer.start(CHECK_INTERVAL * 1000 * 2)
 
-    def handle_status_timeout(self):
+    def on_status_timeout(self):
         logger.warning("Status update timeout")
         self.status_label.setText("Error: No updates")
 

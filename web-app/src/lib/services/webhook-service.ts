@@ -15,7 +15,7 @@ export async function encryptWebhookUrl(url: string): Promise<string> {
       }),
     });
     if (!response.ok) {
-      throw new Error( //TODO: Fix warning ('throw' of exception caught locally)
+      throw new Error(
         `Failed to encrypt webhook URL: HTTP status ${response.status}`,
       );
     }

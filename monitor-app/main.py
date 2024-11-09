@@ -10,66 +10,67 @@ from src.core.app_settings import app_settings
 
 gui_available = False
 
-try:
-    import PySide6
-    from PySide6 import QtWidgets, QtCore, QtGui
-    from src.gui.mainwindow import MainWindow
-    from src.gui.system_tray import SystemTrayIcon
-    gui_available = all((PySide6, QtWidgets, QtCore, QtGui, MainWindow, SystemTrayIcon))
-except ImportError as e:
-    logger.warning(f"GUI import error: {e}")
-    logger.warning("GUI functionality will be disabled.")
-except Exception as e:
-    logger.error(f"Unexpected error importing GUI modules: {e}")
-    logger.warning("GUI functionality will be disabled.")
+def import_gui_modules():
+    global gui_available
+    try:
+        import PySide6
+        from PySide6 import QtWidgets, QtCore, QtGui
+        from src.gui.mainwindow import MainWindow
+        from src.gui.system_tray import SystemTrayIcon
+        gui_available = all((PySide6, QtWidgets, QtCore, QtGui, MainWindow, SystemTrayIcon))
+    except ImportError as e:
+        logger.warning(f"GUI import error: {e}")
+        logger.warning("GUI functionality will be disabled.")
+    except Exception as e:
+        logger.error(f"Unexpected error importing GUI modules: {e}")
+        logger.warning("GUI functionality will be disabled.")
 
-if not gui_available:
-    logger.warning("GUI functionality is disabled.")
+    if not gui_available:
+        logger.warning("GUI functionality is disabled.")
 
+import_gui_modules()
 
-def check_and_update_status(game_state, game_server_state, window):
+def fetch_status():
     try:
         api_key = app_settings.get('api_key', '')
         steam_id = app_settings.get('steam_id', '')
         game_app_id = int(app_settings.get('game_app_id', '0'))
         game_status, server_status, lobby_id, server_owner, server_data = get_status(api_key, steam_id, game_app_id)
-
-        game_name = config.get_game_name(game_app_id)
-
-        logger.info(f"Game status: {game_status}, Server status: {server_status}")
-
-        # Always update game state regardless of monitor mode
-        game_state.update(status=game_status)
-
-        # Update server state
-        game_server_state.update(
-            status=server_status,
-            lobby_id=lobby_id,
-            server_owner=server_owner or "Unknown",
-            server_data=server_data
-        )
-
-        if window and not window.is_minimized:
-            status_text = (f"{game_name} \nGame: {'Online ✅' if game_status == 'online' else 'Offline ❌ '}"
-                           f"\n Server: {'Online ✅' if server_status == 'online' else 'Offline ❌'}")
-            window.update_status(status_text)
-        elif window is None:
-            # CLI mode
-            print(f"{game_name} - Game: {game_status}, Server: {server_status}")
-
+        return game_status, server_status, lobby_id, server_owner, server_data
     except Exception as e:
         logger.error(f"Error occurred while fetching status: {e}")
+        return None, None, None, None, None
 
-def setup_application():
+def update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data):
+    game_name = config.get_game_name(app_settings.get('game_app_id'))
+
+    logger.info(f"Game status: {game_status}, Server status: {server_status}")
+
+    game_state.update(status=game_status)
+
+    game_server_state.update(
+        status=server_status,
+        lobby_id=lobby_id,
+        server_owner=server_owner or "Unknown",
+        server_data=server_data
+    )
+
+    if window and not window.is_minimized:
+        status_text = (f"{game_name} \nGame: {'Online ✅' if game_status == 'online' else 'Offline ❌ '}"
+                       f"\n Server: {'Online ✅' if server_status == 'online' else 'Offline ❌'}")
+        window.update_status(status_text)
+    elif window is None:
+        print(f"{game_name} - Game: {game_status}, Server: {server_status}")
+
+def initialize_application():
     if gui_available:
         AppSettings.set_app_metadata()
     logger.info("Application setup completed")
 
 def main() -> None:
-    """Main function to continuously check game and server status."""
     logger.info("Application starting")
 
-    setup_application()
+    initialize_application()
 
     setup_notification_handlers()
     game_state = GameState()
@@ -84,10 +85,11 @@ def main() -> None:
             while True:
                 current_time = time.time()
                 if current_time - last_check >= app_settings.get('check_interval'):
-                    check_and_update_status(game_state, game_server_state, window)
+                    game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
+                    update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data)
                     last_check = current_time
                 app.processEvents()
-                time.sleep(0.1)  # Short sleep to prevent busy-waiting
+                time.sleep(0.1)
         except KeyboardInterrupt:
             logger.info("Received keyboard interrupt, shutting down...")
         finally:
@@ -98,9 +100,10 @@ def main() -> None:
             while True:
                 current_time = time.time()
                 if current_time - last_check >= app_settings.get('check_interval'):
-                    check_and_update_status(game_state, game_server_state, None)
+                    game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
+                    update_status(game_state, game_server_state, None, game_status, server_status, lobby_id, server_owner, server_data)
                     last_check = current_time
-                time.sleep(0.1)  # Short sleep to prevent busy-waiting
+                time.sleep(0.1)
         except KeyboardInterrupt:
             logger.info("Received keyboard interrupt, shutting down...")
 
