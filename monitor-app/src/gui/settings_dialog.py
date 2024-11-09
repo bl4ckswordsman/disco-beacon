@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QSpinBox, QPushButton, QComboBox
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QSpinBox, QPushButton, QComboBox, QLabel
 from PySide6.QtCore import Signal
 from src.core.app_settings import app_settings
 from src.core import constants
@@ -41,6 +41,9 @@ class SettingsDialog(QDialog):
         self.monitor_mode.setCurrentText(app_settings.get('monitor_mode', 'Both'))
         form_layout.addRow("Monitor Mode:", self.monitor_mode)
 
+        self.build_version_label = QLabel(f"Build Version: {app_settings.get('build_version', 'N/A')}")
+        form_layout.addRow("Build Version:", self.build_version_label)
+
         self.layout.addLayout(form_layout)
 
         save_button = QPushButton("Save")
@@ -54,4 +57,5 @@ class SettingsDialog(QDialog):
         app_settings.set('check_interval', self.check_interval.value())
         app_settings.set('game_app_id', [k for k, v in constants.SUPPORTED_GAMES.items() if v == self.game_selector.currentText()][0])
         app_settings.set('monitor_mode', self.monitor_mode.currentText().lower())
+        app_settings.set('build_version', self.build_version_label.text().split(": ")[1])
         self.accept()

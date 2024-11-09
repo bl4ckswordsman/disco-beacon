@@ -24,6 +24,13 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
+      - name: Set VERSION
+        run: |
+          $env:VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
+          echo "VERSION=$env:VERSION" >> $env:GITHUB_ENV
+      - name: Set build version
+        run: |
+          echo "BUILD_VERSION=$env:VERSION" >> $env:GITHUB_ENV
       - name: Upload test artifact
         uses: actions/upload-artifact@v4
         with:

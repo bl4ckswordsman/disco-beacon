@@ -16,3 +16,7 @@ class AppSettings:
     @classmethod
     def get_app_icon(cls):
         return QIcon(cls.ICON_PATH)
+
+    @classmethod
+    def get_build_version(cls):
+        return QCoreApplication.applicationVersion()

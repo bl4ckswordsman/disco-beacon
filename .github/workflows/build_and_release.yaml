@@ -29,6 +29,9 @@ jobs:
         run: |
           $env:VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
           echo "VERSION=$env:VERSION" >> $env:GITHUB_ENV
+      - name: Set build version
+        run: |
+          echo "BUILD_VERSION=$env:VERSION" >> $env:GITHUB_ENV
       - name: Create archive
         run: |
           Compress-Archive -Path .\dist\DiscoBeacon.exe -DestinationPath .\DiscoBeacon_Windows_$env:VERSION.zip
@@ -71,6 +74,9 @@ jobs:
       - name: Set VERSION
         run: |
           echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+      - name: Set build version
+        run: |
+          echo "BUILD_VERSION=${VERSION}" >> $GITHUB_ENV
       - name: Create archive
         run: |
           tar -czvf ./DiscoBeacon_Linux_${VERSION}.tar.gz -C ./dist DiscoBeacon
