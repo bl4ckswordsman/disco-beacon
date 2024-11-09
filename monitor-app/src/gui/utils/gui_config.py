@@ -24,6 +24,5 @@ class GUIConfig:
         'offline': Qt.red
     }
 
-    WINDOWS_11_VERSION = QOperatingSystemVersion.Windows11
 
 gui_config = GUIConfig()

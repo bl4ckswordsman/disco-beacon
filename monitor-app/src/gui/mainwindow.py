@@ -2,7 +2,6 @@ try:
     from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
     from PySide6.QtCore import Qt, Signal, QTimer
     from PySide6.QtGui import QIcon, QFont
-    from PySide6.QtCore import QOperatingSystemVersion
 except ImportError:
     from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QSystemTrayIcon, QPushButton
     from PyQt6.QtCore import Qt, pyqtSignal as Signal, QTimer
@@ -16,7 +15,6 @@ from src.gui.utils.app_settings import AppSettings
 from src.core.constants import CHECK_INTERVAL
 
 
-from src.gui.utils.platform_utils import is_windows_11
 class MainWindow(QMainWindow):
     is_minimized = False
     exit_app = Signal()
@@ -24,6 +22,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        # Enable translucent background for Mica effect
+        self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
