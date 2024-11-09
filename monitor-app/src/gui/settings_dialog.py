@@ -1,11 +1,18 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QSpinBox, QPushButton, QComboBox
+from PySide6.QtCore import Signal
 from src.core.app_settings import app_settings
 from src.core import constants
+from src.gui.utils.platform_utils import is_windows_11
+from src.gui.utils.mica_utils import apply_mica_to_window
 
 class SettingsDialog(QDialog):
+    theme_changed = Signal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
+        if is_windows_11():
+            apply_mica_to_window(self)
         self.layout = QVBoxLayout(self)
 
         form_layout = QFormLayout()
