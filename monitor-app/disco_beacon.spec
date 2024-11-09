@@ -14,6 +14,7 @@ png_icon_path = os.path.join('icons', 'tower-control.png')
 icons_dir = 'icons'
 
 a = Analysis(
+    version='version.py:VERSION',
     ['main.py'],
     pathex=[],
     binaries=[],

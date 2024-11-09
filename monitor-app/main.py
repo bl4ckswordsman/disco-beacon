@@ -7,7 +7,6 @@ from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import app_settings
-from version import __version__
 
 gui_available = False
 
@@ -64,7 +63,6 @@ def check_and_update_status(game_state, game_server_state, window):
 def setup_application():
     if gui_available:
         AppSettings.set_app_metadata()
-        app_settings.set('build_version', __version__)
     logger.info("Application setup completed")
 
 def main() -> None:

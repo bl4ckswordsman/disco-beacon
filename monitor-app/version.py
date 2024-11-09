@@ -1,6 +1,3 @@
-import os
+VERSION = "0.0.1-hotfix2"
 
-def get_version():
-    return os.getenv('VERSION', '0.0.1')
-
-__version__ = get_version()
+__version__ = VERSION

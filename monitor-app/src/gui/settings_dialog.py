@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QSpinBox, QPushButton, QComboBox, QLabel
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
+from version import __version__
 from src.core.app_settings import app_settings
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11
@@ -41,14 +42,22 @@ class SettingsDialog(QDialog):
         self.monitor_mode.setCurrentText(app_settings.get('monitor_mode', 'Both'))
         form_layout.addRow("Monitor Mode:", self.monitor_mode)
 
-        self.build_version_label = QLabel(f"Build Version: {app_settings.get('build_version', 'N/A')}")
-        form_layout.addRow("Build Version:", self.build_version_label)
-
         self.layout.addLayout(form_layout)
 
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_settings)
         self.layout.addWidget(save_button)
+
+        # Add build version at bottom with styling
+        self.build_version_label = QLabel(f"Version {__version__}")
+        self.build_version_label.setStyleSheet("""
+            QLabel {
+                font-size: 9pt;
+                padding: 5px;
+            }
+        """)
+        self.build_version_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.layout.addWidget(self.build_version_label)
 
     def save_settings(self):
         app_settings.set('webhook_url', self.webhook_url.text())
@@ -57,5 +66,4 @@ class SettingsDialog(QDialog):
         app_settings.set('check_interval', self.check_interval.value())
         app_settings.set('game_app_id', [k for k, v in constants.SUPPORTED_GAMES.items() if v == self.game_selector.currentText()][0])
         app_settings.set('monitor_mode', self.monitor_mode.currentText().lower())
-        app_settings.set('build_version', self.build_version_label.text().split(": ")[1])
         self.accept()
