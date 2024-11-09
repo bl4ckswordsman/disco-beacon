@@ -28,6 +28,7 @@ def import_gui_modules():
     if not gui_available:
         logger.warning("GUI functionality is disabled.")
 
+
 import_gui_modules()
 
 def fetch_status():
