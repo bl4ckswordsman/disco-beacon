@@ -14,7 +14,6 @@ png_icon_path = os.path.join('icons', 'tower-control.png')
 icons_dir = 'icons'
 
 a = Analysis(
-    version='version.py:VERSION',
     ['main.py'],
     pathex=[],
     binaries=[],
@@ -44,6 +43,7 @@ exe = EXE(
     a.datas,
     [],
     name='DiscoBeacon',
+    version_file=None,  # Version info from version.py will be shown in the app
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -89,6 +89,7 @@ if platform.system() == "Windows":
         a_windows.datas,
         [],
         name='DiscoBeacon',
+        version_file=None,  # Version info from version.py will be shown in the app
         debug=False,
         bootloader_ignore_signals=False,
         strip=False,
