@@ -61,7 +61,7 @@ def apply_mica_to_window(window) -> bool:
         ApplyMica(
             HWND=hwnd,
             Theme=MicaTheme.AUTO,  # Auto-switch based on system theme
-            Style=MicaStyle.DEFAULT,  # Use default style for better visibility
+            Style=MicaStyle.ALT,  # MicaStyle.DEFAULT or MicaStyle.ALT
             OnThemeChange=theme_change_callback
         )
 
