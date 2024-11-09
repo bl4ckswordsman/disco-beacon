@@ -1,6 +1,5 @@
 from PySide6.QtCore import Qt
 from src.core.logger import logger
-from src.gui.utils.gui_utils import get_current_theme
 from src.gui.utils.platform_utils import is_windows_11
 
 # Only import win32mica on Windows
@@ -28,15 +27,7 @@ def apply_mica_to_window(window) -> bool:
     if not is_windows_11() or not MICA_AVAILABLE:
         logger.debug("Mica effect not available on this platform")
         return True  # Return True since this is expected behavior
-    """
-    Apply Mica effect to a Qt window using win32mica.
 
-    Args:
-        window: PySide6 window instance
-
-    Returns:
-        bool: True if successfully applied, False otherwise
-    """
     try:
         # Enable translucent background for Mica effect (Windows 11 only)
         window.setAttribute(Qt.WA_TranslucentBackground)
