@@ -21,12 +21,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pillow
+      - name: Set test version
+        run: |
+          $timestamp = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), 'Central European Standard Time').ToString("yyyyMMdd-HHmm")
+          # Read version from version.py and append timestamp
+          $version = (Get-Content version.py | Select-String 'VERSION = "(.*)"').Matches.Groups[1].Value
+          $testVersion = "$version-test-$timestamp"
+          echo "VERSION=$testVersion" >> $env:GITHUB_ENV
+          # Update version.py with test version
+          (Get-Content version.py) -replace 'VERSION = ".*"', "VERSION = `"$testVersion`"" | Set-Content version.py
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec
       - name: Upload test artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DiscoBeacon_Windows_Test
+          name: DiscoBeacon_Windows_Test_${{ env.VERSION }}
           path: ${{ github.workspace }}/monitor-app/dist/DiscoBeacon.exe
           retention-days: 5

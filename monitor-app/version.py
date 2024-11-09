@@ -1,1 +1,3 @@
-__version__ = "0.0.1" # Pre-release version
+VERSION = "0.0.1-hotfix2"
+
+__version__ = VERSION

@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QSpinBox, QPushButton, QComboBox
-from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QSpinBox, QPushButton, QComboBox, QLabel
+from PySide6.QtCore import Signal, Qt
+from version import __version__
 from src.core.app_settings import app_settings
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11
@@ -46,6 +47,17 @@ class SettingsDialog(QDialog):
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_settings)
         self.layout.addWidget(save_button)
+
+        # Add build version at bottom with styling
+        self.build_version_label = QLabel(f"Version {__version__}")
+        self.build_version_label.setStyleSheet("""
+            QLabel {
+                font-size: 9pt;
+                padding: 5px;
+            }
+        """)
+        self.build_version_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.layout.addWidget(self.build_version_label)
 
     def save_settings(self):
         app_settings.set('webhook_url', self.webhook_url.text())
