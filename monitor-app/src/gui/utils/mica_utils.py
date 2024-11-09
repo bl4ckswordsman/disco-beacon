@@ -1,82 +1,10 @@
-import ctypes
-from enum import IntEnum
+from win32mica import ApplyMica, MicaTheme, MicaStyle
 from src.core.logger import logger
-
-class DwmWindowAttribute(IntEnum):
-    """Windows 11 DWM window attributes"""
-    DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-    DWMWA_SYSTEMBACKDROP_TYPE = 38
-    DWMWA_MICA_EFFECT = 1029
-
-class DwmSystemBackdropType(IntEnum):
-    """Windows 11 system backdrop types"""
-    DWMSBT_AUTO = 0
-    DWMSBT_NONE = 1
-    DWMSBT_MAINWINDOW = 2
-    DWMSBT_TRANSIENTWINDOW = 3
-    DWMSBT_TABBEDWINDOW = 4
-
-def apply_mica_effect(hwnd: int) -> bool:
-    """
-    Apply the Windows 11 Mica effect to a window.
-
-    Args:
-        hwnd: Window handle to apply the effect to
-
-    Returns:
-        bool: True if successfully applied, False otherwise
-    """
-    try:
-        dwm = ctypes.WinDLL("dwmapi")
-
-        # Try the newer Windows 11 22H2+ method first (preferred)
-        try:
-            success = _set_window_attribute(
-                dwm,
-                hwnd,
-                DwmWindowAttribute.DWMWA_SYSTEMBACKDROP_TYPE,
-                DwmSystemBackdropType.DWMSBT_MAINWINDOW
-            )
-            if success:
-                return True
-        except Exception:
-            logger.debug("Windows 11 22H2+ method failed, trying fallback")
-
-        # Fallback for earlier Windows 11 versions
-        try:
-            success = _set_window_attribute(
-                dwm,
-                hwnd,
-                DwmWindowAttribute.DWMWA_MICA_EFFECT,
-                True
-            )
-            if success:
-                return True
-        except Exception:
-            logger.debug("Windows 11 fallback method failed")
-
-        return False
-
-    except Exception as e:
-        logger.error(f"Failed to apply Mica effect: {e}")
-        return False
-
-def _set_window_attribute(dwm, hwnd: int, attribute: DwmWindowAttribute, value: int) -> bool:
-    """Helper function to set DWM window attributes"""
-    val = ctypes.c_int(value)
-    result = dwm.DwmSetWindowAttribute(
-        hwnd,
-        attribute,
-        ctypes.byref(val),
-        ctypes.sizeof(val)
-    )
-    if result != 0:  # S_OK = 0
-        raise OSError(f"DwmSetWindowAttribute failed with code {result}")
-    return True
+from src.gui.utils.gui_utils import get_current_theme
 
 def apply_mica_to_window(window) -> bool:
     """
-    Apply Mica effect to a Qt window.
+    Apply Mica effect to a Qt window using win32mica.
 
     Args:
         window: PySide6 window instance
@@ -88,12 +16,22 @@ def apply_mica_to_window(window) -> bool:
         if not window.winId():
             window.create()
 
-        hwnd = int(window.winId())
+        hwnd = window.winId().__int__()
         if not hwnd:
             logger.error("Failed to get window handle")
             return False
 
-        return apply_mica_effect(hwnd)
+        # Set theme based on current system theme
+        theme = MicaTheme.DARK if get_current_theme() == 'dark' else MicaTheme.LIGHT
+
+        # Apply Mica effect with auto theme switching
+        ApplyMica(
+            HWND=hwnd,
+            Theme=MicaTheme.AUTO,  # Auto-switch based on system theme
+            Style=MicaStyle.DEFAULT,
+            OnThemeChange=lambda new_theme: logger.debug(f"Mica theme changed to: {new_theme}")
+        )
+        return True
 
     except Exception as e:
         logger.error(f"Error applying Mica effect: {e}")

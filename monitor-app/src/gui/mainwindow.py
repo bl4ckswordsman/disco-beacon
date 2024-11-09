@@ -24,9 +24,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        if is_windows_11():
-            # Enable window frame for Mica
-            self.setWindowFlag(Qt.WindowType.FramelessWindowHint, False)
+
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
         self.current_theme = get_current_theme()
