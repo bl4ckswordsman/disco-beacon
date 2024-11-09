@@ -5,14 +5,27 @@ from src.gui.system_tray import SystemTrayIcon
 from src.core.logger import logger
 import resources.resources # noqa: F401
 from src.gui.utils.gui_utils import get_current_theme
+from src.gui.utils.platform_utils import is_windows_11
+from src.gui.utils.mica_utils import apply_mica_to_window
 
 def init_gui():
+    """Initialize the GUI application with appropriate platform-specific settings."""
     # import os
     # os.environ['QT_QPA_PLATFORM'] = 'xcb'  # Platform: xcb | wayland
     # os.environ['QT_STYLE_OVERRIDE'] = 'Fusion'  # Style: Fusion| Windows
+
+    # Initialize application
     app = QApplication(sys.argv)
-    app.setStyle("Fusion")  # Explicitly set Fusion style
+
+    if not is_windows_11():
+        app.setStyle("Fusion")  # Use Fusion style on non-Windows platforms
+
     window = MainWindow()
+
+    if is_windows_11():
+        apply_mica_to_window(window)
+
+    # Setup system tray
     current_theme = get_current_theme()
     tray_icon = SystemTrayIcon(window, theme=current_theme)
     tray_icon.show()

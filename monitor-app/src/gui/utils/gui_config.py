@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QOperatingSystemVersion
 
 class GUIConfig:
     WINDOW_WIDTH: int = 600
@@ -23,5 +23,6 @@ class GUIConfig:
         'online': Qt.green,
         'offline': Qt.red
     }
+
 
 gui_config = GUIConfig()

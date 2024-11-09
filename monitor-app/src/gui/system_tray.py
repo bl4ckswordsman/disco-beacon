@@ -8,7 +8,8 @@ except ImportError:
     from PyQt6.QtCore import pyqtSignal as Signal
 
 from src.gui.utils.app_settings import AppSettings
-from src.gui.utils.gui_utils import get_icon_path, is_linux
+from src.gui.utils.gui_utils import get_icon_path
+from src.gui.utils.platform_utils import is_linux
 
 class SystemTrayIcon(QSystemTrayIcon):
     exit_app = Signal()
