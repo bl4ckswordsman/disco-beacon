@@ -22,8 +22,6 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        # Enable translucent background for Mica effect
-        self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.setWindowTitle(AppSettings.APP_NAME)
         self.setGeometry(100, 100, gui_config.WINDOW_WIDTH, gui_config.WINDOW_HEIGHT)
