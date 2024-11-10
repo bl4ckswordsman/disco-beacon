@@ -61,7 +61,7 @@ exe = EXE(
 
 if platform.system() == "Windows":
     a_windows = Analysis(
-        ['main.py'],
+        ['windows_main.pyw'],
         pathex=[],
         binaries=[],
         datas=[
@@ -96,7 +96,7 @@ if platform.system() == "Windows":
         upx=True,
         upx_exclude=[],
         runtime_tmpdir=None,
-        console=True, # For logging purposes
+        console=False, # For logging purposes
         disable_windowed_traceback=False,
         target_arch=None,
         codesign_identity=None,
