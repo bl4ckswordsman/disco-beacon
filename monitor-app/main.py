@@ -77,9 +77,10 @@ def initialize_application():
     logger.info("Application setup completed")
 
     app_name = AppSettings.APP_NAME
-    app_path = os.path.abspath(__file__)
+    app_path = os.path.abspath(sys.argv[0])
 
     if is_windows():
+        sync_autorun_setting()
         if settings_loader.get_setting('auto_run', False):
             set_auto_run(app_name, app_path)
         else:
