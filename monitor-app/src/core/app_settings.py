@@ -2,6 +2,8 @@ import json
 import os
 import sys
 from src.gui.utils.platform_utils import is_windows
+from src.core.logger import logger
+from src.gui.utils.app_settings import AppSettings
 
 if is_windows():
     import winreg
@@ -73,20 +75,21 @@ def remove_auto_run(app_name):
                 winreg.DeleteValue(reg_key, app_name)
         except FileNotFoundError:
             pass
-            def verify_auto_run(app_name):
-                """Verify if the autorun registry entry exists and matches the current executable"""
-                if not is_windows():
-                    return False
 
-                key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-                try:
-                    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as reg_key:
-                        value, _ = winreg.QueryValueEx(reg_key, app_name)
-                        expected_path = f'"{sys.executable}"' if getattr(sys, 'frozen', False) else f'"{os.path.abspath(__file__)}"'
-                        return value == expected_path
-                except (WindowsError, FileNotFoundError):
-                    return False
 
+def verify_auto_run(app_name):
+    """Verify if the autorun registry entry exists and matches the current executable"""
+    if not is_windows():
+        return False
+
+    key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as reg_key:
+            value, _ = winreg.QueryValueEx(reg_key, app_name)
+            expected_path = f'"{sys.executable}"' if getattr(sys, 'frozen', False) else f'"{os.path.abspath(sys.argv[0])}"'
+            return value == expected_path
+    except (WindowsError, FileNotFoundError):
+        return False
 
 def sync_autorun_setting():
     """Synchronize the autorun setting with the actual registry state"""
@@ -94,25 +97,7 @@ def sync_autorun_setting():
         actual_autorun = verify_auto_run(AppSettings.APP_NAME)
         if settings_loader.get_setting('auto_run') != actual_autorun:
             settings_saver.set_setting('auto_run', actual_autorun)
-            def verify_auto_run(app_name):
-                """Verify if the autorun registry entry exists and matches the current executable"""
-                if not is_windows():
-                    return False
 
-                key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-                try:
-                    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as reg_key:
-                        value, _ = winreg.QueryValueEx(reg_key, app_name)
-                        expected_path = f'"{sys.executable}"' if getattr(sys, 'frozen', False) else f'"{os.path.abspath(sys.argv[0])}"'
-                        return value == expected_path
-                except (WindowsError, FileNotFoundError):
-                    return False
 
-            def sync_autorun_setting():
-                """Synchronize the autorun setting with the actual registry state"""
-                if is_windows():
-                    actual_autorun = verify_auto_run(AppSettings.APP_NAME)
-                    if settings_loader.get_setting('auto_run') != actual_autorun:
-                        settings_saver.set_setting('auto_run', actual_autorun)
 settings_loader = SettingsLoader()
 settings_saver = SettingsSaver(settings_loader)

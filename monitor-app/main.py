@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 from src.core.config import config
 from src.core.steam_api import fetch_status_from_api
@@ -7,7 +8,7 @@ from src.core.notification_handler import setup_notification_handlers
 from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
-from src.core.app_settings import settings_loader, set_auto_run, remove_auto_run
+from src.core.app_settings import settings_loader, set_auto_run, remove_auto_run, sync_autorun_setting
 from src.gui.utils.platform_utils import is_windows
 
 gui_available = False
