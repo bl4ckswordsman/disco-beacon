@@ -24,12 +24,12 @@ jobs:
       - name: Set test version
         run: |
           $timestamp = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), 'Central European Standard Time').ToString("yyyyMMdd-HHmm")
-          # Read version from version.py and append timestamp
-          $version = (Get-Content version.py | Select-String 'VERSION = "(.*)"').Matches.Groups[1].Value
+          # Read version from src/version.py and append timestamp
+          $version = (Get-Content src/version.py | Select-String 'VERSION = "(.*)"').Matches.Groups[1].Value
           $testVersion = "$version-test-$timestamp"
           echo "VERSION=$testVersion" >> $env:GITHUB_ENV
-          # Update version.py with test version
-          (Get-Content version.py) -replace 'VERSION = ".*"', "VERSION = `"$testVersion`"" | Set-Content version.py
+          # Update src/version.py with test version
+          (Get-Content src/version.py) -replace 'VERSION = ".*"', "VERSION = `"$testVersion`"" | Set-Content src/version.py
       - name: Build executable
         run: |
           pyinstaller --clean disco_beacon.spec

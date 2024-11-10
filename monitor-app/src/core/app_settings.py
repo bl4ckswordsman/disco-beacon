@@ -1,9 +1,9 @@
 import json
 import os
 
-class AppSettings:
-    def __init__(self):
-        self.settings_file = 'settings.json'
+class SettingsLoader:
+    def __init__(self, settings_file='settings.json'):
+        self.settings_file = settings_file
         self.default_settings = {
             'webhook_url': '',
             'api_key': '',
@@ -20,16 +20,22 @@ class AppSettings:
                 return json.load(f)
         return self.default_settings
 
-    def save_settings(self):
-        with open(self.settings_file, 'w') as f:
-            json.dump(self.settings, f, indent=4)
-
-    def get(self, key, default=None):
+    def get_setting(self, key, default=None):
         return self.settings.get(key, self.default_settings.get(key, default))
 
-    def set(self, key, value):
-        self.settings[key] = value
+
+class SettingsSaver:
+    def __init__(self, settings_loader):
+        self.settings_loader = settings_loader
+
+    def save_settings(self):
+        with open(self.settings_loader.settings_file, 'w') as f:
+            json.dump(self.settings_loader.settings, f, indent=4)
+
+    def set_setting(self, key, value):
+        self.settings_loader.settings[key] = value
         self.save_settings()
 
 
-app_settings = AppSettings()
+settings_loader = SettingsLoader()
+settings_saver = SettingsSaver(settings_loader)

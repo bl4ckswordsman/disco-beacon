@@ -2,7 +2,7 @@ import requests
 from typing import Dict, Optional, Tuple
 from .logger import logger
 
-def get_status(api_key: str, steam_id: str, game_app_id: int) -> Tuple[str, str, Optional[str], Optional[str], Optional[Dict]]:
+def fetch_status_from_api(api_key: str, steam_id: str, game_app_id: int) -> Tuple[str, str, Optional[str], Optional[str], Optional[Dict]]:
     """
     Fetch game and server status from Steam API.
 
@@ -39,7 +39,7 @@ def get_status(api_key: str, steam_id: str, game_app_id: int) -> Tuple[str, str,
     except requests.RequestException:
         raise
 
-def get_game_icon(app_id: int) -> Optional[str]:
+def fetch_game_icon(app_id: int) -> Optional[str]:
     """
     Fetch game icon URL from Steam Store API.
 
