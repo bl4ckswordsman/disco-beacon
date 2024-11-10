@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit,
-    QSpinBox, QPushButton, QComboBox, QLabel)
+    QSpinBox, QPushButton, QComboBox, QLabel, QCheckBox)
 from PySide6.QtCore import Signal, Qt
 from src.version import __version__
 from src.core.app_settings import settings_loader, settings_saver
@@ -50,6 +50,10 @@ class SettingsDialog(QDialog):
         self.monitor_mode.setCurrentText(settings_loader.get_setting('monitor_mode', 'Both').title())
         form_layout.addRow("Monitor Mode:", self.monitor_mode)
 
+        self.auto_run_checkbox = QCheckBox("Run on system startup")
+        self.auto_run_checkbox.setChecked(settings_loader.get_setting('auto_run', False))
+        form_layout.addRow(self.auto_run_checkbox)
+
         self.layout.addLayout(form_layout)
 
         save_button = QPushButton("Save")
@@ -74,4 +78,5 @@ class SettingsDialog(QDialog):
         settings_saver.set_setting('check_interval', self.check_interval.value())
         settings_saver.set_setting('game_app_id', [k for k, v in constants.SUPPORTED_GAMES.items() if v == self.game_selector.currentText()][0])
         settings_saver.set_setting('monitor_mode', self.monitor_mode.currentText().lower())
+        settings_saver.set_setting('auto_run', self.auto_run_checkbox.isChecked())
         self.accept()
