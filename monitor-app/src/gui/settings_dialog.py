@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal, Qt
 from src.version import __version__
 from src.core.app_settings import settings_loader, settings_saver
 from src.core import constants
-from src.gui.utils.platform_utils import is_windows_11
+from src.gui.utils.platform_utils import is_windows_11, is_windows
 from src.gui.utils.mica_utils import apply_mica_to_window
 
 class SettingsDialog(QDialog):
@@ -51,7 +51,11 @@ class SettingsDialog(QDialog):
         form_layout.addRow("Monitor Mode:", self.monitor_mode)
 
         self.auto_run_checkbox = QCheckBox("Run on system startup")
-        self.auto_run_checkbox.setChecked(settings_loader.get_setting('auto_run', False))
+        if is_windows():
+            self.auto_run_checkbox.setChecked(settings_loader.get_setting('auto_run', False))
+        else:
+            self.auto_run_checkbox.setEnabled(False)
+            self.auto_run_checkbox.setToolTip("Auto-run is only supported on Windows")
         form_layout.addRow(self.auto_run_checkbox)
 
         self.layout.addLayout(form_layout)
