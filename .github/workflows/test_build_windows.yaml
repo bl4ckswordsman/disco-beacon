@@ -1,7 +1,13 @@
 name: Test Windows Build
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      debug_mode:
+        description: 'Enable Debug Mode'
+        required: false
+        type: boolean
+        default: true
   pull_request:      # Optionally trigger on PRs
 
 jobs:
@@ -32,7 +38,9 @@ jobs:
           (Get-Content src/version.py) -replace 'VERSION = ".*"', "VERSION = `"$testVersion`"" | Set-Content src/version.py
       - name: Build executable
         run: |
-          pyinstaller --clean disco_beacon.spec
+          # Replace the DEBUG_MODE line in the spec file
+          (Get-Content disco_beacon_test.spec) -replace 'DEBUG_MODE = False', 'DEBUG_MODE = ${{ inputs.debug_mode }}' | Set-Content disco_beacon_test.spec
+          pyinstaller --clean disco_beacon_test.spec
       - name: Upload test artifact
         uses: actions/upload-artifact@v4
         with:
