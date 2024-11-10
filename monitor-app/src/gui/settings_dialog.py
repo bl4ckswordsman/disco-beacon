@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit,
     QSpinBox, QPushButton, QComboBox, QLabel, QCheckBox)
 from PySide6.QtCore import Signal, Qt
 from src.version import __version__
-from src.core.app_settings import settings_loader, settings_saver
+from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11, is_windows
 from src.gui.utils.mica_utils import apply_mica_to_window
@@ -76,11 +76,20 @@ class SettingsDialog(QDialog):
         self.layout.addWidget(self.build_version_label)
 
     def save_settings(self):
+        # Save all non-autorun settings first
         settings_saver.set_setting('webhook_url', self.webhook_url.text())
         settings_saver.set_setting('api_key', self.api_key.text())
         settings_saver.set_setting('steam_id', self.steam_id.text())
         settings_saver.set_setting('check_interval', self.check_interval.value())
         settings_saver.set_setting('game_app_id', [k for k, v in constants.SUPPORTED_GAMES.items() if v == self.game_selector.currentText()][0])
         settings_saver.set_setting('monitor_mode', self.monitor_mode.currentText().lower())
-        settings_saver.set_setting('auto_run', self.auto_run_checkbox.isChecked())
+
+        # Handle autorun setting separately to apply changes immediately
+        autorun_enabled = self.auto_run_checkbox.isChecked()
+        if handle_autorun_change(autorun_enabled):
+            settings_saver.set_setting('auto_run', autorun_enabled)
+        else:
+            settings_saver.set_setting('auto_run', False)
+            self.auto_run_checkbox.setChecked(False)
+
         self.accept()

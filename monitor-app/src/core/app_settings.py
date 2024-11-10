@@ -103,13 +103,24 @@ def verify_auto_run(app_name):
         logger.debug(f"Failed to verify autorun: {e}")
         return False
 
-def sync_autorun_setting():
-    """Synchronize the autorun setting with the actual registry state"""
+
+
+
+def handle_autorun_change(enabled: bool):
+    """Handle changes to autorun setting by updating registry immediately"""
     if is_windows():
-        actual_autorun = verify_auto_run(AppSettings.APP_NAME)
-        if settings_loader.get_setting('auto_run') != actual_autorun:
-            settings_saver.set_setting('auto_run', actual_autorun)
+        app_name = AppSettings.APP_NAME
+        app_path = os.path.abspath(sys.argv[0])
 
-
+        if enabled:
+            logger.info("Enabling autorun...")
+            if not set_auto_run(app_name, app_path):
+                logger.warning("Failed to set up autorun")
+                return False
+        else:
+            logger.info("Disabling autorun...")
+            remove_auto_run(app_name)
+        return True
+    return False
 settings_loader = SettingsLoader()
 settings_saver = SettingsSaver(settings_loader)
