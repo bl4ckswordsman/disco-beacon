@@ -1,12 +1,12 @@
 import time
 from src.core.config import config
-from src.core.steam_api import get_status
+from src.core.steam_api import fetch_status_from_api
 from src.core.logger import logger
 from src.core.notification_handler import setup_notification_handlers
 from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
-from src.core.app_settings import app_settings
+from src.core.app_settings import settings_loader
 
 gui_available = False
 
@@ -33,17 +33,17 @@ import_gui_modules()
 
 def fetch_status():
     try:
-        api_key = app_settings.get('api_key', '')
-        steam_id = app_settings.get('steam_id', '')
-        game_app_id = int(app_settings.get('game_app_id', '0'))
-        game_status, server_status, lobby_id, server_owner, server_data = get_status(api_key, steam_id, game_app_id)
+        api_key = settings_loader.get_setting('api_key', '')
+        steam_id = settings_loader.get_setting('steam_id', '')
+        game_app_id = int(settings_loader.get_setting('game_app_id', '0'))
+        game_status, server_status, lobby_id, server_owner, server_data = fetch_status_from_api(api_key, steam_id, game_app_id)
         return game_status, server_status, lobby_id, server_owner, server_data
     except Exception as e:
         logger.error(f"Error occurred while fetching status: {e}")
         return None, None, None, None, None
 
 def update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data):
-    game_name = config.get_game_name(app_settings.get('game_app_id'))
+    game_name = config.get_game_name(settings_loader.get_setting('game_app_id'))
 
     logger.info(f"Game status: {game_status}, Server status: {server_status}")
 
@@ -85,7 +85,7 @@ def main() -> None:
         try:
             while True:
                 current_time = time.time()
-                if current_time - last_check >= app_settings.get('check_interval'):
+                if current_time - last_check >= settings_loader.get_setting('check_interval'):
                     game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
                     update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data)
                     last_check = current_time
@@ -100,7 +100,7 @@ def main() -> None:
         try:
             while True:
                 current_time = time.time()
-                if current_time - last_check >= app_settings.get('check_interval'):
+                if current_time - last_check >= settings_loader.get_setting('check_interval'):
                     game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
                     update_status(game_state, game_server_state, None, game_status, server_status, lobby_id, server_owner, server_data)
                     last_check = current_time

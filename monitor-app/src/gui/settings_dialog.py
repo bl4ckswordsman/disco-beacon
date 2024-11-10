@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QSpinBox, QPushButton, QComboBox, QLabel
 from PySide6.QtCore import Signal, Qt
-from version import __version__
-from src.core.app_settings import app_settings
+from src.version import __version__
+from src.core.app_settings import settings_loader
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11
 from src.gui.utils.mica_utils import apply_mica_to_window
@@ -18,28 +18,28 @@ class SettingsDialog(QDialog):
 
         form_layout = QFormLayout()
 
-        self.webhook_url = QLineEdit(app_settings.get('webhook_url'))
+        self.webhook_url = QLineEdit(settings_loader.get_setting('webhook_url'))
         form_layout.addRow("Webhook URL:", self.webhook_url)
 
-        self.api_key = QLineEdit(app_settings.get('api_key'))
+        self.api_key = QLineEdit(settings_loader.get_setting('api_key'))
         form_layout.addRow("Steam API Key:", self.api_key)
 
-        self.steam_id = QLineEdit(app_settings.get('steam_id'))
+        self.steam_id = QLineEdit(settings_loader.get_setting('steam_id'))
         form_layout.addRow("Steam ID:", self.steam_id)
 
         self.check_interval = QSpinBox()
-        self.check_interval.setValue(app_settings.get('check_interval'))
+        self.check_interval.setValue(settings_loader.get_setting('check_interval'))
         self.check_interval.setRange(1, 3600)
         form_layout.addRow("Check Interval (seconds):", self.check_interval)
 
         self.game_selector = QComboBox()
         self.game_selector.addItems(constants.SUPPORTED_GAMES.values())
-        self.game_selector.setCurrentText(constants.SUPPORTED_GAMES.get(app_settings.get('game_app_id'), "Valheim"))
+        self.game_selector.setCurrentText(constants.SUPPORTED_GAMES.get(settings_loader.get_setting('game_app_id'), "Valheim"))
         form_layout.addRow("Game:", self.game_selector)
 
         self.monitor_mode = QComboBox()
         self.monitor_mode.addItems(['Both', 'Server Only'])
-        self.monitor_mode.setCurrentText(app_settings.get('monitor_mode', 'Both'))
+        self.monitor_mode.setCurrentText(settings_loader.get_setting('monitor_mode', 'Both'))
         form_layout.addRow("Monitor Mode:", self.monitor_mode)
 
         self.layout.addLayout(form_layout)
