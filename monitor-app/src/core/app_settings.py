@@ -45,6 +45,16 @@ class SettingsSaver:
         self.save_settings()
 
 
+def windows_only(func):
+    """Decorator to mark functions that only work on Windows"""
+    def wrapper(*args, **kwargs):
+        if not is_windows():
+            logger.debug(f"Skipping {func.__name__}: Feature only available on Windows")
+            return False
+        return func(*args, **kwargs)
+    return wrapper
+
+@windows_only
 def set_auto_run(app_name, app_path):
     if is_windows():
         # Use the actual exe path instead of the temporary pyc file
@@ -76,6 +86,7 @@ def set_auto_run(app_name, app_path):
     return False
 
 
+@windows_only
 def remove_auto_run(app_name):
     if is_windows():
         key = r"Software\Microsoft\Windows\CurrentVersion\Run"
@@ -86,6 +97,7 @@ def remove_auto_run(app_name):
             pass
 
 
+@windows_only
 def verify_auto_run(app_name):
     """Verify if the autorun registry entry exists and matches the current executable"""
     if not is_windows():
@@ -104,8 +116,7 @@ def verify_auto_run(app_name):
         return False
 
 
-
-
+@windows_only
 def handle_autorun_change(enabled: bool):
     """Handle changes to autorun setting by updating registry immediately"""
     if is_windows():
