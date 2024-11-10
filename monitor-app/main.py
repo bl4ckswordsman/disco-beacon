@@ -1,3 +1,4 @@
+import os
 import time
 from src.core.config import config
 from src.core.steam_api import fetch_status_from_api
