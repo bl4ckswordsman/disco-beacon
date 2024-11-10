@@ -1,6 +1,10 @@
 import json
 import os
-import winreg
+import sys
+from src.gui.utils.platform_utils import is_windows
+
+if is_windows():
+    import winreg
 
 class SettingsLoader:
     def __init__(self, settings_file='settings.json'):
@@ -40,18 +44,26 @@ class SettingsSaver:
 
 
 def set_auto_run(app_name, app_path):
-    key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
-        winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, app_path)
+    if is_windows():
+        # Use the actual exe path instead of the temporary pyc file
+        if getattr(sys, 'frozen', False):
+            exe_path = sys.executable
+        else:
+            exe_path = app_path
+
+        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
+            winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, exe_path)
 
 
 def remove_auto_run(app_name):
-    key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-    try:
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
-            winreg.DeleteValue(reg_key, app_name)
-    except FileNotFoundError:
-        pass
+    if is_windows():
+        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        try:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
+                winreg.DeleteValue(reg_key, app_name)
+        except FileNotFoundError:
+            pass
 
 
 settings_loader = SettingsLoader()
