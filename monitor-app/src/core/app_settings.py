@@ -49,22 +49,31 @@ def set_auto_run(app_name, app_path):
     if is_windows():
         # Use the actual exe path instead of the temporary pyc file
         if getattr(sys, 'frozen', False):
-            exe_path = f'"{sys.executable}"'
+            exe_path = sys.executable
         else:
-            exe_path = f'"{os.path.abspath(app_path)}"'
+            exe_path = os.path.abspath(app_path)
+
+        # Add quotes only after getting absolute path
+        quoted_path = f'"{exe_path}"'
 
         key = r"Software\Microsoft\Windows\CurrentVersion\Run"
         try:
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
-                winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, exe_path)
-                # Verify the entry was set correctly
-                with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as verify_key:
-                    value, _ = winreg.QueryValueEx(verify_key, app_name)
-                    if value != exe_path:
-                        raise ValueError("Registry value verification failed")
+            with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key) as reg_key:
+                winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, quoted_path)
+                logger.info(f"Successfully set autorun registry entry: {quoted_path}")
+
+            # Verify the entry was set correctly
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as verify_key:
+                value, _ = winreg.QueryValueEx(verify_key, app_name)
+                if value != quoted_path:
+                    raise ValueError(f"Registry verification failed. Expected: {quoted_path}, Got: {value}")
+
         except Exception as e:
             logger.error(f"Failed to set autorun registry: {e}")
             settings_saver.set_setting('auto_run', False)
+            return False
+        return True
+    return False
 
 
 def remove_auto_run(app_name):
@@ -86,9 +95,12 @@ def verify_auto_run(app_name):
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as reg_key:
             value, _ = winreg.QueryValueEx(reg_key, app_name)
-            expected_path = f'"{sys.executable}"' if getattr(sys, 'frozen', False) else f'"{os.path.abspath(sys.argv[0])}"'
+            exe_path = sys.executable if getattr(sys, 'frozen', False) else os.path.abspath(sys.argv[0])
+            expected_path = f'"{exe_path}"'
+            logger.debug(f"Verifying autorun - Expected: {expected_path}, Found: {value}")
             return value == expected_path
-    except (WindowsError, FileNotFoundError):
+    except (WindowsError, FileNotFoundError) as e:
+        logger.debug(f"Failed to verify autorun: {e}")
         return False
 
 def sync_autorun_setting():

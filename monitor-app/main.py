@@ -8,7 +8,7 @@ from src.core.notification_handler import setup_notification_handlers
 from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
-from src.core.app_settings import settings_loader, set_auto_run, remove_auto_run, sync_autorun_setting
+from src.core.app_settings import settings_loader, settings_saver, set_auto_run, remove_auto_run, sync_autorun_setting
 from src.gui.utils.platform_utils import is_windows
 
 gui_available = False
@@ -81,11 +81,18 @@ def initialize_application():
     app_path = os.path.abspath(sys.argv[0])
 
     if is_windows():
-        sync_autorun_setting()
-        if settings_loader.get_setting('auto_run', False):
-            set_auto_run(app_name, app_path)
+        auto_run_enabled = settings_loader.get_setting('auto_run', False)
+        if auto_run_enabled:
+            logger.info("Attempting to set up autorun...")
+            if not set_auto_run(app_name, app_path):
+                logger.warning("Failed to set up autorun")
+                settings_saver.set_setting('auto_run', False)
         else:
+            logger.info("Autorun is disabled, removing registry entry if it exists")
             remove_auto_run(app_name)
+
+        # Sync settings with actual registry state
+        sync_autorun_setting()
 
 def main() -> None:
     logger.info("Application starting")
