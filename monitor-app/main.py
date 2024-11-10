@@ -1,4 +1,5 @@
 import time
+import os
 from src.core.config import config
 from src.core.steam_api import fetch_status_from_api
 from src.core.logger import logger
@@ -7,6 +8,7 @@ from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import settings_loader, set_auto_run, remove_auto_run
+from src.gui.utils.platform_utils import is_windows
 
 gui_available = False
 
@@ -74,13 +76,14 @@ def initialize_application():
         AppSettings.set_app_metadata()
     logger.info("Application setup completed")
 
-    app_name = AppSettings.APP_NAME
-    app_path = os.path.abspath(__file__)
+    if is_windows():
+        app_name = AppSettings.APP_NAME
+        app_path = os.path.abspath(__file__)
 
-    if settings_loader.get_setting('auto_run', False):
-        set_auto_run(app_name, app_path)
-    else:
-        remove_auto_run(app_name)
+        if settings_loader.get_setting('auto_run', False):
+            set_auto_run(app_name, app_path)
+        else:
+            remove_auto_run(app_name)
 
 def main() -> None:
     logger.info("Application starting")

@@ -1,6 +1,7 @@
 import json
 import os
 import winreg
+from src.gui.utils.platform_utils import is_windows
 
 class SettingsLoader:
     def __init__(self, settings_file='settings.json'):
@@ -40,15 +41,17 @@ class SettingsSaver:
 
 
 def set_auto_run(app_name, app_path):
-    key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
-        winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, app_path)
+    if is_windows():
+        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
+            winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, app_path)
 
 
 def remove_auto_run(app_name):
-    key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
-        winreg.DeleteValue(reg_key, app_name)
+    if is_windows():
+        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
+            winreg.DeleteValue(reg_key, app_name)
 
 
 settings_loader = SettingsLoader()
