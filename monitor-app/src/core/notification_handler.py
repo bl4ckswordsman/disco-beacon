@@ -13,6 +13,11 @@ def setup_notification_handlers():
     event_emitter.on('game_server_state_changed', handle_game_server_state_change)
 
 def handle_game_state_change(state, old_status, new_status):
+    # Ignore transitions involving None/error states
+    if old_status is None or new_status is None:
+        logger.info(f"Ignoring state change involving error state: {old_status} -> {new_status}")
+        return
+
     monitor_mode = settings_loader.get_setting('monitor_mode', 'both')
     game_app_id = settings_loader.get_setting('game_app_id')
     game_name = SUPPORTED_GAMES.get(game_app_id, "Unknown Game")
@@ -20,22 +25,27 @@ def handle_game_state_change(state, old_status, new_status):
     current_time = datetime.now(timezone.utc).isoformat()
 
     if monitor_mode == 'both':
-        if new_status == 'online':
+        if new_status == 'online' and old_status == 'offline':
             notify_game_online(game_name, current_time, icon_url)
-        else:
+        elif new_status == 'offline' and old_status == 'online':
             notify_game_offline(game_name, current_time, icon_url)
     else:
         logger.info(f"Game state change detected: {old_status} -> {new_status}")
 
 def handle_game_server_state_change(state, old_status, new_status):
+    # Ignore transitions involving None/error states
+    if old_status is None or new_status is None:
+        logger.info(f"Ignoring server state change involving error state: {old_status} -> {new_status}")
+        return
+
     game_app_id = settings_loader.get_setting('game_app_id')
     game_name = SUPPORTED_GAMES.get(game_app_id, "Unknown Game")
     icon_url = config.get_game_icon_url(game_app_id)
     current_time = datetime.now(timezone.utc).isoformat()
 
-    if new_status == 'online':
+    if new_status == 'online' and old_status == 'offline':
         notify_server_online(game_name, state.server_owner, state.lobby_id or "Unknown", current_time, icon_url)
-    else:
+    elif new_status == 'offline' and old_status == 'online':
         notify_server_offline(game_name, state.server_owner, current_time, icon_url)
 
 def notify_game_online(game_name: str, current_time: str, icon_url: Optional[str]):

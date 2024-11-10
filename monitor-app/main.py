@@ -47,9 +47,9 @@ def update_status(game_state, game_server_state, window, game_status, server_sta
 
     logger.info(f"Game status: {game_status}, Server status: {server_status}")
 
-    game_state.update(status=game_status)
+    game_state.update_state(status=game_status)
 
-    game_server_state.update(
+    game_server_state.update_state(
         status=server_status,
         lobby_id=lobby_id,
         server_owner=server_owner or "Unknown",
@@ -57,11 +57,17 @@ def update_status(game_state, game_server_state, window, game_status, server_sta
     )
 
     if window and not window.is_minimized:
-        status_text = (f"{game_name} \nGame: {'Online ✅' if game_status == 'online' else 'Offline ❌ '}"
-                       f"\n Server: {'Online ✅' if server_status == 'online' else 'Offline ❌'}")
-        window.update_status(status_text)
+        if game_status is None or server_status is None:
+            status_text = "Error: Could not fetch status\nCheck your settings and connection"
+        else:
+            status_text = (f"{game_name} \nGame: {'Online ✅' if game_status == 'online' else 'Offline ❌'}"
+                         f"\nServer: {'Online ✅' if server_status == 'online' else 'Offline ❌'}")
+        window.refresh_status(status_text)
     elif window is None:
-        print(f"{game_name} - Game: {game_status}, Server: {server_status}")
+        if game_status is None or server_status is None:
+            print("Error: Could not fetch status")
+        else:
+            print(f"{game_name} - Game: {game_status}, Server: {server_status}")
 
 def initialize_application():
     if gui_available:
