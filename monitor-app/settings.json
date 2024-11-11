@@ -1,8 +1,0 @@
-{
-  "webhook_url": "",
-  "api_key": "",
-  "steam_id": "",
-  "check_interval": 30,
-  "game_app_id": 892970,
-  "monitor_mode": "both"
-}
