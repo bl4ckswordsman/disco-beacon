@@ -66,22 +66,23 @@ def notify_game_online(game_name: str, current_time: str, icon_url: Optional[str
 
 def notify_game_offline(game_name: str, current_time: str, icon_url: Optional[str], duration: Optional[float]):
     logger.info(f"{game_name} is now offline")
-    duration_text = f"Duration: {duration:.2f} seconds" if duration else "Duration: N/A"
     send_webhook_notification(settings_loader.get_setting('webhook_url'), {
         "content": f"{game_name} is no longer running",
         "embeds": [{
             "title": f"{RED_CIRCLE} Game Offline",
             "description": f"No active {game_name} instance",
             "color": 15548997,  # Red color
+            "fields": [
+                {"name": "Uptime", "value": duration if duration else "N/A", "inline": True}
+            ],
             "timestamp": current_time,
-            "footer": {"text": duration_text},
+            "footer": {"text": "Last updated"},
             "thumbnail": {"url": icon_url} if icon_url else {}
         }]
     })
 
 def notify_server_offline(game_name: str, server_owner: str, current_time: str, icon_url: Optional[str], duration: Optional[float]):
     logger.info(f"{game_name} server owned by {server_owner} is now offline")
-    duration_text = f"Duration: {duration:.2f} seconds" if duration else "Duration: N/A"
     send_webhook_notification(settings_loader.get_setting('webhook_url'), {
         "content": f"The {game_name} server is down! @everyone",
         "embeds": [{
@@ -89,10 +90,11 @@ def notify_server_offline(game_name: str, server_owner: str, current_time: str, 
             "description": f"No active {game_name} server",
             "color": 15548997,  # Red color
             "fields": [
-                {"name": "Steam Host", "value": server_owner, "inline": True}
+                {"name": "Steam Host", "value": server_owner, "inline": True},
+                {"name": "Uptime", "value": duration if duration else "N/A", "inline": True}
             ],
             "timestamp": current_time,
-            "footer": {"text": duration_text},
+            "footer": {"text": "Last updated"},
             "thumbnail": {"url": icon_url} if icon_url else {}
         }]
     })
