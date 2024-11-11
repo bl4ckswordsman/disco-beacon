@@ -57,6 +57,9 @@ def update_status(game_state, game_server_state, window, game_status, server_sta
         server_data=server_data
     )
 
+    duration = game_state.get_duration() if game_status == 'offline' else None
+    server_duration = game_server_state.get_duration() if server_status == 'offline' else None
+
     if window and not window.is_minimized:
         if game_status is None or server_status is None:
             status_text = "Error: Could not fetch status\nCheck your settings and connection"

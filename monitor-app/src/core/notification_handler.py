@@ -28,7 +28,8 @@ def handle_game_state_change(state, old_status, new_status):
         if new_status == 'online' and old_status == 'offline':
             notify_game_online(game_name, current_time, icon_url)
         elif new_status == 'offline' and old_status == 'online':
-            notify_game_offline(game_name, current_time, icon_url)
+            duration = state.get_duration()
+            notify_game_offline(game_name, current_time, icon_url, duration)
     else:
         logger.info(f"Game state change detected: {old_status} -> {new_status}")
 
@@ -46,7 +47,8 @@ def handle_game_server_state_change(state, old_status, new_status):
     if new_status == 'online' and old_status == 'offline':
         notify_server_online(game_name, state.server_owner, state.lobby_id or "Unknown", current_time, icon_url)
     elif new_status == 'offline' and old_status == 'online':
-        notify_server_offline(game_name, state.server_owner, current_time, icon_url)
+        duration = state.get_duration()
+        notify_server_offline(game_name, state.server_owner, current_time, icon_url, duration)
 
 def notify_game_online(game_name: str, current_time: str, icon_url: Optional[str]):
     logger.info(f"{game_name} is now running")
@@ -62,8 +64,9 @@ def notify_game_online(game_name: str, current_time: str, icon_url: Optional[str
         }]
     })
 
-def notify_game_offline(game_name: str, current_time: str, icon_url: Optional[str]):
+def notify_game_offline(game_name: str, current_time: str, icon_url: Optional[str], duration: Optional[float]):
     logger.info(f"{game_name} is now offline")
+    duration_text = f"Duration: {duration:.2f} seconds" if duration else "Duration: N/A"
     send_webhook_notification(settings_loader.get_setting('webhook_url'), {
         "content": f"{game_name} is no longer running",
         "embeds": [{
@@ -71,13 +74,14 @@ def notify_game_offline(game_name: str, current_time: str, icon_url: Optional[st
             "description": f"No active {game_name} instance",
             "color": 15548997,  # Red color
             "timestamp": current_time,
-            "footer": {"text": "Last updated"},
+            "footer": {"text": duration_text},
             "thumbnail": {"url": icon_url} if icon_url else {}
         }]
     })
 
-def notify_server_offline(game_name: str, server_owner: str, current_time: str, icon_url: Optional[str]):
+def notify_server_offline(game_name: str, server_owner: str, current_time: str, icon_url: Optional[str], duration: Optional[float]):
     logger.info(f"{game_name} server owned by {server_owner} is now offline")
+    duration_text = f"Duration: {duration:.2f} seconds" if duration else "Duration: N/A"
     send_webhook_notification(settings_loader.get_setting('webhook_url'), {
         "content": f"The {game_name} server is down! @everyone",
         "embeds": [{
@@ -88,7 +92,7 @@ def notify_server_offline(game_name: str, server_owner: str, current_time: str, 
                 {"name": "Steam Host", "value": server_owner, "inline": True}
             ],
             "timestamp": current_time,
-            "footer": {"text": "Last updated"},
+            "footer": {"text": duration_text},
             "thumbnail": {"url": icon_url} if icon_url else {}
         }]
     })
