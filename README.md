@@ -43,7 +43,9 @@ Download the latest Windows or Linux build from the Releases page:
 5. **Monitor Mode**: Choose 'Both' for game and server, or 'Server Only'
 
 Enter these settings in the app's configuration dialog to get started. Settings are stored in:
+
 - Windows: `%APPDATA%\bl4ckswordsman\Disco Beacon\settings.json`
+
 - Linux: `~/.config/disco-beacon/settings.json`
 
 On Windows, you can also enable "Run on system startup" in the settings dialog to automatically start the app when you log in.

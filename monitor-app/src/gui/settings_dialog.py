@@ -5,8 +5,6 @@ from src.version import __version__
 from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11, is_windows
-import os
-import sys
 from src.gui.utils.mica_utils import apply_mica_to_window
 
 class SettingsDialog(QDialog):
