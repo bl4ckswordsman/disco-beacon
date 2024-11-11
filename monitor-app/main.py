@@ -8,6 +8,7 @@ from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
 from src.gui.utils.platform_utils import is_windows
+from src.core.version_checker import fetch_latest_version, compare_versions
 
 gui_available = False
 
@@ -81,6 +82,21 @@ def initialize_application():
         if not handle_autorun_change(auto_run_enabled):
             settings_saver.set_setting('auto_run', False)
 
+def check_for_updates(tray_icon=None):
+    latest_version = fetch_latest_version()
+    if latest_version:
+        comparison_result = compare_versions(AppSettings.VERSION, latest_version)
+        if "→" in comparison_result:
+            logger.info(comparison_result)
+            if gui_available and tray_icon:
+                from PySide6.QtWidgets import QSystemTrayIcon
+                tray_icon.showMessage(
+                    "Update Available",
+                    comparison_result,
+                    QSystemTrayIcon.MessageIcon.Information,
+                    5000  # Show for 5 seconds
+                )
+
 def main() -> None:
     logger.info("Application starting")
 
@@ -95,6 +111,7 @@ def main() -> None:
     if gui_available:
         logger.info("Running in GUI mode")
         app, window, tray_icon = init_gui()
+        check_for_updates(tray_icon)
         try:
             while True:
                 current_time = time.time()

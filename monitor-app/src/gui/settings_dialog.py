@@ -1,11 +1,13 @@
-from PySide6.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit,
-    QSpinBox, QPushButton, QComboBox, QLabel, QCheckBox)
-from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QLineEdit,
+    QSpinBox, QPushButton, QComboBox, QLabel, QCheckBox, QFrame)
+from PySide6.QtCore import Signal
 from src.version import __version__
 from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11, is_windows
 from src.gui.utils.mica_utils import apply_mica_to_window
+from src.core.version_checker import fetch_latest_version, compare_versions
+import webbrowser
 
 class SettingsDialog(QDialog):
     theme_changed = Signal(str)
@@ -64,16 +66,51 @@ class SettingsDialog(QDialog):
         save_button.clicked.connect(self.save_settings)
         self.layout.addWidget(save_button)
 
-        # Add build version at bottom with styling
-        self.build_version_label = QLabel(f"Version {__version__}")
-        self.build_version_label.setStyleSheet("""
-            QLabel {
+        # Add separator
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+        self.layout.addWidget(separator)
+
+        # Create horizontal layout for version info
+        version_layout = QHBoxLayout()
+
+        # Version label
+        self.version_label = QLabel("Checking for updates...")
+        self.version_label.setStyleSheet("font-size: 9pt;")
+        version_layout.addWidget(self.version_label)
+
+        # Update button (smaller than regular buttons)
+        self.update_button = QPushButton("View Update")
+        self.update_button.setStyleSheet("""
+            QPushButton {
                 font-size: 9pt;
-                padding: 5px;
+                padding: 2px 8px;
+                max-height: 20px;
             }
         """)
-        self.build_version_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.layout.addWidget(self.build_version_label)
+        self.update_button.clicked.connect(self.open_latest_release_page)
+        self.update_button.hide()  # Hidden by default until update is available
+        version_layout.addWidget(self.update_button)
+
+        version_layout.addStretch()  # Push everything to the left
+        self.layout.addLayout(version_layout)
+
+        self.fetch_and_compare_versions()
+
+    def fetch_and_compare_versions(self):
+        latest_version = fetch_latest_version()
+        if latest_version:
+            comparison_result = compare_versions(__version__, latest_version)
+            self.version_label.setText(comparison_result)
+            # Show update button only if newer version is available
+            if "→" in comparison_result:
+                self.update_button.show()
+        else:
+            self.version_label.setText("Version check failed")
+
+    def open_latest_release_page(self):
+        webbrowser.open("https://github.com/bl4ckswordsman/disco-beacon/releases/latest")
 
     def save_settings(self):
         # Save all non-autorun settings first
