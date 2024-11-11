@@ -112,9 +112,11 @@ def set_auto_run(app_name, app_path):
         exe_path = sys.executable if getattr(sys, 'frozen', False) else os.path.abspath(app_path)
         quoted_path = f'"{exe_path}"'
 
+        logger.debug(f"Setting autorun registry entry: {quoted_path}")
         key = r"Software\Microsoft\Windows\CurrentVersion\Run"
         with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key) as reg_key:
             winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, quoted_path)
+            logger.debug("Registry entry created successfully")
             return True
     except Exception as e:
         logger.error(f"Failed to set autorun registry: {e}")
@@ -127,10 +129,13 @@ def remove_auto_run(app_name):
 
     try:
         key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        logger.debug(f"Removing autorun registry entry for {app_name}")
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
             winreg.DeleteValue(reg_key, app_name)
+            logger.debug("Registry entry removed successfully")
         return True
     except FileNotFoundError:
+        logger.debug(f"No autorun registry entry found for {app_name}")
         return True
     except Exception as e:
         logger.error(f"Failed to remove autorun registry: {e}")
@@ -139,15 +144,28 @@ def remove_auto_run(app_name):
 def handle_autorun_change(enabled: bool):
     """Handle changes to autorun setting"""
     if not is_windows():
+        logger.debug("Autorun change requested but system is not Windows")
         return True
 
     app_name = AppSettings.APP_NAME
     app_path = os.path.abspath(sys.argv[0])
 
     if enabled:
-        return set_auto_run(app_name, app_path)
+        logger.info(f"Enabling autorun for {app_name}")
+        success = set_auto_run(app_name, app_path)
+        if success:
+            logger.info("Autorun successfully enabled")
+        else:
+            logger.error("Failed to enable autorun")
+        return success
     else:
-        return remove_auto_run(app_name)
+        logger.info(f"Disabling autorun for {app_name}")
+        success = remove_auto_run(app_name)
+        if success:
+            logger.info("Autorun successfully disabled")
+        else:
+            logger.error("Failed to disable autorun")
+        return success
 
 # Initialize singleton instances
 settings_loader = SettingsLoader()
