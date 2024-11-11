@@ -1,5 +1,4 @@
 import requests
-from src.version import __version__
 
 GITHUB_API_URL = "https://api.github.com/repos/bl4ckswordsman/disco-beacon/releases/latest"
 
@@ -24,6 +23,6 @@ def compare_versions(current_version, latest_version):
     latest_parts = tuple(map(int, latest.split('.')))
 
     if current_parts >= latest_parts:
-        return "You are using the latest version."
+        return f"v{current} (Latest ✅)"
     else:
-        return f"A new version ({latest_version}) is available. Please update."
+        return f"Update available: v{current} → v{latest}"
