@@ -41,9 +41,9 @@ class SettingsLoader:
             settings_path = os.path.join(base_path, 'settings.json')
             return settings_path
         except Exception as e:
-            logger.error(f"Failed to get settings path: {e}")
-            fallback_path = os.path.expanduser(f"~/.disco-beacon-settings.json")
-            logger.info(f"Using fallback settings path: {fallback_path}")
+            logger.error("Failed to get settings path: {}".format(str(e)))
+            fallback_path = os.path.expanduser("~/.disco-beacon-settings.json")
+            logger.info("Using fallback settings path: {}".format(fallback_path))
             return fallback_path
 
     def load_settings(self):
@@ -96,8 +96,8 @@ class SettingsSaver:
             if temp_file and os.path.exists(temp_file):
                 try:
                     os.remove(temp_file)
-                except:
-                    pass
+                except OSError as e:
+                    logger.debug(f"Failed to remove temporary file: {e}")
 
     def set_setting(self, key, value):
         self.settings_loader.settings[key] = value
