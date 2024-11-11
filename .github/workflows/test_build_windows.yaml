@@ -39,7 +39,8 @@ jobs:
       - name: Build executable
         run: |
           # Replace the DEBUG_MODE line in the spec file
-          (Get-Content disco_beacon_win_test.spec) -replace 'DEBUG_MODE = False', 'DEBUG_MODE = ${{ inputs.debug_mode }}' | Set-Content disco_beacon_win_test.spec
+          $debug_value = if (${{ inputs.debug_mode }}) { "True" } else { "False" }
+          (Get-Content disco_beacon_win_test.spec) -replace 'DEBUG_MODE = (?:True|False)', "DEBUG_MODE = $debug_value" | Set-Content disco_beacon_win_test.spec
           pyinstaller --clean disco_beacon_win_test.spec
       - name: Upload test artifact
         uses: actions/upload-artifact@v4
