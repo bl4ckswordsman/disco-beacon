@@ -8,13 +8,22 @@ def fetch_latest_version():
         response = requests.get(GITHUB_API_URL)
         response.raise_for_status()
         latest_release = response.json()
-        return latest_release["tag_name"]
+        # Strip 'v' prefix if present to ensure consistent comparison
+        return latest_release["tag_name"].lstrip('v')
     except requests.RequestException as e:
         print(f"Error fetching latest version: {e}")
         return None
 
 def compare_versions(current_version, latest_version):
-    if current_version == latest_version:
+    # Strip 'v' prefix if present
+    current = current_version.lstrip('v')
+    latest = latest_version.lstrip('v')
+
+    # Convert version strings to tuples of integers for proper comparison
+    current_parts = tuple(map(int, current.split('.')))
+    latest_parts = tuple(map(int, latest.split('.')))
+
+    if current_parts >= latest_parts:
         return "You are using the latest version."
     else:
         return f"A new version ({latest_version}) is available. Please update."

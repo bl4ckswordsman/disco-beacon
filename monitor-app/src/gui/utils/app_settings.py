@@ -7,7 +7,7 @@ class AppSettings:
     APP_ID = "com." + ORG_NAME
     ORG_DOMAIN = ORG_NAME + ".com"
     ICON_PATH = ":/icons/light/tower-control.svg"
-    VERSION = __version__
+    VERSION = __version__.lstrip('v')
 
     @classmethod
     def set_app_metadata(cls):
