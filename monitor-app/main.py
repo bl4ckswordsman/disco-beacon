@@ -6,7 +6,8 @@ from src.core.notification_handler import setup_notification_handlers
 from src.core.state import GameState, GameServerState
 from src.gui.utils.gui_init import init_gui
 from src.gui.utils.app_settings import AppSettings
-from src.core.app_settings import settings_loader
+from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
+from src.gui.utils.platform_utils import is_windows
 
 gui_available = False
 
@@ -73,6 +74,12 @@ def initialize_application():
     if gui_available:
         AppSettings.set_app_metadata()
     logger.info("Application setup completed")
+
+    if is_windows():
+        # Handle autorun based on saved setting
+        auto_run_enabled = settings_loader.get_setting('auto_run', False)
+        if not handle_autorun_change(auto_run_enabled):
+            settings_saver.set_setting('auto_run', False)
 
 def main() -> None:
     logger.info("Application starting")

@@ -42,7 +42,13 @@ Download the latest Windows or Linux build from the Releases page:
 4. **Check Interval**: Set how often to check server status (in seconds)
 5. **Monitor Mode**: Choose 'Both' for game and server, or 'Server Only'
 
-Enter these settings in the app's configuration dialog to get started. You can also configure the app by editing the `settings.json` file directly.
+Enter these settings in the app's configuration dialog to get started. Settings are stored in:
+
+- Windows: `%APPDATA%\bl4ckswordsman\Disco Beacon\settings.json`
+
+- Linux: `~/.config/disco-beacon/settings.json`
+
+On Windows, you can also enable "Run on system startup" in the settings dialog to automatically start the app when you log in.
 
 ## Web App (Svelte)
 
