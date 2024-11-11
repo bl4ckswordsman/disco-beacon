@@ -5,6 +5,8 @@ from src.version import __version__
 from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11, is_windows
+import os
+import sys
 from src.gui.utils.mica_utils import apply_mica_to_window
 
 class SettingsDialog(QDialog):
@@ -86,10 +88,29 @@ class SettingsDialog(QDialog):
 
         # Handle autorun setting separately to apply changes immediately
         autorun_enabled = self.auto_run_checkbox.isChecked()
-        if handle_autorun_change(autorun_enabled):
-            settings_saver.set_setting('auto_run', autorun_enabled)
-        else:
-            settings_saver.set_setting('auto_run', False)
+
+        # Handle autorun changes
+        autorun_enabled = self.auto_run_checkbox.isChecked()
+        registry_updated = handle_autorun_change(autorun_enabled)
+        settings_saved = settings_saver.set_setting('auto_run', registry_updated and autorun_enabled)
+
+        if is_windows() and not registry_updated:
             self.auto_run_checkbox.setChecked(False)
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self,
+                "Settings Error",
+                "Failed to save autorun settings. Make sure you have the necessary permissions."
+            )
+            return
+
+        if not settings_saved:
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self,
+                "Settings Error",
+                "Failed to save settings. Make sure you have write permissions in your config directory."
+            )
+            return
 
         self.accept()

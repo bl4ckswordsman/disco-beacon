@@ -9,8 +9,7 @@ if is_windows():
     import winreg
 
 class SettingsLoader:
-    def __init__(self, settings_file='settings.json'):
-        self.settings_file = settings_file
+    def __init__(self):
         self.default_settings = {
             'webhook_url': '',
             'api_key': '',
@@ -20,118 +19,136 @@ class SettingsLoader:
             'monitor_mode': 'both',
             'auto_run': False
         }
+        self.settings_file = self._get_settings_path()
         self.settings = self.load_settings()
 
+    def _get_settings_path(self):
+        """Get the appropriate settings file path based on the platform"""
+        try:
+            if is_windows():
+                base_path = os.path.join(os.getenv('APPDATA', ''), AppSettings.ORG_NAME, AppSettings.APP_NAME)
+            else:
+                config_home = os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
+                base_path = os.path.join(config_home, 'disco-beacon')
+
+            if not os.path.exists(base_path):
+                old_umask = os.umask(0o077)
+                try:
+                    os.makedirs(base_path, mode=0o700, exist_ok=True)
+                finally:
+                    os.umask(old_umask)
+
+            settings_path = os.path.join(base_path, 'settings.json')
+            return settings_path
+        except Exception as e:
+            logger.error(f"Failed to get settings path: {e}")
+            fallback_path = os.path.expanduser(f"~/.disco-beacon-settings.json")
+            logger.info(f"Using fallback settings path: {fallback_path}")
+            return fallback_path
+
     def load_settings(self):
-        if os.path.exists(self.settings_file):
-            with open(self.settings_file, 'r') as f:
-                return json.load(f)
-        return self.default_settings
+        try:
+            if os.path.exists(self.settings_file):
+                with open(self.settings_file, 'r') as f:
+                    loaded_settings = json.load(f)
+                    merged_settings = self.default_settings.copy()
+                    merged_settings.update(loaded_settings)
+                    return merged_settings
+        except Exception as e:
+            logger.error(f"Failed to load settings: {e}")
+        return self.default_settings.copy()
 
     def get_setting(self, key, default=None):
         return self.settings.get(key, self.default_settings.get(key, default))
-
 
 class SettingsSaver:
     def __init__(self, settings_loader):
         self.settings_loader = settings_loader
 
     def save_settings(self):
-        with open(self.settings_loader.settings_file, 'w') as f:
-            json.dump(self.settings_loader.settings, f, indent=4)
+        temp_file = None
+        old_umask = None
+        try:
+            old_umask = os.umask(0o077)
+            settings_dir = os.path.dirname(self.settings_loader.settings_file)
+
+            if not os.path.exists(settings_dir):
+                os.makedirs(settings_dir, mode=0o700)
+
+            temp_file = f"{self.settings_loader.settings_file}.tmp"
+            with open(temp_file, 'w') as f:
+                json.dump(self.settings_loader.settings, f, indent=4)
+                f.flush()
+                os.fsync(f.fileno())
+
+            os.chmod(temp_file, 0o600)
+            os.replace(temp_file, self.settings_loader.settings_file)
+            os.chmod(self.settings_loader.settings_file, 0o600)
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to save settings: {e}")
+            return False
+
+        finally:
+            if old_umask is not None:
+                os.umask(old_umask)
+            if temp_file and os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except:
+                    pass
 
     def set_setting(self, key, value):
         self.settings_loader.settings[key] = value
-        self.save_settings()
+        return self.save_settings()
 
-
-def windows_only(func):
-    """Decorator to mark functions that only work on Windows"""
-    def wrapper(*args, **kwargs):
-        if not is_windows():
-            logger.debug(f"Skipping {func.__name__}: Feature only available on Windows")
-            return False
-        return func(*args, **kwargs)
-    return wrapper
-
-@windows_only
 def set_auto_run(app_name, app_path):
-    if is_windows():
-        # Use the actual exe path instead of the temporary pyc file
-        if getattr(sys, 'frozen', False):
-            exe_path = sys.executable
-        else:
-            exe_path = os.path.abspath(app_path)
-
-        # Add quotes only after getting absolute path
-        quoted_path = f'"{exe_path}"'
-
-        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-        try:
-            with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key) as reg_key:
-                winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, quoted_path)
-                logger.info(f"Successfully set autorun registry entry: {quoted_path}")
-
-            # Verify the entry was set correctly
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as verify_key:
-                value, _ = winreg.QueryValueEx(verify_key, app_name)
-                if value != quoted_path:
-                    raise ValueError(f"Registry verification failed. Expected: {quoted_path}, Got: {value}")
-
-        except Exception as e:
-            logger.error(f"Failed to set autorun registry: {e}")
-            settings_saver.set_setting('auto_run', False)
-            return False
-        return True
-    return False
-
-
-@windows_only
-def remove_auto_run(app_name):
-    if is_windows():
-        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
-        try:
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
-                winreg.DeleteValue(reg_key, app_name)
-        except FileNotFoundError:
-            pass
-
-
-@windows_only
-def verify_auto_run(app_name):
-    """Verify if the autorun registry entry exists and matches the current executable"""
+    """Set up autorun for Windows"""
     if not is_windows():
         return False
 
-    key = r"Software\Microsoft\Windows\CurrentVersion\Run"
     try:
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_READ) as reg_key:
-            value, _ = winreg.QueryValueEx(reg_key, app_name)
-            exe_path = sys.executable if getattr(sys, 'frozen', False) else os.path.abspath(sys.argv[0])
-            expected_path = f'"{exe_path}"'
-            logger.debug(f"Verifying autorun - Expected: {expected_path}, Found: {value}")
-            return value == expected_path
-    except (WindowsError, FileNotFoundError) as e:
-        logger.debug(f"Failed to verify autorun: {e}")
+        exe_path = sys.executable if getattr(sys, 'frozen', False) else os.path.abspath(app_path)
+        quoted_path = f'"{exe_path}"'
+
+        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        with winreg.CreateKey(winreg.HKEY_CURRENT_USER, key) as reg_key:
+            winreg.SetValueEx(reg_key, app_name, 0, winreg.REG_SZ, quoted_path)
+            return True
+    except Exception as e:
+        logger.error(f"Failed to set autorun registry: {e}")
         return False
 
-
-@windows_only
-def handle_autorun_change(enabled: bool):
-    """Handle changes to autorun setting by updating registry immediately"""
-    if is_windows():
-        app_name = AppSettings.APP_NAME
-        app_path = os.path.abspath(sys.argv[0])
-
-        if enabled:
-            logger.info("Enabling autorun...")
-            if not set_auto_run(app_name, app_path):
-                logger.warning("Failed to set up autorun")
-                return False
-        else:
-            logger.info("Disabling autorun...")
-            remove_auto_run(app_name)
+def remove_auto_run(app_name):
+    """Remove autorun entry for Windows"""
+    if not is_windows():
         return True
-    return False
+
+    try:
+        key = r"Software\Microsoft\Windows\CurrentVersion\Run"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0, winreg.KEY_SET_VALUE) as reg_key:
+            winreg.DeleteValue(reg_key, app_name)
+        return True
+    except FileNotFoundError:
+        return True
+    except Exception as e:
+        logger.error(f"Failed to remove autorun registry: {e}")
+        return False
+
+def handle_autorun_change(enabled: bool):
+    """Handle changes to autorun setting"""
+    if not is_windows():
+        return True
+
+    app_name = AppSettings.APP_NAME
+    app_path = os.path.abspath(sys.argv[0])
+
+    if enabled:
+        return set_auto_run(app_name, app_path)
+    else:
+        return remove_auto_run(app_name)
+
+# Initialize singleton instances
 settings_loader = SettingsLoader()
 settings_saver = SettingsSaver(settings_loader)
