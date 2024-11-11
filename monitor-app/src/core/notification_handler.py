@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from .config import config
 from .logger import logger
 from .webhook import send_webhook_notification
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from .constants import GREEN_CIRCLE, YELLOW_CIRCLE, RED_CIRCLE, SUPPORTED_GAMES
 from .events import event_emitter
 from .app_settings import settings_loader
@@ -11,6 +11,11 @@ from .app_settings import settings_loader
 def setup_notification_handlers():
     event_emitter.on('game_state_changed', handle_game_state_change)
     event_emitter.on('game_server_state_changed', handle_game_server_state_change)
+
+def get_local_time():
+    utc_time = datetime.now(timezone.utc)
+    local_time = utc_time + timedelta(hours=1)  # Adjusting for local timezone
+    return local_time
 
 def handle_game_state_change(state, old_status, new_status):
     # Ignore transitions involving None/error states
@@ -22,7 +27,7 @@ def handle_game_state_change(state, old_status, new_status):
     game_app_id = settings_loader.get_setting('game_app_id')
     game_name = SUPPORTED_GAMES.get(game_app_id, "Unknown Game")
     icon_url = config.get_game_icon_url(game_app_id)
-    current_time = datetime.now(timezone.utc).isoformat()
+    current_time = get_local_time().isoformat()
 
     if monitor_mode == 'both':
         if new_status == 'online' and old_status == 'offline':
@@ -42,7 +47,7 @@ def handle_game_server_state_change(state, old_status, new_status):
     game_app_id = settings_loader.get_setting('game_app_id')
     game_name = SUPPORTED_GAMES.get(game_app_id, "Unknown Game")
     icon_url = config.get_game_icon_url(game_app_id)
-    current_time = datetime.now(timezone.utc).isoformat()
+    current_time = get_local_time().isoformat()
 
     if new_status == 'online' and old_status == 'offline':
         notify_server_online(game_name, state.server_owner, state.lobby_id or "Unknown", current_time, icon_url)
