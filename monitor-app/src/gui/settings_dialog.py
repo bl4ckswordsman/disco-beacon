@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit,
-    QSpinBox, QPushButton, QComboBox, QLabel, QCheckBox)
+    QSpinBox, QPushButton, QComboBox, QLabel, QCheckBox, QFrame)
 from PySide6.QtCore import Signal, Qt
 from src.version import __version__
 from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
@@ -65,6 +65,12 @@ class SettingsDialog(QDialog):
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_settings)
         self.layout.addWidget(save_button)
+
+        # Add separator
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+        self.layout.addWidget(separator)
 
         # Add build version at bottom with styling
         self.build_version_label = QLabel(f"Version {__version__}")
