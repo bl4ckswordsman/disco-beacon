@@ -82,15 +82,20 @@ def initialize_application():
         if not handle_autorun_change(auto_run_enabled):
             settings_saver.set_setting('auto_run', False)
 
-def check_for_updates():
+def check_for_updates(tray_icon=None):
     latest_version = fetch_latest_version()
     if latest_version:
         comparison_result = compare_versions(AppSettings.VERSION, latest_version)
-        if "new version" in comparison_result:
+        if "→" in comparison_result:
             logger.info(comparison_result)
-            if gui_available:
-                from PySide6.QtWidgets import QMessageBox
-                QMessageBox.information(None, "Update Available", comparison_result)
+            if gui_available and tray_icon:
+                from PySide6.QtWidgets import QSystemTrayIcon
+                tray_icon.showMessage(
+                    "Update Available",
+                    comparison_result,
+                    QSystemTrayIcon.MessageIcon.Information,
+                    5000  # Show for 5 seconds
+                )
 
 def main() -> None:
     logger.info("Application starting")
@@ -106,7 +111,7 @@ def main() -> None:
     if gui_available:
         logger.info("Running in GUI mode")
         app, window, tray_icon = init_gui()
-        check_for_updates()
+        check_for_updates(tray_icon)
         try:
             while True:
                 current_time = time.time()
