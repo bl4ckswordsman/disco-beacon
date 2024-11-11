@@ -39,7 +39,7 @@ jobs:
       - name: Build executable
         run: |
           # Replace the DEBUG_MODE line in the spec file
-          $debug_value = if (${{ inputs.debug_mode }}) { "True" } else { "False" }
+          $debug_value = ${{ inputs.debug_mode }:-eq "false"} ? "False" : "True"
           (Get-Content disco_beacon_win_test.spec) -replace 'DEBUG_MODE = (?:True|False)', "DEBUG_MODE = $debug_value" | Set-Content disco_beacon_win_test.spec
           pyinstaller --clean disco_beacon_win_test.spec
       - name: Upload test artifact
