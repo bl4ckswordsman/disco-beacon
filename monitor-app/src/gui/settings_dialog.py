@@ -6,6 +6,8 @@ from src.core.app_settings import settings_loader, settings_saver, handle_autoru
 from src.core import constants
 from src.gui.utils.platform_utils import is_windows_11, is_windows
 from src.gui.utils.mica_utils import apply_mica_to_window
+from src.core.version_checker import fetch_latest_version, compare_versions
+import webbrowser
 
 class SettingsDialog(QDialog):
     theme_changed = Signal(str)
@@ -74,6 +76,35 @@ class SettingsDialog(QDialog):
         """)
         self.build_version_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.layout.addWidget(self.build_version_label)
+
+        # Add latest version label
+        self.latest_version_label = QLabel("Fetching latest version...")
+        self.latest_version_label.setStyleSheet("""
+            QLabel {
+                font-size: 9pt;
+                padding: 5px;
+            }
+        """)
+        self.latest_version_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.layout.addWidget(self.latest_version_label)
+
+        # Add button to open latest release page
+        self.release_button = QPushButton("Go to Latest Release")
+        self.release_button.clicked.connect(self.open_latest_release_page)
+        self.layout.addWidget(self.release_button)
+
+        self.fetch_and_compare_versions()
+
+    def fetch_and_compare_versions(self):
+        latest_version = fetch_latest_version()
+        if latest_version:
+            comparison_result = compare_versions(__version__, latest_version)
+            self.latest_version_label.setText(f"Latest Version: {latest_version}\n{comparison_result}")
+        else:
+            self.latest_version_label.setText("Failed to fetch latest version")
+
+    def open_latest_release_page(self):
+        webbrowser.open("https://github.com/bl4ckswordsman/disco-beacon/releases/latest")
 
     def save_settings(self):
         # Save all non-autorun settings first
