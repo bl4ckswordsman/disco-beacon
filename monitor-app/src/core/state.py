@@ -82,9 +82,10 @@ class GameServerState:
             event_emitter.emit('game_server_state_changed', self, old_state, new_state)
             self.last_notified_status = new_state
 
-    def get_duration(self):
+    def get_duration(self) -> Optional[str]:
         if self.start_time and self.end_time:
-            return self.end_time - self.start_time
+            duration_seconds = self.end_time - self.start_time
+            return format_duration(duration_seconds)
         return None
 
 

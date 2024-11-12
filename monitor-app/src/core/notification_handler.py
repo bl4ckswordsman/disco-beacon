@@ -81,7 +81,7 @@ def notify_game_offline(game_name: str, current_time: str, icon_url: Optional[st
         }]
     })
 
-def notify_server_offline(game_name: str, server_owner: str, current_time: str, icon_url: Optional[str], duration: Optional[float]):
+def notify_server_offline(game_name: str, server_owner: str, current_time: str, icon_url: Optional[str], duration: Optional[str]):
     logger.info(f"{game_name} server owned by {server_owner} is now offline")
     send_webhook_notification(settings_loader.get_setting('webhook_url'), {
         "content": f"The {game_name} server is down! @everyone",
@@ -91,7 +91,7 @@ def notify_server_offline(game_name: str, server_owner: str, current_time: str, 
             "color": 15548997,  # Red color
             "fields": [
                 {"name": "Steam Host", "value": server_owner, "inline": True},
-                {"name": "Uptime", "value": duration if duration else "N/A", "inline": True}
+                {"name": "Active for", "value": duration if duration else "N/A", "inline": True}
             ],
             "timestamp": current_time,
             "footer": {"text": "Last updated"},
