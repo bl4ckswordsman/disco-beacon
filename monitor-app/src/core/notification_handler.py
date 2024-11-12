@@ -1,3 +1,4 @@
+import time
 from typing import Dict, Optional
 from .config import config
 from .logger import logger
@@ -29,6 +30,7 @@ def handle_game_state_change(state, old_status, new_status):
             notify_game_online(game_name, current_time, icon_url)
         elif new_status == 'offline' and old_status == 'online':
             duration = state.get_duration()
+            time.sleep(1) # Short delay to ensure server notification is sent first
             notify_game_offline(game_name, current_time, icon_url, duration)
     else:
         logger.info(f"Game state change detected: {old_status} -> {new_status}")
