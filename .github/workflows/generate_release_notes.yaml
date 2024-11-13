@@ -1,0 +1,39 @@
+name: Generate Release Notes and Changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release Version'
+        required: true
+      additional_notes:
+        description: 'Additional Notes'
+        required: false
+
+jobs:
+  generate_release_notes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate Release Notes
+        id: release_notes
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+
+      - name: Compile Changelog
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const changelogPath = 'CHANGELOG.md';
+            const releaseNotes = `# Release ${github.event.inputs.release_version}\n\n${steps.release_notes.outputs.draft}\n\n${github.event.inputs.additional_notes || ''}\n\n`;
+            if (fs.existsSync(changelogPath)) {
+              const existingChangelog = fs.readFileSync(changelogPath, 'utf8');
+              fs.writeFileSync(changelogPath, releaseNotes + existingChangelog);
+            } else {
+              fs.writeFileSync(changelogPath, releaseNotes);
+            }
+            console.log('Changelog compiled successfully.');
