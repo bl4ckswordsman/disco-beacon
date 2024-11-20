@@ -11,6 +11,7 @@ from src.core.app_settings import settings_loader, settings_saver, handle_autoru
 from src.gui.utils.platform_utils import is_windows
 from src.core.version_checker import fetch_latest_version, compare_versions
 from src.core.single_instance import SingleInstance
+from PySide6.QtWidgets import QMessageBox
 
 gui_available = False
 
@@ -111,6 +112,12 @@ def main() -> None:
         with SingleInstance(lockfile_path) as instance:
             if not instance:
                 logger.info("Another instance of the application is already running. Exiting.")
+                if gui_available:
+                    msg_box = QMessageBox()
+                    msg_box.setIcon(QMessageBox.Icon.Information)
+                    msg_box.setWindowTitle("Instance Running")
+                    msg_box.setText("Another instance of the application is already running. Exiting.")
+                    msg_box.exec()
                 return
 
             initialize_application()
