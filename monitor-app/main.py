@@ -102,7 +102,12 @@ def main() -> None:
     logger.info("Application starting")
 
     try:
-        with SingleInstance("/tmp/disco_beacon.lock") as instance:
+        lockfile_path = "/tmp/disco_beacon.lock" if not is_windows() else os.path.join(os.getenv('APPDATA', ''), 'disco_beacon.lock')
+        lockfile_dir = os.path.dirname(lockfile_path)
+        if not os.path.exists(lockfile_dir):
+            os.makedirs(lockfile_dir)
+
+        with SingleInstance(lockfile_path) as instance:
             if not instance:
                 logger.info("Another instance of the application is already running. Exiting.")
                 return
