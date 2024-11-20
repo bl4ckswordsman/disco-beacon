@@ -101,50 +101,55 @@ def check_for_updates(tray_icon=None):
 def main() -> None:
     logger.info("Application starting")
 
-    with SingleInstance("/tmp/disco_beacon.lock") as instance:
-        if not instance:
-            logger.info("Another instance of the application is already running. Exiting.")
-            return
+    try:
+        with SingleInstance("/tmp/disco_beacon.lock") as instance:
+            if not instance:
+                logger.info("Another instance of the application is already running. Exiting.")
+                return
 
-        initialize_application()
+            initialize_application()
 
-        setup_notification_handlers()
-        game_state = GameState()
-        game_server_state = GameServerState()
+            setup_notification_handlers()
+            game_state = GameState()
+            game_server_state = GameServerState()
 
-        last_check = time.time()
+            last_check = time.time()
 
-        if gui_available:
-            logger.info("Running in GUI mode")
-            app, window, tray_icon = init_gui()
-            check_for_updates(tray_icon)
-            try:
-                while True:
-                    current_time = time.time()
-                    if current_time - last_check >= settings_loader.get_setting('check_interval'):
-                        game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
-                        update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data)
-                        last_check = current_time
-                    app.processEvents()
-                    time.sleep(0.1)
-            except KeyboardInterrupt:
-                logger.info("Received keyboard interrupt, shutting down...")
-            finally:
-                app.quit()
-        else:
-            logger.info("Running in CLI mode")
-            try:
-                while True:
-                    current_time = time.time()
-                    if current_time - last_check >= settings_loader.get_setting('check_interval'):
-                        game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
-                        update_status(game_state, game_server_state, None, game_status, server_status, lobby_id, server_owner, server_data)
-                        last_check = current_time
-                    time.sleep(0.1)
-            except KeyboardInterrupt:
-                logger.info("Received keyboard interrupt, shutting down...")
+            if gui_available:
+                logger.info("Running in GUI mode")
+                app, window, tray_icon = init_gui()
+                check_for_updates(tray_icon)
+                try:
+                    while True:
+                        current_time = time.time()
+                        if current_time - last_check >= settings_loader.get_setting('check_interval'):
+                            game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
+                            update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data)
+                            last_check = current_time
+                        app.processEvents()
+                        time.sleep(0.1)
+                except KeyboardInterrupt:
+                    logger.info("Received keyboard interrupt, shutting down...")
+                finally:
+                    app.quit()
+            else:
+                logger.info("Running in CLI mode")
+                try:
+                    while True:
+                        current_time = time.time()
+                        if current_time - last_check >= settings_loader.get_setting('check_interval'):
+                            game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
+                            update_status(game_state, game_server_state, None, game_status, server_status, lobby_id, server_owner, server_data)
+                            last_check = current_time
+                        time.sleep(0.1)
+                except KeyboardInterrupt:
+                    logger.info("Received keyboard interrupt, shutting down...")
 
-        logger.info("Application shutting down")
+            logger.info("Application shutting down")
+    except FileNotFoundError as e:
+        logger.error(f"Lock file not found: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
 
 
 if __name__ == "__main__":
