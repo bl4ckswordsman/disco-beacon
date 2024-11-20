@@ -11,7 +11,7 @@ from src.core.app_settings import settings_loader, settings_saver, handle_autoru
 from src.gui.utils.platform_utils import is_windows
 from src.core.version_checker import fetch_latest_version, compare_versions
 from src.core.single_instance import SingleInstance
-from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox, QApplication
 
 gui_available = False
 
@@ -102,6 +102,8 @@ def check_for_updates(tray_icon=None):
 
 def main() -> None:
     logger.info("Application starting")
+
+    app = QApplication(sys.argv)
 
     try:
         lockfile_path = "/tmp/disco_beacon.lock" if not is_windows() else os.path.join(os.getenv('APPDATA', ''), 'disco_beacon.lock')
