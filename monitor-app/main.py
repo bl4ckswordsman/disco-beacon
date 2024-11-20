@@ -101,6 +101,7 @@ def check_for_updates(tray_icon=None):
                 )
 
 def main() -> None:
+    import sys
     logger.info("Application starting")
 
     app = QApplication(sys.argv)
