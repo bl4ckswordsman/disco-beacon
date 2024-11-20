@@ -1,4 +1,5 @@
 import time
+import os
 from src.core.config import config
 from src.core.steam_api import fetch_status_from_api
 from src.core.logger import logger
@@ -68,9 +69,9 @@ def update_status(game_state, game_server_state, window, game_status, server_sta
         window.refresh_status(status_text)
     elif window is None:
         if game_status is None or server_status is None:
-            print("Error: Could not fetch status")
+            logger.error("Error: Could not fetch status")
         else:
-            print(f"{game_name} - Game: {game_status}, Server: {server_status}")
+            logger.info(f"{game_name} - Game: {game_status}, Server: {server_status}")
 
 def initialize_application():
     if gui_available:
