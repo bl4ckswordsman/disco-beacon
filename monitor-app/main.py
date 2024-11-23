@@ -107,10 +107,24 @@ def check_for_updates(tray_icon=None):
 def main() -> None:
     logger.info("Application starting")
 
-    with SingleInstance("/tmp/disco_beacon.lock") as instance:
-        if not instance:
-            logger.error("Another instance of the application is already running.")
-            return
+    instance = SingleInstance()
+    is_single = instance.__enter__()
+
+    if not is_single:
+        if gui_available:
+            from PySide6.QtWidgets import QMessageBox, QApplication
+            app = QApplication([])
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle("Already Running")
+            msg.setText("Another instance of Disco Beacon is already running.")
+            msg.setInformativeText("Please check your system tray for the running application.")
+            msg.exec()
+        else:
+            print("Another instance of Disco Beacon is already running.")
+        return
+
+    try:
 
         initialize_application()
 
@@ -151,6 +165,8 @@ def main() -> None:
                 logger.info("Received keyboard interrupt, shutting down...")
 
         logger.info("Application shutting down")
+    finally:
+        instance.__exit__(None, None, None)
 
 
 if __name__ == "__main__":
