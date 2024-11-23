@@ -113,8 +113,12 @@ def main() -> None:
     if not is_single:
         if gui_available:
             from PySide6.QtWidgets import QMessageBox, QApplication
+            from PySide6.QtGui import QIcon
+            from src.gui.utils.gui_config import gui_config
+
             app = QApplication([])
             msg = QMessageBox()
+            msg.setWindowIcon(QIcon(gui_config.WINDOW_ICON_PNG))
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setWindowTitle("Already Running")
             msg.setText("Another instance of Disco Beacon is already running.")
