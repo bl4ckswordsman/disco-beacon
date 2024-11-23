@@ -13,6 +13,7 @@ from src.core.single_instance import SingleInstance
 
 gui_available = False
 
+
 def import_gui_modules():
     global gui_available
     try:
@@ -34,6 +35,7 @@ def import_gui_modules():
 
 import_gui_modules()
 
+
 def fetch_status():
     try:
         api_key = settings_loader.get_setting('api_key', '')
@@ -44,6 +46,7 @@ def fetch_status():
     except Exception as e:
         logger.error(f"Error occurred while fetching status: {e}")
         return None, None, None, None, None
+
 
 def update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data):
     game_name = config.get_game_name(settings_loader.get_setting('game_app_id'))
@@ -72,6 +75,7 @@ def update_status(game_state, game_server_state, window, game_status, server_sta
         else:
             print(f"{game_name} - Game: {game_status}, Server: {server_status}")
 
+
 def initialize_application():
     if gui_available:
         AppSettings.set_app_metadata()
@@ -82,6 +86,7 @@ def initialize_application():
         auto_run_enabled = settings_loader.get_setting('auto_run', False)
         if not handle_autorun_change(auto_run_enabled):
             settings_saver.set_setting('auto_run', False)
+
 
 def check_for_updates(tray_icon=None):
     latest_version = fetch_latest_version()
@@ -97,6 +102,7 @@ def check_for_updates(tray_icon=None):
                     QSystemTrayIcon.MessageIcon.Information,
                     5000  # Show for 5 seconds
                 )
+
 
 def main() -> None:
     logger.info("Application starting")

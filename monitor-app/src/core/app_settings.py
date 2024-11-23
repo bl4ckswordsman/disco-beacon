@@ -8,6 +8,7 @@ from src.gui.utils.app_settings import AppSettings
 if is_windows():
     import winreg
 
+
 class SettingsLoader:
     def __init__(self):
         self.default_settings = {
@@ -61,6 +62,7 @@ class SettingsLoader:
     def get_setting(self, key, default=None):
         return self.settings.get(key, self.default_settings.get(key, default))
 
+
 class SettingsSaver:
     def __init__(self, settings_loader):
         self.settings_loader = settings_loader
@@ -103,6 +105,7 @@ class SettingsSaver:
         self.settings_loader.settings[key] = value
         return self.save_settings()
 
+
 def set_auto_run(app_name, app_path):
     """Set up autorun for Windows"""
     if not is_windows():
@@ -122,6 +125,7 @@ def set_auto_run(app_name, app_path):
         logger.error(f"Failed to set autorun registry: {e}")
         return False
 
+
 def remove_auto_run(app_name):
     """Remove autorun entry for Windows"""
     if not is_windows():
@@ -140,6 +144,7 @@ def remove_auto_run(app_name):
     except Exception as e:
         logger.error(f"Failed to remove autorun registry: {e}")
         return False
+
 
 def handle_autorun_change(enabled: bool):
     """Handle changes to autorun setting"""
@@ -166,6 +171,7 @@ def handle_autorun_change(enabled: bool):
         else:
             logger.error("Failed to disable autorun")
         return success
+
 
 # Initialize singleton instances
 settings_loader = SettingsLoader()

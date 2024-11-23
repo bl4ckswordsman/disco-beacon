@@ -2,6 +2,7 @@ from . import constants
 from .app_settings import settings_loader
 from .steam_api import fetch_game_icon
 
+
 class Config:
     APP_NAME = 'Disco Beacon'
     API_KEY = settings_loader.get_setting('api_key', '')

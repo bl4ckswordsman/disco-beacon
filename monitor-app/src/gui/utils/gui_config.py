@@ -1,5 +1,6 @@
 from PySide6.QtCore import Qt
 
+
 class GUIConfig:
     WINDOW_WIDTH: int = 600
     WINDOW_HEIGHT: int = 400
