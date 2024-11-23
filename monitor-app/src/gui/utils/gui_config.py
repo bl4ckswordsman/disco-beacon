@@ -18,11 +18,20 @@ class GUIConfig:
     WINDOW_ICON: str = ':/icons/tower-control.ico'
 
     COLORS = {
-        'background': Qt.white,
-        'text': Qt.black,
-        'accent': Qt.blue,
-        'online': Qt.green,
-        'offline': Qt.red
+        'light': {
+            'background': Qt.white,
+            'text': Qt.black,
+            'accent': Qt.blue,
+            'online': Qt.green,
+            'offline': Qt.red
+        },
+        'dark': {
+            'background': Qt.darkGray,
+            'text': Qt.white,
+            'accent': Qt.cyan,
+            'online': Qt.green,
+            'offline': Qt.red
+        }
     }
 
 

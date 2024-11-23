@@ -1,6 +1,7 @@
 from PySide6.QtCore import QCoreApplication
 from src.version import __version__
 
+
 class AppSettings:
     APP_NAME = "Disco Beacon"
     ORG_NAME = "bl4ckswordsman"
