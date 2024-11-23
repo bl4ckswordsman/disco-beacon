@@ -52,7 +52,6 @@ def get_current_theme():
     return 'dark' if window_color.lightness() < text_color.lightness() else 'light'
 
 
-
 def get_icon_path(theme: str) -> str:
     if is_linux():
         return f"{gui_config.ICON_THEME_DARK}/{gui_config.ICON_NAME}"
