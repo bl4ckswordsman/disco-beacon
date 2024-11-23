@@ -8,6 +8,7 @@ from src.gui.utils.gui_utils import get_current_theme
 from src.gui.utils.platform_utils import is_windows_11
 from src.gui.utils.mica_utils import apply_mica_to_window
 
+
 def init_gui():
     """Initialize the GUI application with appropriate platform-specific settings."""
     # import os

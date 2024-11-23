@@ -9,8 +9,10 @@ from src.gui.utils.app_settings import AppSettings
 from src.core.app_settings import settings_loader, settings_saver, handle_autorun_change
 from src.gui.utils.platform_utils import is_windows
 from src.core.version_checker import fetch_latest_version, compare_versions
+from src.core.single_instance import SingleInstance
 
 gui_available = False
+
 
 def import_gui_modules():
     global gui_available
@@ -33,6 +35,7 @@ def import_gui_modules():
 
 import_gui_modules()
 
+
 def fetch_status():
     try:
         api_key = settings_loader.get_setting('api_key', '')
@@ -43,6 +46,7 @@ def fetch_status():
     except Exception as e:
         logger.error(f"Error occurred while fetching status: {e}")
         return None, None, None, None, None
+
 
 def update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data):
     game_name = config.get_game_name(settings_loader.get_setting('game_app_id'))
@@ -71,6 +75,7 @@ def update_status(game_state, game_server_state, window, game_status, server_sta
         else:
             print(f"{game_name} - Game: {game_status}, Server: {server_status}")
 
+
 def initialize_application():
     if gui_available:
         AppSettings.set_app_metadata()
@@ -81,6 +86,7 @@ def initialize_application():
         auto_run_enabled = settings_loader.get_setting('auto_run', False)
         if not handle_autorun_change(auto_run_enabled):
             settings_saver.set_setting('auto_run', False)
+
 
 def check_for_updates(tray_icon=None):
     latest_version = fetch_latest_version()
@@ -97,48 +103,70 @@ def check_for_updates(tray_icon=None):
                     5000  # Show for 5 seconds
                 )
 
+
 def main() -> None:
     logger.info("Application starting")
 
-    initialize_application()
+    instance = SingleInstance()
+    with instance.get_lock() as is_single:
+        if not is_single:
+            if gui_available:
+                from PySide6.QtWidgets import QMessageBox, QApplication
+                from PySide6.QtGui import QIcon
+                from src.gui.utils.gui_config import gui_config
 
-    setup_notification_handlers()
-    game_state = GameState()
-    game_server_state = GameServerState()
+                app = QApplication([])
+                msg = QMessageBox()
+                msg.setWindowIcon(QIcon(gui_config.WINDOW_ICON_PNG))
+                msg.setIcon(QMessageBox.Icon.Information)
+                msg.setWindowTitle("Already Running")
+                msg.setText("Another instance of Disco Beacon is already running.")
+                msg.setInformativeText("Please check your system tray for the running application.")
+                msg.exec()
+            else:
+                print("Another instance of Disco Beacon is already running.")
+            return
 
-    last_check = time.time()
+        initialize_application()
 
-    if gui_available:
-        logger.info("Running in GUI mode")
-        app, window, tray_icon = init_gui()
-        check_for_updates(tray_icon)
-        try:
-            while True:
-                current_time = time.time()
-                if current_time - last_check >= settings_loader.get_setting('check_interval'):
-                    game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
-                    update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data)
-                    last_check = current_time
-                app.processEvents()
-                time.sleep(0.1)
-        except KeyboardInterrupt:
-            logger.info("Received keyboard interrupt, shutting down...")
-        finally:
-            app.quit()
-    else:
-        logger.info("Running in CLI mode")
-        try:
-            while True:
-                current_time = time.time()
-                if current_time - last_check >= settings_loader.get_setting('check_interval'):
-                    game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
-                    update_status(game_state, game_server_state, None, game_status, server_status, lobby_id, server_owner, server_data)
-                    last_check = current_time
-                time.sleep(0.1)
-        except KeyboardInterrupt:
-            logger.info("Received keyboard interrupt, shutting down...")
+        setup_notification_handlers()
+        game_state = GameState()
+        game_server_state = GameServerState()
 
-    logger.info("Application shutting down")
+        last_check = time.time()
+
+        if gui_available:
+            logger.info("Running in GUI mode")
+            app, window, tray_icon = init_gui()
+            check_for_updates(tray_icon)
+            try:
+                while True:
+                    current_time = time.time()
+                    if current_time - last_check >= settings_loader.get_setting('check_interval'):
+                        game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
+                        update_status(game_state, game_server_state, window, game_status, server_status, lobby_id, server_owner, server_data)
+                        last_check = current_time
+                    app.processEvents()
+                    time.sleep(0.1)
+            except KeyboardInterrupt:
+                logger.info("Received keyboard interrupt, shutting down...")
+            finally:
+                app.quit()
+        else:
+            logger.info("Running in CLI mode")
+            try:
+                while True:
+                    current_time = time.time()
+                    if current_time - last_check >= settings_loader.get_setting('check_interval'):
+                        game_status, server_status, lobby_id, server_owner, server_data = fetch_status()
+                        update_status(game_state, game_server_state, None, game_status, server_status, lobby_id, server_owner, server_data)
+                        last_check = current_time
+                    time.sleep(0.1)
+            except KeyboardInterrupt:
+                logger.info("Received keyboard interrupt, shutting down...")
+
+        logger.info("Application shutting down")
+
 
 
 if __name__ == "__main__":

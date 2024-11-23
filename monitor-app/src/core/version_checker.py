@@ -1,4 +1,5 @@
 import requests
+from .logger import logger
 
 GITHUB_API_URL = "https://api.github.com/repos/bl4ckswordsman/disco-beacon/releases/latest"
 
@@ -10,7 +11,7 @@ def fetch_latest_version():
         # Strip 'v' prefix if present to ensure consistent comparison
         return latest_release["tag_name"].lstrip('v')
     except requests.RequestException as e:
-        print(f"Error fetching latest version: {e}")
+        logger.error(f"Error fetching latest version: {e}")
         return None
 
 def compare_versions(current_version, latest_version):
@@ -18,9 +19,13 @@ def compare_versions(current_version, latest_version):
     current = current_version.lstrip('v')
     latest = latest_version.lstrip('v')
 
-    # Convert version strings to tuples of integers for proper comparison
-    current_parts = tuple(map(int, current.split('.')))
-    latest_parts = tuple(map(int, latest.split('.')))
+    try:
+        # Convert version strings to tuples of integers for proper comparison
+        current_parts = tuple(map(int, current.split('.')))
+        latest_parts = tuple(map(int, latest.split('.')))
+    except ValueError as e:
+        logger.error(f"Error comparing versions: {e}")
+        return f"Invalid version format: {current_version} or {latest_version}"
 
     if current_parts >= latest_parts:
         return f"v{current} (Latest ✅)"

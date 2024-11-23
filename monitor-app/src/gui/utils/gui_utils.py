@@ -11,6 +11,7 @@ def get_current_theme():
         return 'dark' if palette.color(QPalette.ColorRole.Window).lightness() < 128 else 'light'
     return 'light'  # Default to light theme if app instance is not available
 
+
 def get_icon_path(theme: str) -> str:
     if is_linux():
         return f"{gui_config.ICON_THEME_DARK}/{gui_config.ICON_NAME}"
