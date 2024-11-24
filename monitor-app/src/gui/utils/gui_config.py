@@ -17,22 +17,4 @@ class GUIConfig:
     WINDOW_ICON_PNG: str = ':/icons/tower-control.png'
     WINDOW_ICON: str = ':/icons/tower-control.ico'
 
-    COLORS = {
-        'light': {
-            'background': Qt.white,
-            'text': Qt.black,
-            'accent': Qt.blue,
-            'online': Qt.green,
-            'offline': Qt.red
-        },
-        'dark': {
-            'background': Qt.darkGray,
-            'text': Qt.white,
-            'accent': Qt.cyan,
-            'online': Qt.green,
-            'offline': Qt.red
-        }
-    }
-
-
 gui_config = GUIConfig()
