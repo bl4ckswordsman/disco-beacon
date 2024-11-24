@@ -6,6 +6,10 @@ from PySide6.QtGui import QPalette
 from src.gui.utils.gui_config import gui_config
 from src.gui.utils.platform_utils import is_linux, is_windows
 from src.core.logger import logger
+# Constants for secure subprocess execution
+ALLOWED_DESKTOPS = frozenset(['gnome', 'unity'])
+GSETTINGS_CMD = "gsettings"
+GSETTINGS_ARGS = ["get", "org.gnome.desktop.interface", "color-scheme"]
 
 
 def get_windows_theme():
