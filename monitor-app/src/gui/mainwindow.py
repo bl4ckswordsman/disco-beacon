@@ -28,9 +28,10 @@ class MainWindow(QMainWindow):
         self.current_theme = get_current_theme()
         self.set_window_icon()
 
+        # Check theme less frequently to reduce system calls
         self.theme_timer = QTimer(self)
         self.theme_timer.timeout.connect(self.check_and_update_theme)
-        self.theme_timer.start(1000)  # Check every second
+        self.theme_timer.start(5000)  # Check every 5 seconds
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -73,12 +74,16 @@ class MainWindow(QMainWindow):
         logger.info(f"Window icon set to: {gui_config.WINDOW_ICON_PNG}")
 
     def update_theme(self, new_theme):
-        if new_theme != self.current_theme:
-            self.current_theme = new_theme
-            if self.tray_icon and not is_linux():
-                self.tray_icon.update_icon(new_theme)
-            logger.info(f"Theme updated to: {new_theme}")
-            self.theme_changed.emit(new_theme)
+        """Update the application theme if changed"""
+        if new_theme == self.current_theme:
+            return
+
+        self.current_theme = new_theme
+        logger.info(f"Theme updated to: {new_theme}")
+
+        # Update tray icon if available and not on Linux
+        if self.tray_icon and not is_linux():
+            self.tray_icon.update_icon(new_theme)
 
     def check_and_update_theme(self):
         new_theme = get_current_theme()

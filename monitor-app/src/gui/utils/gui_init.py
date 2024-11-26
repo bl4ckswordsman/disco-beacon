@@ -7,10 +7,19 @@ import resources.resources # noqa: F401
 from src.gui.utils.gui_utils import get_current_theme
 from src.gui.utils.platform_utils import is_windows_11
 from src.gui.utils.mica_utils import apply_mica_to_window
+from src.gui.utils.platform_utils import is_linux
 
 
 def init_gui():
     """Initialize the GUI application with appropriate platform-specific settings."""
+    import os
+
+    # Set environment variables for Linux theme support
+    if is_linux():
+        os.environ['QT_QPA_PLATFORMTHEME'] = 'qt6ct'  # Use qt6ct for theme management
+        os.environ['QT_STYLE_OVERRIDE'] = 'Fusion'
+        # Suppress GTK module warnings
+        # os.environ['NO_AT_BRIDGE'] = '1'
     # import os
     # os.environ['QT_QPA_PLATFORM'] = 'xcb'  # Platform: xcb | wayland
     # os.environ['QT_STYLE_OVERRIDE'] = 'Fusion'  # Style: Fusion| Windows
