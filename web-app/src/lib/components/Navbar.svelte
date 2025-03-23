@@ -14,6 +14,7 @@
             target="_blank"
             rel="noopener noreferrer"
             class="btn btn-square btn-ghost"
+            aria-label="GitHub Repository link"
         >
             <GitHub />
         </a>
