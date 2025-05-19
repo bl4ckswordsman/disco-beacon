@@ -17,6 +17,8 @@ def handle_game_state_change(state, old_status, new_status):
     # Ignore transitions involving None/error states
     if old_status is None or new_status is None:
         logger.info(f"Ignoring state change involving error state: {old_status} -> {new_status}")
+        # Save the last status back to prevent webhook firing
+        state.last_notified_status = old_status if new_status is None else state.last_notified_status
         return
 
     monitor_mode = settings_loader.get_setting('monitor_mode', 'both')
@@ -39,6 +41,8 @@ def handle_game_server_state_change(state, old_status, new_status):
     # Ignore transitions involving None/error states
     if old_status is None or new_status is None:
         logger.info(f"Ignoring server state change involving error state: {old_status} -> {new_status}")
+        # Save the last status back to prevent webhook firing
+        state.last_notified_status = old_status if new_status is None else state.last_notified_status
         return
 
     game_app_id = settings_loader.get_setting('game_app_id')
