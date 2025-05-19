@@ -1,0 +1,54 @@
+name: Test Linux Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      debug_mode:
+        description: "Enable Debug Mode"
+        required: false
+        type: boolean
+        default: true
+  pull_request: # Optionally trigger on PRs
+
+jobs:
+  build_linux_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: monitor-app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxkbcommon-x11-0
+      - name: Set test version
+        run: |
+          # Get current date in CEST timezone
+          timestamp=$(TZ='Europe/Paris' date '+%Y%m%d-%H%M')
+          # Read version from src/version.py
+          version=$(grep -o 'VERSION = "[^"]*"' src/version.py | cut -d'"' -f2)
+          testVersion="$version-test-$timestamp"
+          echo "VERSION=$testVersion" >> $GITHUB_ENV
+          # Update src/version.py with test version
+          sed -i "s/VERSION = \".*\"/VERSION = \"$testVersion\"/" src/version.py
+      - name: Build executable
+        run: |
+          # Replace the DEBUG_MODE line in the spec file
+          debug_value=$([ "${{ inputs.debug_mode }}" == "false" ] && echo "False" || echo "True")
+          sed -i "s/DEBUG_MODE = \(True\|False\)/DEBUG_MODE = $debug_value/" disco_beacon_linux_test.spec
+          pyinstaller --clean disco_beacon_linux_test.spec
+      - name: Upload test artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DiscoBeacon_Linux_${{ env.VERSION }}
+          path: ${{ github.workspace }}/monitor-app/dist/DiscoBeacon
+          retention-days: 5
