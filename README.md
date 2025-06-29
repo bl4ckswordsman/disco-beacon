@@ -1,3 +1,7 @@
+<a>
+  <img src="/monitor-app/icons/tower-control.png" alt="Disco Beacon App Icon" width="144">
+</a>
+
 # Disco Beacon
 
 A project consisting of a Python monitor app and a Svelte web app for Discord notifications.
