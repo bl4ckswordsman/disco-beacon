@@ -40,7 +40,7 @@ jobs:
           echo "File name: DiscoBeacon_Windows_$env:VERSION.zip"
           Get-ChildItem -Path . -Filter DiscoBeacon_Windows_*.zip
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: DiscoBeacon_Windows
           path: ${{ github.workspace }}/monitor-app/DiscoBeacon_Windows_${{ env.VERSION }}.zip
@@ -82,7 +82,7 @@ jobs:
           echo "File name: DiscoBeacon_Linux_${VERSION}.tar.gz"
           ls ./DiscoBeacon_Linux_*.tar.gz
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: DiscoBeacon_Linux
           path: ${{ github.workspace }}/monitor-app/DiscoBeacon_Linux_${{ env.VERSION }}.tar.gz
@@ -98,11 +98,11 @@ jobs:
       - name: Set VERSION
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Download Windows artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: DiscoBeacon_Windows
       - name: Download Linux artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: DiscoBeacon_Linux
       - name: Debug List Downloaded Files

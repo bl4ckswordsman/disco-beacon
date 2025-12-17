@@ -43,7 +43,7 @@ jobs:
           (Get-Content disco_beacon_win_test.spec) -replace 'DEBUG_MODE = (?:True|False)', "DEBUG_MODE = $debug_value" | Set-Content disco_beacon_win_test.spec
           pyinstaller --clean disco_beacon_win_test.spec
       - name: Upload test artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: DiscoBeacon_Windows_${{ env.VERSION }}
           path: ${{ github.workspace }}/monitor-app/dist/DiscoBeacon.exe
