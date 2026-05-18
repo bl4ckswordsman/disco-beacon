@@ -3,7 +3,5 @@
   "extends": [
     "config:recommended"
   ],
-  "schedule": [
-    "before 5am on wednesday and friday"
-  ]
+  "schedule": ["* * 1 */2 *"]
 }
