@@ -3,5 +3,22 @@
   "extends": [
     "config:recommended"
   ],
-  "schedule": ["* * 1 */2 *"]
+  "schedule": ["* * 1 */2 *"],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^svelte", "^@sveltejs/"],
+      "groupName": "Svelte dependencies",
+      "groupSlug": "svelte-dependencies"
+    },
+    {
+      "matchCategories": ["python"],
+      "groupName": "Python dependencies",
+      "groupSlug": "python-dependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions updates",
+      "automerge": true
+    }
+  ]
 }
