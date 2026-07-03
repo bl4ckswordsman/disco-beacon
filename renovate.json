@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "schedule": ["* * 1 */2 *"],
   "configMigration": true,
   "packageRules": [
     {
