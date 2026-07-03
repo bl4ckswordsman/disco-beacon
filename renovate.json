@@ -4,11 +4,22 @@
     "config:recommended"
   ],
   "schedule": ["* * 1 */2 *"],
+  "configMigration": true,
   "packageRules": [
     {
-      "matchPackagePatterns": ["^svelte", "^@sveltejs/"],
-      "groupName": "Svelte dependencies",
-      "groupSlug": "svelte-dependencies"
+      "matchFileNames": ["web-app/**"],
+      "groupName": "Svelte & Frontend dependencies",
+      "groupSlug": "svelte-frontend-dependencies"
+    },
+    {
+      "matchManagers": ["npm", "bun"],
+      "groupName": "Svelte & Frontend dependencies",
+      "groupSlug": "svelte-frontend-dependencies"
+    },
+    {
+      "matchFileNames": ["monitor-app/**"],
+      "groupName": "Python dependencies",
+      "groupSlug": "python-dependencies"
     },
     {
       "matchCategories": ["python"],
